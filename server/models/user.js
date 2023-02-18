@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
 
+/* Resource: https://mongoosejs.com/docs/ */
+
 /* Create a user schema */
 const userSchema = new mongoose.Schema({
     email: String,

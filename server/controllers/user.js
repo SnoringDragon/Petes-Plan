@@ -1,40 +1,45 @@
 const User = require('../models/user');
-
+const email = require('./controllers/email');
 
 /* Create a new user */
-exports.signup = (req, res) => {
-    //TODO Actually implement properly, this is just a satabase test currently
+exports.signup = async (req, res) => {
+    //TODO Actually implement properly, this is just a database test currently
+    /* Resource: https://openclassrooms.com/en/courses/5614116-go-full-stack-with-node-js-express-and-mongodb/5656271-create-new-users */
     const newuser = new User({ email: req.body.email.toLowerCase(), password: req.body.password });
     newuser.save();
+
+    /* Send a verification email */
+    await email.sendEmail('example@gmail.com', 'testSubject', 'testBody');
+
     res.send('User created');
 };
 
 /* Verify a user's email */
-exports.verifyEmail = (req, res) => {
+exports.verifyEmail = async (req, res) => {
 
 };
 
 /* Login a user */
-exports.login = (req, res) => {
+exports.login = async (req, res) => {
 
 };
 
 /* Verify a user's token */
-exports.verifyToken = (req, res) => {
+exports.verifyToken = async (req, res) => {
 
 };
 
 /* Logout a user */
-exports.logout = (req, res) => {
+exports.logout = async (req, res) => {
 
 };
 
 /* Delete a user */
-exports.delete = (req, res) => {
+exports.delete = async (req, res) => {
 
 };
 
 /* Update a user's details */
-exports.update = (req, res) => {
+exports.update = async (req, res) => {
 
 };
