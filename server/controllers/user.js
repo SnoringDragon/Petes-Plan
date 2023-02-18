@@ -1,6 +1,12 @@
+const User = require('../models/user');
+
+
 /* Create a new user */
 exports.signup = (req, res) => {
-    res.send('user test');
+    //TODO Actually implement properly, this is just a satabase test currently
+    const newuser = new User({ email: req.body.email.toLowerCase(), password: req.body.password });
+    newuser.save();
+    res.send('User created');
 };
 
 /* Verify a user's email */
