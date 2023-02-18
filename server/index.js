@@ -10,8 +10,10 @@ async function main() {
 
     const app = express();
 
-    require('./routes')(app);
+    /* Load files in ./routes */
+    require('./routes/index')(app);
 
+    /* Start the server */
     app.listen(port, () => {
         console.log('listening on port', port);
     });
