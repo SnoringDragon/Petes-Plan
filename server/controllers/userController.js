@@ -1,5 +1,5 @@
-const User = require('../models/user');
-const email = require('./email');
+const User = require('../models/userModel');
+const email = require('./emailController');
 
 /* Create a new user */
 exports.signup = async (req, res) => {

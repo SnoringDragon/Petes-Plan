@@ -3,7 +3,7 @@ const jsonParser = require('body-parser').json();
 
 module.exports = app => {
     const router = Router();
-    const userController = require('../controllers/user');
+    const userController = require('../controllers/userController');
 
     /* Add HTTP requests for managing user data */
     router.post('/signup', jsonParser, userController.signup);              /* Create a new user */
