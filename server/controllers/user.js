@@ -1,5 +1,5 @@
 const User = require('../models/user');
-const email = require('./controllers/email');
+const email = require('./email');
 
 /* Create a new user */
 exports.signup = async (req, res) => {
@@ -9,7 +9,11 @@ exports.signup = async (req, res) => {
     newuser.save();
 
     /* Send a verification email */
-    await email.sendEmail('example@gmail.com', 'testSubject', 'testBody');
+    await email.sendEmail('example@gmail.com', 'Email Verification', 'verifyEmail', {
+        username: 'input username here',
+        email: 'input email here',
+        token: 'input token here'
+    });
 
     res.send('User created');
 };

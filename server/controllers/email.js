@@ -1,4 +1,5 @@
 const nodeMailer = require('nodemailer');
+const handlebars = require('nodemailer-express-handlebars');
 
 /* Create a transporter for sending emails */
 const mailer = nodeMailer.createTransport({
@@ -17,22 +18,34 @@ const mailer = nodeMailer.createTransport({
     */
 });
 
+/* Set up the email template */
+const handlebarsOptions = {
+    viewEngine: {
+        extName: '.hbs',
+        partialsDir: './emails/',
+        defaultLayout: false,
+    },
+    extName: '.hbs',
+    viewPath: './emails/',
+};
+mailer.use('compile', handlebars(handlebarsOptions));
+
 /* Send an email using arguments */
-exports.sendEmail = async (to, subject, html) => {
+exports.sendEmail = async (to, subject, template, context) => {
     /* Compose the email */
     const mailOptions = {
         from: process.env.MAIL_ADDRESS,
         to: to,
         subject: subject,
-        html: html
+        template: template,
+        context: context
     };
 
     /* Send the email */
-    try {
-        await mailer.sendMail(mailOptions);
-        return true;
-    } catch (error) {
-        console.log(error);
-        return false;
-    }
+    await mailer.sendMail(mailOptions, (error) => {
+        if (error) {
+            console.log(error);
+            return false;
+        } else return true;
+    });
 };
