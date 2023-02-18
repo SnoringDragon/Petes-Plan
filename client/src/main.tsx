@@ -8,19 +8,24 @@ import App from './App';
 import './index.scss';
 import { Dashboard } from './pages/dashboard/dashboard';
 import { Login } from './pages/login/login';
+import { Register } from './pages/register/register';
 
 const router = createBrowserRouter([
   {
     path: '/',
     element: <App />,
     children: [{
-      index: true,
-      element: <Dashboard />
-    },
-    {
-      path: '/login',
-      element: <Login />
-    }
+        index: true,
+        element: <Dashboard />
+      },
+      {
+        path: '/login',
+        element: <Login />
+      },
+      {
+        path: '/register',
+        element: <Register />
+      }
     ]
   }
 ]);
