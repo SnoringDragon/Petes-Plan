@@ -9,6 +9,7 @@ import './index.scss';
 import { Dashboard } from './pages/dashboard/dashboard';
 import { Login } from './pages/login/login';
 import { Register } from './pages/register/register';
+import { Homepage } from './pages/homepage/homepage';
 
 const router = createBrowserRouter([
   {
@@ -25,6 +26,10 @@ const router = createBrowserRouter([
       {
         path: '/register',
         element: <Register />
+      },
+      {
+        path: '/homepage',
+        element: <Homepage />
       }
     ]
   }

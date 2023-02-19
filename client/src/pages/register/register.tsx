@@ -1,4 +1,7 @@
-import Card from '@material-ui/core/Card';
+export function Register() {
+    return (<div>register</div>);
+}
+/*import Card from '@material-ui/core/Card';
 import TextField from '@material-ui/core/TextField';
 
 import CardContent from '@material-ui/core/CardContent';
@@ -43,4 +46,4 @@ export function Register() {
             </CardActions>
         </Card>
     </div>)
-}
+}*/
