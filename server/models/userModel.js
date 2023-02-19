@@ -10,6 +10,14 @@ const userSchema = new mongoose.Schema({
     verificationToken: String,
 });
 
+userSchema.methods.toJSON = function() {
+    const obj = this.toObject();
+    delete obj.password;
+    delete obj.verificationToken;
+    delete obj.__v;
+    return obj;
+};
+
 // https://stackoverflow.com/questions/14588032/mongoose-password-hashing
 userSchema.pre('save', async function (next) {
     // don't need to re-hash password if password not modified
