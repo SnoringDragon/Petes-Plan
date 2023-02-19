@@ -30,6 +30,18 @@ export function Homepage() {
         left = "500px"
         children = "Register"
       />
+      <Button 
+        border="thick"
+        color="grey"
+        height = "100px"
+        onClick={() => navigate('/dashboard')  }
+        radius = "5%"
+        width = "300px"
+        padding="50px"
+        top = "0px"
+        left = "500px"
+        children = "Dashboard (for ease of use)"
+      />
     </>
     );
 }   
