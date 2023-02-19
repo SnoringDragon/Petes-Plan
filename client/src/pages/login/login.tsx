@@ -1,27 +1,3 @@
-import { Layout } from '../../components/layout/layout';
-import Button from '../../components/buttonset/buttonset';
-import { useNavigate } from 'react-router-dom';
-
-export function Login() {
-    const navigate = useNavigate();
-
-    return (
-        <>
-                <Button 
-                    border="thick"
-                    color="grey"
-                    height = "50px"
-                    onClick={() =>  navigate('/password-reset')    }
-                    radius = "5%"
-                    width = "200px"
-                    top = "60px"
-                    padding="50px"
-                    left = "0px"
-                    children = "Forgot My Password"
-                 />
-            </>);
-}
-/*
 import React, { useReducer, useEffect } from 'react';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
@@ -81,6 +57,8 @@ export function Login() {
                     //onChange={handlePasswordChange}
                     //onKeyPress={handleKeyPress}
                     />
+                    <p> </p>
+                    <a href='/password-reset'><u>Forgot your password?</u></a >
                 </div>
             </CardContent>
             <CardActions>
@@ -93,4 +71,4 @@ export function Login() {
                 </Button>
             </CardActions>
         </Card>);
-}*/
+}
