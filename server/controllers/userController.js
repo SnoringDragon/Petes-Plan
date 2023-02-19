@@ -1,10 +1,8 @@
 const jwt = require('jsonwebtoken');
 
+const { secret } = require('../middleware/authenticate');
 const User = require('../models/userModel');
 const mailer = require('./emailController');
-
-const SECRET_KEY = process.env.JWT_SECRET_KEY;
-delete process.env.JWT_SECRET_KEY;
 
 /* Generate a unique token for a user */
 async function generateToken(email) {
@@ -80,7 +78,7 @@ exports.login = async (req, res) => {
     // return token as signed payload
     return res.json({
         error: false,
-        token: await jwt.sign(user.toJSON(), SECRET_KEY, {
+        token: await jwt.sign(user.toJSON(), user.permuteKey(secret), {
             expiresIn: req.body.remember ? '30 days' : '1 day'
         }),
         // whether the token should be stored in localStorage or sessionStorage
@@ -90,7 +88,9 @@ exports.login = async (req, res) => {
 
 /* Verify a user's token */
 exports.verifyToken = async (req, res) => {
-
+    // authenticate middleware added in userController
+    // therefore already authenticated if we are at this point
+    return res.json({ error: false });
 };
 
 /* Logout a user */
