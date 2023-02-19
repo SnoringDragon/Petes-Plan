@@ -8,6 +8,7 @@ import App from './App';
 import './index.scss';
 import { Dashboard } from './pages/dashboard/dashboard';
 import { Login } from './pages/login/login';
+import { SignUp } from './pages/sign_up/sign_up'
 
 const router = createBrowserRouter([
   {
@@ -20,6 +21,10 @@ const router = createBrowserRouter([
     {
       path: '/login',
       element: <Login />
+    },
+    {
+      path: '/sign_up',
+      element: <SignUp />
     }
     ]
   }

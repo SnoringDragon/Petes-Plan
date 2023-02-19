@@ -17,7 +17,7 @@ const useStyles = makeStyles((theme: Theme) =>
         container: {
             display: 'flex',
             flexWrap: 'wrap',
-            width: 400,
+            width: 10,
             margin: `${theme.spacing(0)} auto`
         },
         loginBtn: {
@@ -48,8 +48,6 @@ export function Login() {
                         label="Username"
                         placeholder="Username"
                         margin="normal"
-                    //onChange={handleUsernameChange}
-                    //onKeyPress={handleKeyPress}
                     />
                     <TextField
                         fullWidth
@@ -58,10 +56,9 @@ export function Login() {
                         label="Password"
                         placeholder="Password"
                         margin="normal"
-                    //helperText={state.helperText}
-                    //onChange={handlePasswordChange}
-                    //onKeyPress={handleKeyPress}
                     />
+                    <p> </p>
+                    <a href='/sign_up'><u>Do not have an account? Sign up here.</u></a >
                 </div>
             </CardContent>
             <CardActions>
