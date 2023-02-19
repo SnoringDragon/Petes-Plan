@@ -1,4 +1,5 @@
 import React from "react";
+import { PropsWithChildren } from 'react';
 
 interface Options {
   border: string;
@@ -6,10 +7,14 @@ interface Options {
   children?: React.ReactNode;
   height: string;
   onClick: () => void;
-  radius: string
+  radius: string;
   width: string;
+  padding: string;
+  top: string;
+  left: string;
 }
 
+/*code source: https://www.twilio.com/blog/intro-custom-button-component-typescript-react*/
 const Button: React.FC<Options> = ({ 
     border,
     color,
@@ -17,7 +22,10 @@ const Button: React.FC<Options> = ({
     height,
     onClick, 
     radius,
-    width
+    width,
+    padding,
+    top,
+    left
   }) => { 
   return (
     <button 
@@ -27,7 +35,10 @@ const Button: React.FC<Options> = ({
          border,
          borderRadius: radius,
          height,
-         width
+         width,
+         marginBottom: padding,
+         marginTop: top,
+         marginLeft: left
       }}
     >
     {children}
@@ -35,5 +46,4 @@ const Button: React.FC<Options> = ({
   );
 }
 
-/*code source: https://www.twilio.com/blog/intro-custom-button-component-typescript-react*/
 export default Button;

@@ -1,5 +1,9 @@
+import { Layout } from '../../components/layout/layout';
+
 export function Register() {
-    return (<div>register</div>);
+    return (<Layout>
+        <div>Register</div>
+    </Layout>);
 }
 /*import Card from '@material-ui/core/Card';
 import TextField from '@material-ui/core/TextField';

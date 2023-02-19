@@ -1,6 +1,9 @@
+import { Layout } from '../../components/layout/layout';
 
 export function Login() {
-    return (<div>login in</div>);
+    return (<Layout>
+        <div>Log In</div>
+    </Layout>);
 }
 /*
 import React, { useReducer, useEffect } from 'react';
