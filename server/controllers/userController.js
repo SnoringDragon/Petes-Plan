@@ -68,6 +68,12 @@ exports.login = async (req, res) => {
             message: 'Invalid email'
         });
 
+    if (!user.verified)
+        return res.status(400).json({
+            error: true,
+            message: 'Email has not been verified yet'
+        });
+
     // invalid password
     if (!await user.validatePassword(req.body.password))
         return res.status(400).json({
