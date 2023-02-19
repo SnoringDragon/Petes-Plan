@@ -97,7 +97,7 @@ exports.login = async (req, res) => {
         });
 
     // invalid password
-    if (!await user.validatePassword(req.body.password))
+    if (!await user.validatePassword(req.body.password, hash))
         return res.status(400).json({
             error: true,
             message: 'Invalid password'
