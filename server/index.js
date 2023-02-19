@@ -1,4 +1,5 @@
 const express = require('express');
+const jsonParser = require('body-parser').json();
 
 require('dotenv').config()
 
@@ -9,6 +10,8 @@ async function main() {
     delete process.env.DB;
 
     const app = express();
+
+    app.use(jsonParser);
 
     /* Load files in ./routes */
     require('./routes/index')(app);
