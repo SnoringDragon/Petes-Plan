@@ -5,7 +5,10 @@ const mongoose = require('mongoose');
 /* Create a user schema */
 const userSchema = new mongoose.Schema({
     email: String,
-    password: String,
+    passwordSalt: String,
+    passwordHash: String,
+    verified: Boolean,
+    verificationToken: String,
 });
 
 module.exports = mongoose.model('User', userSchema);
