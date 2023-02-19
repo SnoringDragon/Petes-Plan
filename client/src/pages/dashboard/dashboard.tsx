@@ -1,3 +1,7 @@
+import { Layout } from '../../components/layout/layout';
+
 export function Dashboard() {
-    return (<div>dashboard</div>);
+    return (<Layout>
+        <div>dashboard</div>
+    </Layout>);
 }
