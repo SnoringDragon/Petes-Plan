@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const crypto = require('crypto');
 
 /* Resource: https://mongoosejs.com/docs/ */
 
@@ -9,6 +10,17 @@ const userSchema = new mongoose.Schema({
     verified: Boolean,
     verificationToken: String,
 });
+
+/* modify secret key by xor-ing it with hash of user's password
+*  password changes will then invalidate the secret key */
+userSchema.methods.permuteKey = function(secretKey) {
+    // compute sha256 hash of password
+    const hash = crypto.createHash('sha256')
+        .update(this.password).digest();
+
+    return Buffer.alloc(Math.max(hash.length, secretKey.length)) // create buffer of whatever is the max length
+        .map((_, i) => secretKey[i % secretKey.length] ^ hash[i % hash.length]); // xor the secret key with password hash
+}
 
 userSchema.methods.toJSON = function() {
     const obj = this.toObject();
