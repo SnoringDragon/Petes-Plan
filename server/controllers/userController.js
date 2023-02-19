@@ -6,6 +6,27 @@ const mailer = require('./emailController');
 
 /* Generate a unique token for a user */
 async function generateToken(email) {
+    bcrypt.hash(req.body.password, 10).then(
+        (hash) => {
+          user = new User({
+            email: email,
+            password: hash
+          });
+          user.save().then(
+            () => {
+              res.status(201).json({
+                message: 'User added successfully!'
+              });
+            }
+          ).catch(
+            (error) => {
+              res.status(500).json({
+                error: error
+              });
+            }
+          );
+        }
+      );
     return jwt.sign({ email }, secret, {
         expiresIn: '30 days'
     });
