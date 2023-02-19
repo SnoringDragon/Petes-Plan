@@ -1,9 +1,12 @@
 const mongoose = require('mongoose');
 
+//Includes schemas for: userCourse, semester, section, instructor
+
 /* Resources: https://mongoosejs.com/docs/guide.html#definition */
 /* https://stackoverflow.com/questions/43534461/array-of-subdocuments-in-mongoose */ 
+
 /* Create a course schema - US5 */
-const userCourseSchema = new mongoose.Schema({
+const courseSchema = new mongoose.Schema({
     name: String,
     courseID: String,
     credits: Number,
@@ -16,7 +19,7 @@ const userCourseSchema = new mongoose.Schema({
         }]
     },
     prerequisites: {
-        type: [userCourseSchema]
+        type: [courseSchema]
     }
 });
 
@@ -41,4 +44,21 @@ const semesterSchema = new mongoose.Schema({
     prerequisites: {
         type: [courseSchema]
     }
+});
+
+
+const instructorSchema = new mongoose.Schema({
+    name: String,
+    email: String,
+});
+
+const sectionSchema = new mongoose.Schema({
+    instructor: instructorSchema,
+    days: String,
+    crn: Number,
+    name: String,
+    startTime: Date,
+    endTime: Date,
+    location: String,
+    type: String
 });
