@@ -13,7 +13,7 @@ export function Homepage() {
         onClick={() =>  navigate('/login')    }
         radius = "5%"
         width = "300px"
-        top = "100px"
+        top = "60px"
         padding="50px"
         left = "500px"
         children = "Login"
