@@ -63,7 +63,6 @@ userSchema.pre('save', async function (next) {
 });
 
 userSchema.methods.validatePassword = async function (password, hash) {
-    // TODO: check password to see if it matches hash
     // source: https://www.makeuseof.com/nodejs-bcrypt-hash-verify-salt-password/ 
     bcrypt.compare(password, hash, function(err, result) {
         if (result) {
