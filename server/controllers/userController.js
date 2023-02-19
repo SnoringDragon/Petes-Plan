@@ -5,11 +5,12 @@ const User = require('../models/userModel');
 const mailer = require('./emailController');
 
 /* Generate a unique token for a user */
-async function generateToken(email) {
+async function generateToken(req, res) {
+    /* When I am able to run the program, test that req.body.password works!*/
     bcrypt.hash(req.body.password, 10).then(
         (hash) => {
           user = new User({
-            email: email,
+            email: req.body.email,
             password: hash
           });
           user.save().then(
@@ -38,7 +39,7 @@ exports.signup = async (req, res) => {
     /* Resource: https://openclassrooms.com/en/courses/5614116-go-full-stack-with-node-js-express-and-mongodb/5656271-create-new-users */
     
     const email = req.body.email.toLowerCase();
-    const token = await generateToken(req.body.email);
+    const token = await generateToken(req, res);
     const user = new User({
         email: email,
         verified: false,
