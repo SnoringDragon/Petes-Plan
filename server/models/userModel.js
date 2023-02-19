@@ -1,5 +1,11 @@
 const mongoose = require('mongoose');
 const crypto = require('crypto');
+const jwt = require('jsonwebtoken');
+const util = require('util');
+
+const secret = require('../secret');
+
+const verify = util.promisify(jwt.verify);
 
 /* Resource: https://mongoosejs.com/docs/ */
 
@@ -9,6 +15,7 @@ const userSchema = new mongoose.Schema({
     password: String,
     verified: Boolean,
     verificationToken: String,
+    tokenBlacklist: [String]
 });
 
 /* modify secret key by xor-ing it with hash of user's password
@@ -22,11 +29,28 @@ userSchema.methods.permuteKey = function(secretKey) {
         .map((_, i) => secretKey[i % secretKey.length] ^ hash[i % hash.length]); // xor the secret key with password hash
 }
 
+/* remove expired tokens from blacklist */
+userSchema.methods.filterBlacklist = async function() {
+    if (!this.tokenBlacklist) return;
+
+    const userSecret = this.permuteKey(secret);
+
+    // try to verify each token
+    const potentiallyValidTokens = await Promise.all(
+        this.tokenBlacklist.map(token => verify(token, userSecret)
+            .then(() => token).catch(() => false)));
+
+    // remove already expired tokens
+    this.tokenBlacklist = potentiallyValidTokens.filter(x => x);
+    await this.save();
+}
+
 userSchema.methods.toJSON = function() {
     const obj = this.toObject();
     delete obj.password;
     delete obj.verificationToken;
     delete obj.__v;
+    delete obj.tokenBlacklist;
     return obj;
 };
 

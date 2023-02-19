@@ -1,12 +1,12 @@
 const jwt = require('jsonwebtoken');
 
-const { secret } = require('../middleware/authenticate');
+const secret = require('../secret');
 const User = require('../models/userModel');
 const mailer = require('./emailController');
 
 /* Generate a unique token for a user */
 async function generateToken(email) {
-    return jwt.sign({ email }, SECRET_KEY, {
+    return jwt.sign({ email }, secret, {
         expiresIn: '30 days'
     });
 }
@@ -75,6 +75,8 @@ exports.login = async (req, res) => {
             message: 'Invalid password'
         });
 
+    await user.filterBlacklist();
+
     // return token as signed payload
     return res.json({
         error: false,
@@ -95,7 +97,9 @@ exports.verifyToken = async (req, res) => {
 
 /* Logout a user */
 exports.logout = async (req, res) => {
-
+    req.user.tokenBlacklist.push(req.token);
+    req.user.filterBlacklist();
+    return res.json({ error: false });
 };
 
 /* Delete a user */
