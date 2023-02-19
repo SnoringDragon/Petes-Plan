@@ -10,6 +10,7 @@ import { Dashboard } from './pages/dashboard/dashboard';
 import { Login } from './pages/login/login';
 import { Register } from './pages/register/register';
 import { Homepage } from './pages/homepage/homepage';
+import { PasswordReset } from './pages/password-reset/password-reset';
 
 const router = createBrowserRouter([
   {
@@ -30,6 +31,10 @@ const router = createBrowserRouter([
       {
         path: '/dashboard',
         element: <Dashboard />
+      },
+      {
+        path: "/password-reset",
+        element: <PasswordReset />
       }
     ]
   }

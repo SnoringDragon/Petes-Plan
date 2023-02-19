@@ -1,9 +1,25 @@
 import { Layout } from '../../components/layout/layout';
+import Button from '../../components/buttonset/buttonset';
+import { useNavigate } from 'react-router-dom';
 
 export function Login() {
-    return (<Layout>
-        <div>Log In</div>
-    </Layout>);
+    const navigate = useNavigate();
+
+    return (
+        <>
+                <Button 
+                    border="thick"
+                    color="grey"
+                    height = "50px"
+                    onClick={() =>  navigate('/password-reset')    }
+                    radius = "5%"
+                    width = "200px"
+                    top = "60px"
+                    padding="50px"
+                    left = "0px"
+                    children = "Forgot My Password"
+                 />
+            </>);
 }
 /*
 import React, { useReducer, useEffect } from 'react';
