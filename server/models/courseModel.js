@@ -48,3 +48,9 @@ const sectionSchema = new mongoose.Schema({
     location: String,
     type: String
 });
+
+const APTestSchema = new mongoose.Schema({
+    name: String,
+    credits: [courseSchema][Number],
+    courseID: String
+});
