@@ -162,6 +162,11 @@ class BannerSelfService {
 
         const xml = new XMLParser().parse(await response.text());
 
+        // 200 OK status, but HTML error returned in table
+        // likely our query did not produce results
+        if (xml.table)
+            return [];
+
         let courseInventory = xml['CrseCat:CourseCatalog'].CourseInventory;
         courseInventory = Array.isArray(courseInventory) ? courseInventory : [courseInventory];
 
