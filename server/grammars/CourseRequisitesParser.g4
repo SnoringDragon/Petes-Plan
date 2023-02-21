@@ -13,10 +13,14 @@ course: COURSE_REQUISITE COURSE_NAME COURSE_GRADE_TEXT
 
 non_course: WORD+;
 
-requisite: course | non_course | LPAREN group RPAREN;
+// an and group after an or group does not necessarily surrounding parentheses
 
-or_group: requisite (OR requisite)*;
+and_requisite: course | non_course | LPAREN and_group RPAREN | and_group;
 
-and_group: requisite (AND requisite)*;
+or_requisite: course | non_course | LPAREN or_group RPAREN;
 
-group: or_group | and_group;
+or_group: and_requisite (OR and_requisite)*;
+
+and_group: or_requisite (AND or_requisite)*;
+
+group: and_group | or_group;

@@ -32,12 +32,21 @@ export default class CourseRequisitesParserListener extends antlr4.tree.ParseTre
 	}
 
 
-	// Enter a parse tree produced by CourseRequisitesParser#requisite.
-	enterRequisite(ctx) {
+	// Enter a parse tree produced by CourseRequisitesParser#and_requisite.
+	enterAnd_requisite(ctx) {
 	}
 
-	// Exit a parse tree produced by CourseRequisitesParser#requisite.
-	exitRequisite(ctx) {
+	// Exit a parse tree produced by CourseRequisitesParser#and_requisite.
+	exitAnd_requisite(ctx) {
+	}
+
+
+	// Enter a parse tree produced by CourseRequisitesParser#or_requisite.
+	enterOr_requisite(ctx) {
+	}
+
+	// Exit a parse tree produced by CourseRequisitesParser#or_requisite.
+	exitOr_requisite(ctx) {
 	}
 
 
