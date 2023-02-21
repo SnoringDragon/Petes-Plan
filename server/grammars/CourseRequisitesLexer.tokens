@@ -1,0 +1,17 @@
+AND=1
+OR=2
+LPAREN=3
+RPAREN=4
+COURSE_REQUISITE=5
+WORD=6
+WS=7
+COURSE_NAME=8
+COURSE_GRADE_TEXT=9
+COURSE_GRADE=10
+COURSE_WS=11
+'and'=1
+'or'=2
+'('=3
+')'=4
+'Undergraduate level'=5
+'Minimum Grade of'=9
