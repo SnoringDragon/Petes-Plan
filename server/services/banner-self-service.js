@@ -111,14 +111,23 @@ class BannerSelfService {
         });
 
         const $ = cheerio.load(await response.text());
+
+        // find option dropdown by id
+        const mapOptionsToObject = id => $(`${id} option`)
+            .filter((i, option) => $(option).attr('value') !== '%') // remove wildcard option
+            .map((i, option) => ({
+                name: $(option).text(),
+                value: $(option).attr('value')
+            })).toArray();
+
         // find subject dropdown
-        const subjects = $('#subj_id option').map((i, option) => ({
-            name: $(option).text(),
-            value: $(option).attr('value')
-        })).toArray();
+        const subjects = mapOptionsToObject('#subj_id');
+
+        // find college dropdown
+        const colleges = mapOptionsToObject('#coll_id');
 
         // do we need anything else?
-        return { subjects };
+        return { subjects, colleges };
     }
 
     /**
@@ -130,19 +139,24 @@ class BannerSelfService {
      * @param courseNumberEnd end (inclusive) for course number range
      * @returns {Promise<SelfServiceCourseSummary[]>}
      */
-    async getCourseList({ term, subjects,
+    async getCourseList({ term, subjects, colleges,
                             courseNumberStart = 1,
                             courseNumberEnd = 99999 }) {
-        // convert single subject to 1-array
-        subjects = Array.isArray(subjects) ? subjects : [subjects];
+        const joinMultiOption = value => {
+            if (typeof value === 'string')
+                return `\t${value}\t`;
+            if (Array.isArray(value) && value.length)
+                return value.map(v => `\t${v}\t`).join(''); // expects each value to be tab padded and joined
+            return '%'; // wildcard token
+        };
 
         const params = new URLSearchParams({
             term_in: term,
-            subj_in: subjects.map(s => `\t${s}\t`).join(''),
+            subj_in: joinMultiOption(subjects),
             title_in: '%%',
             divs_in: '%',
             dept_in: '%',
-            coll_in: '%',
+            coll_in: joinMultiOption(colleges),
             schd_in: '%',
             levl_in: '%',
             attr_in: '%',
