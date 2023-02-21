@@ -1,7 +1,6 @@
-// Generated from .\CourseRequisitesParser.g4 by ANTLR 4.12.0
+// Generated from CourseRequisitesParser.g4 by ANTLR 4.12.0
 // jshint ignore: start
 import antlr4 from 'antlr4';
-import CourseRequisitesParserListener from './CourseRequisitesParserListener.js';
 const serializedATN = [4,1,11,71,2,0,7,0,2,1,7,1,2,2,7,2,2,3,7,3,2,4,7,4,
 2,5,7,5,2,6,7,6,2,7,7,7,1,0,1,0,1,0,1,0,1,0,3,0,22,8,0,1,1,1,1,1,1,1,1,1,
 1,1,2,4,2,30,8,2,11,2,12,2,31,1,3,1,3,1,3,1,3,1,3,1,3,1,3,3,3,41,8,3,1,4,
@@ -409,18 +408,6 @@ class StartContext extends antlr4.ParserRuleContext {
 	    return this.getToken(CourseRequisitesParser.RPAREN, 0);
 	};
 
-	enterRule(listener) {
-	    if(listener instanceof CourseRequisitesParserListener ) {
-	        listener.enterStart(this);
-		}
-	}
-
-	exitRule(listener) {
-	    if(listener instanceof CourseRequisitesParserListener ) {
-	        listener.exitStart(this);
-		}
-	}
-
 
 }
 
@@ -456,18 +443,6 @@ class CourseContext extends antlr4.ParserRuleContext {
 	    return this.getToken(CourseRequisitesParser.COURSE_GRADE, 0);
 	};
 
-	enterRule(listener) {
-	    if(listener instanceof CourseRequisitesParserListener ) {
-	        listener.enterCourse(this);
-		}
-	}
-
-	exitRule(listener) {
-	    if(listener instanceof CourseRequisitesParserListener ) {
-	        listener.exitCourse(this);
-		}
-	}
-
 
 }
 
@@ -498,18 +473,6 @@ class Non_courseContext extends antlr4.ParserRuleContext {
 	    }
 	};
 
-
-	enterRule(listener) {
-	    if(listener instanceof CourseRequisitesParserListener ) {
-	        listener.enterNon_course(this);
-		}
-	}
-
-	exitRule(listener) {
-	    if(listener instanceof CourseRequisitesParserListener ) {
-	        listener.exitNon_course(this);
-		}
-	}
 
 
 }
@@ -550,18 +513,6 @@ class And_requisiteContext extends antlr4.ParserRuleContext {
 	    return this.getToken(CourseRequisitesParser.RPAREN, 0);
 	};
 
-	enterRule(listener) {
-	    if(listener instanceof CourseRequisitesParserListener ) {
-	        listener.enterAnd_requisite(this);
-		}
-	}
-
-	exitRule(listener) {
-	    if(listener instanceof CourseRequisitesParserListener ) {
-	        listener.exitAnd_requisite(this);
-		}
-	}
-
 
 }
 
@@ -600,18 +551,6 @@ class Or_requisiteContext extends antlr4.ParserRuleContext {
 	RPAREN() {
 	    return this.getToken(CourseRequisitesParser.RPAREN, 0);
 	};
-
-	enterRule(listener) {
-	    if(listener instanceof CourseRequisitesParserListener ) {
-	        listener.enterOr_requisite(this);
-		}
-	}
-
-	exitRule(listener) {
-	    if(listener instanceof CourseRequisitesParserListener ) {
-	        listener.exitOr_requisite(this);
-		}
-	}
 
 
 }
@@ -655,18 +594,6 @@ class Or_groupContext extends antlr4.ParserRuleContext {
 	};
 
 
-	enterRule(listener) {
-	    if(listener instanceof CourseRequisitesParserListener ) {
-	        listener.enterOr_group(this);
-		}
-	}
-
-	exitRule(listener) {
-	    if(listener instanceof CourseRequisitesParserListener ) {
-	        listener.exitOr_group(this);
-		}
-	}
-
 
 }
 
@@ -709,18 +636,6 @@ class And_groupContext extends antlr4.ParserRuleContext {
 	};
 
 
-	enterRule(listener) {
-	    if(listener instanceof CourseRequisitesParserListener ) {
-	        listener.enterAnd_group(this);
-		}
-	}
-
-	exitRule(listener) {
-	    if(listener instanceof CourseRequisitesParserListener ) {
-	        listener.exitAnd_group(this);
-		}
-	}
-
 
 }
 
@@ -747,18 +662,6 @@ class GroupContext extends antlr4.ParserRuleContext {
 	or_group() {
 	    return this.getTypedRuleContext(Or_groupContext,0);
 	};
-
-	enterRule(listener) {
-	    if(listener instanceof CourseRequisitesParserListener ) {
-	        listener.enterGroup(this);
-		}
-	}
-
-	exitRule(listener) {
-	    if(listener instanceof CourseRequisitesParserListener ) {
-	        listener.exitGroup(this);
-		}
-	}
 
 
 }

@@ -1,4 +1,4 @@
-// Generated from .\CourseRequisitesLexer.g4 by ANTLR 4.12.0
+// Generated from CourseRequisitesLexer.g4 by ANTLR 4.12.0
 // jshint ignore: start
 import antlr4 from 'antlr4';
 
