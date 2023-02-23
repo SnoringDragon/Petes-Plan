@@ -9,8 +9,8 @@ AND : 'and';
 OR : 'or';
 LPAREN: '(';
 RPAREN: ')';
-COURSE_REQUISITE : 'Undergraduate level' -> mode(COURSE_MODE);
-WORD: [a-zA-Z0-9]+;
+COURSE_REQUISITE : ('Undergraduate' | 'Graduate' | 'Professional') ' level' -> mode(COURSE_MODE);
+WORD: [!-'*-~]+;
 WS: Ws -> skip;
 
 mode COURSE_MODE;
