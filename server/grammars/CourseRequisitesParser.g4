@@ -13,7 +13,9 @@ course: COURSE_REQUISITE COURSE_NAME COURSE_GRADE_TEXT
 
 non_course: WORD+;
 
+
 // an and group after an or group does not necessarily surrounding parentheses
+// example: see CS334 prerequisites section
 
 and_requisite: course | non_course | LPAREN and_group RPAREN | and_group;
 
