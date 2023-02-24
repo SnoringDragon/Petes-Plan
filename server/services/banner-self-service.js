@@ -186,6 +186,56 @@ class BannerSelfService {
 
         return courseInventory.map(course => new SelfServiceCourseSummary(course));
     }
+
+    /**
+     * Get prerequisites for courses given term and subject
+     * @param term
+     * @param subject
+     * @typedef {import('../utils/requisites-parser.mjs').Group
+     *  | import('../utils/requisites-parser.mjs').Course
+     *  | import('../utils/requisites-parser.mjs').NonCourse
+     *  | import('../utils/requisites-parser.mjs').StudentAttribute
+     *  | null} Requisite
+     * @returns {Promise<{failed: {courseNumber: string, subject: string, name: string, error: Error }[],
+     *  requisites: {courseNumber: string, subject: string, name: string, requisites: Requisite}[]}>}
+     */
+    async getPrerequisites({ term, subject }) {
+        const response = await this._fetch('bzwkpreq.p_display_prereqs', {
+            method: 'POST',
+            body: `term_in=${term}&sel_subj=None_Selected&sel_subj=${subject}`,
+            headers: { 'content-type': 'application/x-www-form-urlencoded' }
+        });
+
+        const $ = cheerio.load(await response.text());
+
+        // this page is formatted as repeating <b> and <blockquote> tags
+        const courseTitles = $('.pagebodydiv > b');
+        const courseBodies = $('.pagebodydiv > blockquote');
+
+        if (courseTitles.length !== courseBodies.length)
+            throw new Error(`unexpected response from server`);
+
+        const parser = new (await import('../utils/requisites-parser.mjs')).RequisitesParser();
+
+        const failed = [];
+        const results = courseTitles.map((i, title) => {
+            let requisites = null;
+            const [subject, courseNumber, name] = $(title).text().match(/^(\w+)\s+(\w+)\s+(.+)/).slice(1);
+            try {
+                requisites = parser.parse($(courseBodies[i]).text());
+            } catch (error) {
+                failed.push({
+                    subject, courseNumber, name, error
+                });
+            }
+            return {
+                subject, name, courseNumber,
+                requisites
+            }
+        }).toArray();
+
+        return { failed, requisites: results };
+    }
 }
 
 module.exports = new BannerSelfService();
