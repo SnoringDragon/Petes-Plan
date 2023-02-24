@@ -229,6 +229,59 @@ export class RequisitesParser {
         throw new Error(`unknown type ${tree?.constructor?.name}`);
     }
 
+    simplifyTree(tree) {
+        // delete an empty group
+        if (tree instanceof Group && tree.children.length === 0)
+            return null;
+
+        // replace group with one child with just the child
+        if (tree instanceof Group && tree.children.length === 1) {
+            const child = this.simplifyTree(tree.children[0]);
+            if (child instanceof Course || child instanceof Group) {
+                // make sure requiredCredits property is transferred
+                if (typeof child.requiredCredits === 'number' || typeof tree.requiredCredits === 'number')
+                    child.requiredCredits = Math.max(child.requiredCredits, tree.requiredCredits);
+            }
+            return child;
+        }
+
+        // replace PickN with n = 1 with an Or group
+        if (tree instanceof PickN && tree.n === 1)
+            return this.simplifyTree(new Or(tree.children,
+                { requiredCredits: tree.requiredCredits }));
+
+        // replace PickN with n = numCourse with an And group
+        if (tree instanceof PickN && tree.n === tree.children.length)
+            return this.simplifyTree(new And(tree.children,
+                { requiredCredits: tree.requiredCredits }));
+
+        // simply children
+        if (tree instanceof Group) {
+            tree.children = tree.children.map(child => this.simplifyTree(child))
+                .filter(x => x);
+        }
+
+        // apply associative property to flatten nested ORs
+        if (tree instanceof Or) {
+            tree.children = tree.children.flatMap(child => {
+                if (child instanceof Or && child.requiredCredits === null)
+                    return child.children;
+                return child;
+            });
+        }
+
+        // apply associative property to flatten nested ANDs
+        if (tree instanceof And) {
+            tree.children = tree.children.flatMap(child => {
+                if (child instanceof And && child.requiredCredits === null)
+                    return child.children;
+                return child;
+            });
+        }
+
+        return tree;
+    }
+
     parsePrerequisites(str) {
         if (!str.length) return null;
 
@@ -251,10 +304,12 @@ export class RequisitesParser {
         const generalRequirements = (str.match(/(?<=General Requirements:).+?(?=Prerequisites|General Requirements|$)/gs) ?? [])
             .map(x => x.trim()).filter(x => x.length > 30);
 
-        prerequisites.map(p => this.parsePrerequisites(p));
-        generalRequirements.map(g => this.parseGeneralRequirements(g));
+        const tree = new And([
+            prerequisites.map(p => this.parsePrerequisites(p)),
+            generalRequirements.map(g => this.parseGeneralRequirements(g))
+        ].flat(Infinity));
 
-        return null;
+        return this.simplifyTree(tree);
     }
 }
 
