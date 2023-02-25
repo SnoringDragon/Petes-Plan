@@ -15,9 +15,6 @@ async function generateToken(email, duration) {
 
 /* Create a new user */
 exports.signup = async (req, res) => {
-    //TODO Actually implement properly, this is just a database test currently
-    /* Resource: https://openclassrooms.com/en/courses/5614116-go-full-stack-with-node-js-express-and-mongodb/5656271-create-new-users */
-    
     /* Check if the user has provided an email and password */
     if (!req.body.email || !req.body.password) {
         return res.status(400).json({
@@ -76,21 +73,39 @@ exports.signup = async (req, res) => {
 
 /* Verify a user's email */
 exports.verifyEmail = async (req, res) => {
+    /* Checks if the email and token are provided */
+    if (!req.query.email || !req.query.token) {
+        res.status(400).json({
+            error: 'Missing email or token'
+        });
+        return;
+    }
+    
     User.find({ email: req.query.email.toLowerCase() }, (err, docs) => {
         if (err) {
             //TODO Set up error handling
             console.log(err);
+            res.status(500).json({
+                error: 'Internal Server Error'
+            });
             return;
         }
         const user = docs[0];
 
         /* Check if the user exists and token matches */
         if (user && (user.verificationToken === req.query.token)) {
+            /* Update the user's details */
             user.verified = true;
+            user.verificationToken = '';
             user.save();
-            res.send('Email verified'); //TODO Display a verified page instead
+
+            res.status(200).json({
+                message: 'Email verified successfully'
+            });
         } else {
-            res.send('Invalid token'); //TODO Display an invalid token page instead
+            res.status(400).json({
+                error: 'Invalid email or token'
+            });
         }
     });
 };
