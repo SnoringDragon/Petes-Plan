@@ -1,35 +1,15 @@
 const jwt = require('jsonwebtoken');
-
 const secret = require('../secret');
 const User = require('../models/userModel');
 const mailer = require('./emailController');
+const bcrypt = require('bcrypt');
+
+const emailRegex = /^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
 
 /* Generate a unique token for a user */
-async function generateToken(req, res) {
-    /* When I am able to run the program, test that req.body.password works!*/
-    bcrypt.hash(req.body.password, 10).then(
-        (hash) => {
-          user = new User({
-            email: req.body.email,
-            password: hash
-          });
-          user.save().then(
-            () => {
-              res.status(201).json({
-                message: 'User added successfully!'
-              });
-            }
-          ).catch(
-            (error) => {
-              res.status(500).json({
-                error: error
-              });
-            }
-          );
-        }
-      );
+async function generateToken(email, duration) {
     return jwt.sign({ email }, secret, {
-        expiresIn: '30 days'
+        expiresIn: duration
     });
 }
 
@@ -38,24 +18,60 @@ exports.signup = async (req, res) => {
     //TODO Actually implement properly, this is just a database test currently
     /* Resource: https://openclassrooms.com/en/courses/5614116-go-full-stack-with-node-js-express-and-mongodb/5656271-create-new-users */
     
+    /* Check if the user has provided an email and password */
+    if (!req.body.email || !req.body.password) {
+        return res.status(400).json({
+            error: 'Missing email or password'
+        });
+        return;
+    }
+    
+    /* Validate email address */
     const email = req.body.email.toLowerCase();
-    const token = await generateToken(req, res);
-    const user = new User({
-        email: email,
-        verified: false,
-        password: req.body.password,
-        verificationToken: token
+    if (!email.match(emailRegex)) {
+        return res.status(400).json({
+            error: 'Invalid email address'
+        });
+        return;
+    }
+
+    /* Check if the user already exists */
+    if (await User.exists({ email: email })) {
+        return res.status(400).json({
+            error: 'User already exists'
+        });
+        return;
+    }
+
+    /* Populate the user object */
+    const token = generateToken(email, '30 days');
+    bcrypt.hash(req.body.password, 10).then(async (hash) => {
+        const user = new User({
+            email: email,
+            verified: false,
+            password: hash,
+            verificationToken: await token
+        });
+
+        /* Save the user to the database */
+        user.save().then(() => {
+            res.status(201).json({
+                message: 'User added successfully!'
+            });
+        }).catch((error) => {
+            console.log(error);
+            res.status(500).json({
+                error: 'Could not create user'
+            });
+        });
     });
-    user.save();
 
     /* Send a verification email */
-    await mailer.sendEmail(email, 'Email Verification', 'verifyEmail', {
-        username: 'input username here',
+    mailer.sendEmail(email, 'Email Verification', 'verifyEmail', {
+        username: email.substring(0, email.indexOf('@')),
         email: email,
-        token: token
+        token: await token
     });
-
-    res.send('User created');
 };
 
 /* Verify a user's email */
