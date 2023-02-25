@@ -19,38 +19,4 @@ const courseSchema = new mongoose.Schema({
     }
 });
 
-const userCourseSchema = new mongoose.Schema({
-    courseID: String,
-    grade: Number,
-    semester: ['Spring', 'Summer', 'Fall'],
-    year: Number,
-    sections: [sectionSchema]
-})
-
-const semesterSchema = new mongoose.Schema({
-    semester: ['Spring', 'Summer', 'Fall'],
-    sections: [Section],
-});
-
-
-const instructorSchema = new mongoose.Schema({
-    name: String,
-    email: String,
-});
-
-const sectionSchema = new mongoose.Schema({
-    instructor: instructorSchema,
-    days: String,
-    crn: Number,
-    name: String,
-    startTime: Date,
-    endTime: Date,
-    location: String,
-    type: String
-});
-
-const APTestSchema = new mongoose.Schema({
-    name: String,
-    credits: [courseSchema][Number],
-    courseID: String
-});
+module.exports = mongoose.model('Course', courseSchema);

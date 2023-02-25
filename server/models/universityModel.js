@@ -6,24 +6,7 @@ const mongoose = require('mongoose');
 /* https://stackoverflow.com/questions/43534461/array-of-subdocuments-in-mongoose */ 
 
 /* Create a course schema - US5 */
-const degreeSchema = new mongoose.Schema({
-    name: String,
-    type: ['major', 'minor', 'concentration', 'certificate'],
-    requirements: [courseSchema],
-    concentrations: [degreeSchema]
-});
 
-const departmentSchema = new mongoose.Schema({
-    name: String,
-    degrees: [degreeSchema],
-    requirements: [courseSchema]
-})
-
-const collegeSchema = new mongoose.Schema({
-    name: String,
-    departments: [departmentSchema],
-    requirements: [courseSchema]
-});
 
 const universitySchema = new mongoose.Schema({
     name: String,
@@ -32,3 +15,7 @@ const universitySchema = new mongoose.Schema({
     emailDomain: String,
     users: [userSchema]
 });
+
+module.exports = mongoose.model('University', universitySchema);
+
+
