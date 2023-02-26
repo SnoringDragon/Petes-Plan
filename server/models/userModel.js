@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
 const util = require('util');
+const bcrypt = require('bcrypt');
 
 const secret = require('../secret');
 const userCourseSchema = require('./userCourseModel').schema;
@@ -18,7 +19,7 @@ const userSchema = new mongoose.Schema({
     verified: Boolean,                  // whether the user has verified their email address
     verificationToken: String,          // token used to verify the user's email address
     tokenBlacklist: [String],
-    completeCourses: [userCourseSchema], // courses that the user has completed
+    completedCourses: [userCourseSchema], // courses that the user has completed
 });
 
 /* modify secret key by xor-ing it with hash of user's password
@@ -65,14 +66,9 @@ userSchema.pre('save', async function (next) {
 
 });
 
-userSchema.methods.validatePassword = async function (password, hash) {
+userSchema.methods.validatePassword = async function (password) {
     // source: https://www.makeuseof.com/nodejs-bcrypt-hash-verify-salt-password/ 
-    bcrypt.compare(password, hash, function(err, result) {
-        if (result) {
-            // password is valid
-            return true;
-        }
-        });
+    return await bcrypt.compare(password, this.password);
 }
 
 module.exports = mongoose.model('User', userSchema);

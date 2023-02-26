@@ -117,34 +117,32 @@ exports.verifyEmail = async (req, res) => {
 
 /* Login a user */
 exports.login = async (req, res) => {
-    const user = await User.findOne({ email: req.body.email.toLowerCase() });
+    /* Check if the user has provided an email and password */
+    if (!req.body.email || !req.body.password)
+        return res.status(400).json({
+            error: 'Missing email or password'
+        });
+        
+    /* Validate email address */
+    const email = req.body.email.toLowerCase();
+    if (!email.match(emailRegex))
+        return res.status(400).json({
+            error: 'Invalid email address'
+        });
+
+    const user = await User.findOne({ email: email });
 
     // no user with that email
-    if (!user)
+    if (!user || !user.verified || !await user.validatePassword(req.body.password))
         return res.status(400).json({
-            error: true,
-            message: 'Invalid email'
-        });
-
-    if (!user.verified)
-        return res.status(400).json({
-            error: true,
-            message: 'Email has not been verified yet'
-        });
-
-    // invalid password
-    if (!await user.validatePassword(req.body.password, hash))
-        return res.status(400).json({
-            error: true,
-            message: 'Invalid password'
+            error: 'Invalid email password pair'
         });
 
     await user.filterBlacklist();
 
     // return token as signed payload
-    return res.json({
-        error: false,
-        token: await jwt.sign(user.toJSON(), user.permuteKey(secret), {
+    return res.status(201).json({
+        token: jwt.sign({ _id: user._id }, user.permuteKey(secret), {
             expiresIn: req.body.remember ? '30 days' : '1 day'
         }),
         // whether the token should be stored in localStorage or sessionStorage
@@ -248,7 +246,8 @@ exports.logout = async (req, res) => {
 
 /* Delete a user */
 exports.delete = async (req, res) => {
-    await user.deleteOne({ email: req.body.email.toLowerCase() });
+    const user = req.user;
+    await user.deleteOne({ email: user.email });
 };
 
 /* Update a user's details */
