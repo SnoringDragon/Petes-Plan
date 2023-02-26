@@ -6,8 +6,10 @@ import CardActions from '@material-ui/core/CardActions';
 import CardHeader from '@material-ui/core/CardHeader';
 import Button from '@material-ui/core/Button';
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
 export function PasswordReset() {
+    const navigate = useNavigate();
     return (<div className="w-full h-full flex items-center justify-center">
         <Card className="-mt-16">
             <CardHeader title="Enter Your Email: " className="text-center bg-zinc-800 text-white" />
@@ -28,8 +30,9 @@ export function PasswordReset() {
                     variant="contained"
                     size="large"
                     color="secondary"
+                    onClick={() =>  navigate('/verification')    }
                     className="w-full">
-                    Send
+                    Send    
                 </Button>
             </CardActions>
         </Card>

@@ -11,6 +11,7 @@ import { Login } from './pages/login/login';
 import { Register } from './pages/register/register';
 import { Homepage } from './pages/homepage/homepage';
 import { PasswordReset } from './pages/password-reset/password-reset';
+import { Verification } from './pages/verification/verification';
 
 const router = createBrowserRouter([
   {
@@ -35,6 +36,10 @@ const router = createBrowserRouter([
       {
         path: "/password-reset",
         element: <PasswordReset />
+      },
+      {
+        path: "/verification",
+        element: <Verification />
       }
     ]
   }
