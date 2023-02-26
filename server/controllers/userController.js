@@ -248,10 +248,10 @@ exports.logout = async (req, res) => {
 
 /* Delete a user */
 exports.delete = async (req, res) => {
-
+    await user.deleteOne({ email: req.body.email.toLowerCase() });
 };
 
 /* Update a user's details */
 exports.update = async (req, res) => {
-
+    // https://mongoosejs.com/docs/documents.html - TODO: Update Using Queries
 };
