@@ -53,7 +53,7 @@ exports.signup = async (req, res) => {
         });
 
         /* Save the user to the database */
-        user.save().then(async (req, res) => {
+        user.save().then(async () => {
             /* Send a verification email */
             mailer.sendEmail(email, 'Email Verification', 'verifyEmail', {
                 name: req.body.name,
