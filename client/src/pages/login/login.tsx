@@ -30,7 +30,12 @@ export function Login() {
                         placeholder="Password"
                         margin="normal"
                     />
-                    <p> </p>
+                    <Checkbox
+                    //handleChange={handleChangeA}
+                    //isChecked={isCheckedA}
+                    />
+                    <text>Remember me</text> 
+                    <p></p>
                     <a href='/password-reset'><u>Forgot your password?</u></a >
                 </div>
             </CardContent>
