@@ -12,6 +12,7 @@ import { Register } from './pages/register/register';
 import { Homepage } from './pages/homepage/homepage';
 import { PasswordReset } from './pages/password-reset/password-reset';
 import { Verification } from './pages/verification/verification';
+import { ChangePassword } from './pages/change-password/change-password';
 
 const router = createBrowserRouter([
   {
@@ -40,6 +41,10 @@ const router = createBrowserRouter([
       {
         path: "/verification",
         element: <Verification />
+      },
+      {
+        path: "/change-password",
+        element: <ChangePassword />
       }
     ]
   }
