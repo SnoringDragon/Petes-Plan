@@ -11,11 +11,9 @@ const courseSchema = new mongoose.Schema({
     courseID: String,
     credits: Number,
     description: String,
+    requirements: [String], //array of courseIDs
     semesters: {
         type: [semesterSchema],  
-    },
-    prerequisites: {
-        type: [courseSchema]
     }
 });
 

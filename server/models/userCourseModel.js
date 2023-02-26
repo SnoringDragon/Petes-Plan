@@ -5,7 +5,7 @@ const userCourseSchema = new mongoose.Schema({
     grade: Number,
     semester: ['Spring', 'Summer', 'Fall'],
     year: Number,
-    sections: [sectionSchema]
+    sections: [Number] //list of crns
 })
 
 module.exports = mongoose.model('UserCourse', userCourseSchema);

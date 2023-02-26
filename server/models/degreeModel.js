@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const degreeSchema = new mongoose.Schema({
     name: String,
     type: ['major', 'minor', 'concentration', 'certificate'],
-    requirements: [courseSchema],
+    requirements: [String], //array of courseIDs
     concentrations: [degreeSchema]
 });
 
