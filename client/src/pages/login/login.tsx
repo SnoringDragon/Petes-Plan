@@ -30,14 +30,13 @@ export function Login() {
                         placeholder="Password"
                         margin="normal"
                     />
-                    <p> </p>
-                    <a href='/sign_up'><u><br />Do not have an account? Sign up here.</u></a >
-                    <a href='/dashboard'><u><br />Forgot your password? Click here.<br /></u></a >
                     <Checkbox
                     //handleChange={handleChangeA}
                     //isChecked={isCheckedA}
                     />
-                    <text>Stay signed in.</text>
+                    <text>Remember me</text>
+                    <p> </p>
+                    <a href='/dashboard'><u><br />Forgot your password? Click here<br /></u></a >
                 </div>
             </CardContent>
             <CardActions>
