@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken');
 const util = require('util');
 
 const secret = require('../secret');
+const userCourseSchema = require('./userCourseModel').schema;
 
 const verify = util.promisify(jwt.verify);
 
@@ -11,12 +12,13 @@ const verify = util.promisify(jwt.verify);
 
 /* Create a user schema */
 const userSchema = new mongoose.Schema({
-    email: String,              // email address of user
-    password: String,           // hashed password
-    verified: Boolean,          // whether the user has verified their email address
-    verificationToken: String,  // token used to verify the user's email address
-    tokenBlacklist: [String],   
-    name: String,               // name of user
+    name: String,                       // name of user
+    email: String,                      // email address of user
+    password: String,                   // hashed password
+    verified: Boolean,                  // whether the user has verified their email address
+    verificationToken: String,          // token used to verify the user's email address
+    tokenBlacklist: [String],
+    completeCourses: [userCourseSchema], // courses that the user has completed
 });
 
 /* modify secret key by xor-ing it with hash of user's password

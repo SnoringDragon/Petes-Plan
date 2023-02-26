@@ -7,5 +7,6 @@ const userCourseSchema = new mongoose.Schema({
     year: Number,
     sections: [Number] //list of crns
 })
+exports.schema = userCourseSchema;
 
 module.exports = mongoose.model('UserCourse', userCourseSchema);
