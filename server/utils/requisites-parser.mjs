@@ -79,13 +79,23 @@ export class NonCourse {
     }
 }
 
-export class StudentAttribute {
-    constructor(attribute) {
-        this.attribute = attribute;
+// export class StudentAttribute {
+//     constructor(attribute) {
+//         this.attribute = attribute;
+//     }
+//
+//     toJSON() {
+//         return { attribute: this.attribute, type: 'student_attribute' };
+//     }
+// }
+
+export class StudentLevel {
+    constructor(level) {
+        this.level = level;
     }
 
     toJSON() {
-        return { attribute: this.attribute, type: 'student_attribute' };
+        return { level: this.level, type: 'student_level' };
     }
 }
 
@@ -218,8 +228,15 @@ export class RequisitesParser {
         }
 
         // student attribute
-        if (tree instanceof CourseRequirementsParser.Student_attributeContext)
-            return new StudentAttribute(tree.children[0].getText());
+        if (tree instanceof CourseRequirementsParser.Student_attributeContext) {
+            const text = tree.children[0].getText();
+            if (text === 'GR')
+                return new StudentLevel('graduate');
+            if (text === 'PR')
+                return new StudentLevel('professional');
+            throw new Error(`unknown student attribute ${text}`);
+            // return new StudentAttribute(tree.children[0].getText());
+        }
 
         // non course
         if (tree instanceof CourseRequirementsParser.Non_courseContext)
