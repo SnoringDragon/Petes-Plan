@@ -9,6 +9,9 @@ import './index.scss';
 import { Dashboard } from './pages/dashboard/dashboard';
 import { Login } from './pages/login/login';
 import { Register } from './pages/register/register';
+import { Future_Plan_Study } from './pages/future_plan_study/future_plan_study';
+import { Modify_Future_Plan_Study } from './pages/modify_future_plan_study/modify_future_plan_study';
+import { Course_Description } from './pages/course_description/course_description';
 
 const router = createBrowserRouter([
   {
@@ -25,6 +28,18 @@ const router = createBrowserRouter([
     {
       path: '/register',
       element: <Register />
+    },
+    {
+      path: '/future_plan_study',
+      element: <Future_Plan_Study />
+    },
+    {
+      path: "/modify_future_plan_study",
+      element: <Modify_Future_Plan_Study />
+    },
+    {
+      path: "/course_description",
+      element: <Course_Description />
     }
     ]
   }
