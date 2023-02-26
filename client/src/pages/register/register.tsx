@@ -22,6 +22,14 @@ export function Register() {
                 <div className="p-4">
                     <TextField
                         fullWidth
+                        id="name"
+                        type="name"
+                        label="Name"
+                        placeholder="Name"
+                        margin="normal"
+                    />
+                    <TextField
+                        fullWidth
                         id="email"
                         type="email"
                         label="Email"
@@ -37,6 +45,15 @@ export function Register() {
                         margin="normal"
 
                     />
+                    <TextField
+                        fullWidth
+                        id="confirm password"
+                        type="confirm password"
+                        label="Confirm Password"
+                        placeholder="Confirm Password"
+                        margin="normal"
+
+                    />
                 </div>
             </CardContent>
             <CardActions>
@@ -45,7 +62,7 @@ export function Register() {
                     size="large"
                     color="secondary"
                     className="w-full">
-                    Login
+                    Register
                 </Button>
             </CardActions>
         </Card>

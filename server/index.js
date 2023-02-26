@@ -1,4 +1,5 @@
 const express = require('express');
+const jsonParser = require('body-parser').json();
 
 require('dotenv').config()
 
@@ -10,8 +11,12 @@ async function main() {
 
     const app = express();
 
-    require('./routes')(app);
+    app.use(jsonParser);
 
+    /* Load files in ./routes */
+    require('./routes/index')(app);
+
+    /* Start the server */
     app.listen(port, () => {
         console.log('listening on port', port);
     });
