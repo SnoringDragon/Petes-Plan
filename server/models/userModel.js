@@ -11,11 +11,12 @@ const verify = util.promisify(jwt.verify);
 
 /* Create a user schema */
 const userSchema = new mongoose.Schema({
-    email: String,
-    password: String,
-    verified: Boolean,
-    verificationToken: String,
-    tokenBlacklist: [String]
+    email: String,              // email address of user
+    password: String,           // hashed password
+    verified: Boolean,          // whether the user has verified their email address
+    verificationToken: String,  // token used to verify the user's email address
+    tokenBlacklist: [String],   
+    name: String,               // name of user
 });
 
 /* modify secret key by xor-ing it with hash of user's password

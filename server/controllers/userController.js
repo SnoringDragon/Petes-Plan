@@ -15,10 +15,10 @@ async function generateToken(email, duration) {
 
 /* Create a new user */
 exports.signup = async (req, res) => {
-    /* Check if the user has provided an email and password */
-    if (!req.body.email || !req.body.password) {
+    /* Check if the user has provided an email, password, and name */
+    if (!req.body.email || !req.body.password || !req.body.name) {
         return res.status(400).json({
-            error: 'Missing email or password'
+            error: 'Missing email, password, or name'
         });
         return;
     }
@@ -45,6 +45,7 @@ exports.signup = async (req, res) => {
     const token = generateToken(email, '30 days');
     bcrypt.hash(req.body.password, 10).then(async (hash) => {
         const user = new User({
+            name: req.body.name,
             email: email,
             verified: false,
             password: hash,
@@ -55,7 +56,7 @@ exports.signup = async (req, res) => {
         user.save().then(async (req, res) => {
             /* Send a verification email */
             mailer.sendEmail(email, 'Email Verification', 'verifyEmail', {
-                username: email.substring(0, email.indexOf('@')),
+                name: req.body.name,
                 email: email,
                 token: await token
             });
@@ -187,7 +188,7 @@ exports.resetRequest = async (req, res) => {
 
         /* Send a reset email */
         mailer.sendEmail(email, 'Password Reset', 'resetPassword', {
-            username: email.substring(0, email.indexOf('@')),
+            name: user.name,
             email: email,
             token: await token
         });
