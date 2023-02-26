@@ -1,80 +1,116 @@
 const jwt = require('jsonwebtoken');
-
 const secret = require('../secret');
 const User = require('../models/userModel');
 const mailer = require('./emailController');
+const bcrypt = require('bcrypt');
+
+const emailRegex = /^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
 
 /* Generate a unique token for a user */
-async function generateToken(req, res) {
-    /* When I am able to run the program, test that req.body.password works!*/
-    bcrypt.hash(req.body.password, 10).then(
-        (hash) => {
-          user = new User({
-            email: req.body.email,
-            password: hash
-          });
-          user.save().then(
-            () => {
-              res.status(201).json({
-                message: 'User added successfully!'
-              });
-            }
-          ).catch(
-            (error) => {
-              res.status(500).json({
-                error: error
-              });
-            }
-          );
-        }
-      );
+async function generateToken(email, duration) {
     return jwt.sign({ email }, secret, {
-        expiresIn: '30 days'
+        expiresIn: duration
     });
 }
 
 /* Create a new user */
 exports.signup = async (req, res) => {
-    //TODO Actually implement properly, this is just a database test currently
-    /* Resource: https://openclassrooms.com/en/courses/5614116-go-full-stack-with-node-js-express-and-mongodb/5656271-create-new-users */
+    /* Check if the user has provided an email, password, and name */
+    if (!req.body.email || !req.body.password || !req.body.name) {
+        return res.status(400).json({
+            error: 'Missing email, password, or name'
+        });
+        return;
+    }
     
+    /* Validate email address */
+    //TODO: Check if email matches a known university domain
     const email = req.body.email.toLowerCase();
-    const token = await generateToken(req, res);
-    const user = new User({
-        email: email,
-        verified: false,
-        password: req.body.password,
-        verificationToken: token
-    });
-    user.save();
+    if (!email.match(emailRegex)) {
+        return res.status(400).json({
+            error: 'Invalid email address'
+        });
+        return;
+    }
 
-    /* Send a verification email */
-    await mailer.sendEmail(email, 'Email Verification', 'verifyEmail', {
-        username: 'input username here',
-        email: email,
-        token: token
-    });
+    /* Check if the user already exists */
+    if (await User.exists({ email: email })) {
+        return res.status(400).json({
+            error: 'User already exists'
+        });
+        return;
+    }
 
-    res.send('User created');
+    /* Populate the user object */
+    const token = generateToken(email, '30 days');
+    bcrypt.hash(req.body.password, 10).then(async (hash) => {
+        const user = new User({
+            name: req.body.name,
+            email: email,
+            verified: false,
+            password: hash,
+            verificationToken: await token
+        });
+
+        /* Save the user to the database */
+        user.save().then(async (req, res) => {
+            /* Send a verification email */
+            mailer.sendEmail(email, 'Email Verification', 'verifyEmail', {
+                name: req.body.name,
+                email: email,
+                token: await token
+            });
+
+            return res.status(201).json({
+                message: 'User added successfully!'
+            });
+        }).catch((error) => {
+            console.log(error);
+            return res.status(500).json({
+                error: 'Could not create user'
+            });
+        });
+    });
 };
 
 /* Verify a user's email */
 exports.verifyEmail = async (req, res) => {
+    /* Checks if the email and token are provided */
+    if (!req.query.email || !req.query.token) {
+        return res.status(400).json({
+            error: 'Missing email or token'
+        });
+        return;
+    }
+
     User.find({ email: req.query.email.toLowerCase() }, (err, docs) => {
         if (err) {
-            //TODO Set up error handling
             console.log(err);
-            return;
+            return res.status(500).json({
+                error: 'Internal Server Error'
+            });
         }
         const user = docs[0];
 
         /* Check if the user exists and token matches */
-        if (user && (user.verificationToken === req.query.token)) {
+        if (user && (user.verified === false) && (user.verificationToken === req.query.token)) {
+            /* Update the user's details */
             user.verified = true;
-            user.save();
-            res.send('Email verified'); //TODO Display a verified page instead
+            user.verificationToken = '';
+            user.save().catch((err) => {
+                console.log(err);
+                return res.status(500).json({
+                    error: 'Internal Server Error'
+                });
+            });
+
+            return res.status(200).json({
+                message: 'Email verified successfully'
+            });
         } else {
-            res.send('Invalid token'); //TODO Display an invalid token page instead
+            return res.status(400).json({
+                error: 'Invalid email token pair'
+            });
         }
     });
 };
@@ -116,11 +152,91 @@ exports.login = async (req, res) => {
     });
 };
 
-/* Verify a user's token */
-exports.verifyToken = async (req, res) => {
-    // authenticate middleware added in userController
-    // therefore already authenticated if we are at this point
-    return res.json({ error: false });
+/* Send user a password reset email */
+exports.resetRequest = async (req, res) => {
+    /* Check if the user has provided an email */
+    if (!req.body.email) {
+        return res.status(400).json({
+            error: 'No email provided'
+        });
+        return;
+    }
+    
+    /* Validate email address */
+    const email = req.body.email.toLowerCase();
+    if (!email.match(emailRegex)) {
+        return res.status(400).json({
+            error: 'Invalid email address'
+        });
+        return;
+    }
+
+    /* Check if the user already exists */
+    const user = await User.findOne({ email: email });
+    if (user && user.verified) {
+        /* Generate a new token */
+        const token = generateToken(email, '24 hours');
+
+        /* Update the user's details */
+        user.verificationToken = await token;
+        user.save().catch((error) => {
+            console.log(error);
+            return res.status(500).json({
+                error: 'Internal Server Error'
+            });
+        });
+
+        /* Send a reset email */
+        mailer.sendEmail(email, 'Password Reset', 'resetPassword', {
+            name: user.name,
+            email: email,
+            token: await token
+        });
+    }
+
+    return res.status(201).json({
+        message: 'Password reset email sent'
+    });
+};
+
+/* Reset a user's password */
+exports.resetPassword = async (req, res) => {
+    /* Check if the user has provided an email, token, and new password */
+    if (!req.body.email || !req.body.token || !req.body.password) {
+        return res.status(400).json({
+            error: 'Missing email, token, or password'
+        });
+    }
+
+    /* Validate email address */
+    const email = req.body.email.toLowerCase();
+    if (!email.match(emailRegex)) {
+        return res.status(400).json({
+            error: 'Invalid email address'
+        });
+    }
+
+    /* Check if the user exists and token matches */
+    const user = await User.findOne({ email: email });
+    if (user && (user.verified === true) && (user.verificationToken === req.body.token)) {
+        /* Update the user's details */
+        user.password = await bcrypt.hash(req.body.password, 10);
+        user.verificationToken = '';
+        user.save().catch((err) => {
+            console.log(err);
+            return res.status(500).json({
+                error: 'Internal Server Error'
+            });
+        });
+
+        return res.status(201).json({
+            message: 'Password reset successfully'
+        });
+    } else {
+        return res.status(400).json({
+            error: 'Invalid email token pair'
+        });
+    }
 };
 
 /* Logout a user */
@@ -133,11 +249,9 @@ exports.logout = async (req, res) => {
 /* Delete a user */
 exports.delete = async (req, res) => {
     await user.deleteOne({ email: req.body.email.toLowerCase() });
-
 };
 
 /* Update a user's details */
 exports.update = async (req, res) => {
     // https://mongoosejs.com/docs/documents.html - TODO: Update Using Queries
-
 };
