@@ -18,7 +18,7 @@ exports.signup = async (req, res) => {
     /* Check if the user has provided an email, password, and name */
     if (!req.body.email || !req.body.password || !req.body.name) {
         return res.status(400).json({
-            error: 'Missing email, password, or name'
+            message: 'Missing email, password, or name'
         });
         return;
     }
@@ -28,7 +28,7 @@ exports.signup = async (req, res) => {
     const email = req.body.email.toLowerCase();
     if (!email.match(emailRegex)) {
         return res.status(400).json({
-            error: 'Invalid email address'
+            message: 'Invalid email address'
         });
         return;
     }
@@ -36,7 +36,7 @@ exports.signup = async (req, res) => {
     /* Check if the user already exists */
     if (await User.exists({ email: email })) {
         return res.status(400).json({
-            error: 'User already exists'
+            message: 'User already exists'
         });
         return;
     }
@@ -67,7 +67,7 @@ exports.signup = async (req, res) => {
         }).catch((error) => {
             console.log(error);
             return res.status(500).json({
-                error: 'Could not create user'
+                message: 'Could not create user'
             });
         });
     });
@@ -78,7 +78,7 @@ exports.verifyEmail = async (req, res) => {
     /* Checks if the email and token are provided */
     if (!req.query.email || !req.query.token) {
         return res.status(400).json({
-            error: 'Missing email or token'
+            message: 'Missing email or token'
         });
         return;
     }
@@ -87,7 +87,7 @@ exports.verifyEmail = async (req, res) => {
         if (err) {
             console.log(err);
             return res.status(500).json({
-                error: 'Internal Server Error'
+                message: 'Internal Server Error'
             });
         }
         const user = docs[0];
@@ -100,7 +100,7 @@ exports.verifyEmail = async (req, res) => {
             user.save().catch((err) => {
                 console.log(err);
                 return res.status(500).json({
-                    error: 'Internal Server Error'
+                    message: 'Internal Server Error'
                 });
             });
 
@@ -109,7 +109,7 @@ exports.verifyEmail = async (req, res) => {
             });
         } else {
             return res.status(400).json({
-                error: 'Invalid email token pair'
+                message: 'Invalid email token pair'
             });
         }
     });
@@ -120,14 +120,14 @@ exports.login = async (req, res) => {
     /* Check if the user has provided an email and password */
     if (!req.body.email || !req.body.password)
         return res.status(400).json({
-            error: 'Missing email or password'
+            message: 'Missing email or password'
         });
         
     /* Validate email address */
     const email = req.body.email.toLowerCase();
     if (!email.match(emailRegex))
         return res.status(400).json({
-            error: 'Invalid email address'
+            message: 'Invalid email address'
         });
 
     const user = await User.findOne({ email: email });
@@ -135,7 +135,7 @@ exports.login = async (req, res) => {
     // no user with that email
     if (!user || !user.verified || !await user.validatePassword(req.body.password))
         return res.status(400).json({
-            error: 'Invalid email password pair'
+            message: 'Invalid email password pair'
         });
 
     await user.filterBlacklist();
@@ -155,7 +155,7 @@ exports.resetRequest = async (req, res) => {
     /* Check if the user has provided an email */
     if (!req.body.email) {
         return res.status(400).json({
-            error: 'No email provided'
+            message: 'No email provided'
         });
         return;
     }
@@ -164,7 +164,7 @@ exports.resetRequest = async (req, res) => {
     const email = req.body.email.toLowerCase();
     if (!email.match(emailRegex)) {
         return res.status(400).json({
-            error: 'Invalid email address'
+            message: 'Invalid email address'
         });
         return;
     }
@@ -180,7 +180,7 @@ exports.resetRequest = async (req, res) => {
         user.save().catch((error) => {
             console.log(error);
             return res.status(500).json({
-                error: 'Internal Server Error'
+                message: 'Internal Server Error'
             });
         });
 
@@ -202,7 +202,7 @@ exports.resetPassword = async (req, res) => {
     /* Check if the user has provided an email, token, and new password */
     if (!req.body.email || !req.body.token || !req.body.password) {
         return res.status(400).json({
-            error: 'Missing email, token, or password'
+            message: 'Missing email, token, or password'
         });
     }
 
@@ -210,7 +210,7 @@ exports.resetPassword = async (req, res) => {
     const email = req.body.email.toLowerCase();
     if (!email.match(emailRegex)) {
         return res.status(400).json({
-            error: 'Invalid email address'
+            message: 'Invalid email address'
         });
     }
 
@@ -223,7 +223,7 @@ exports.resetPassword = async (req, res) => {
         user.save().catch((err) => {
             console.log(err);
             return res.status(500).json({
-                error: 'Internal Server Error'
+                message: 'Internal Server Error'
             });
         });
 
@@ -232,7 +232,7 @@ exports.resetPassword = async (req, res) => {
         });
     } else {
         return res.status(400).json({
-            error: 'Invalid email token pair'
+            message: 'Invalid email token pair'
         });
     }
 };
@@ -241,13 +241,18 @@ exports.resetPassword = async (req, res) => {
 exports.logout = async (req, res) => {
     req.user.tokenBlacklist.push(req.token);
     req.user.filterBlacklist();
-    return res.json({ error: false });
+    return res.status(200).json({
+        message: 'Logged out successfully'
+    });
 };
 
 /* Delete a user */
 exports.delete = async (req, res) => {
-    const user = req.user;
-    await user.deleteOne({ email: user.email });
+    User.deleteOne({ email: req.user.email }, () => {
+        return res.status(200).json({
+            message: 'User deleted successfully'
+        });
+    });
 };
 
 /* Update a user's details */

@@ -6,6 +6,7 @@ exports.getCourses = async (req, res) => {
 
     /* Return the user's completed courses */
     return res.status(200).json({
+        message: 'Successfully retrieved completed courses',
         courses: user.completedCourses
     });
 };
@@ -14,7 +15,7 @@ exports.getCourses = async (req, res) => {
 exports.queryCourses = async (req, res) => {
     // TODO: Implement (optional)
     return res.status(501).json({
-        error: 'Not Implemented'
+        message: 'Not Implemented'
     });
 };
 
@@ -23,10 +24,10 @@ exports.addCourse = async (req, res) => {
     const user = req.user;
     const courses = req.body.courses;
 
-    /* Validate request */
-    if (!courses || !(courses instanceof Array)) {
+    /* Check if courses are provided */
+    if (!courses || !(courses instanceof Array) || courses.length === 0) {
         return res.status(400).json({
-            error: 'Missing array of courses'
+            message: 'Missing array of courses'
         });
     }
 
@@ -34,10 +35,45 @@ exports.addCourse = async (req, res) => {
     for (let i = 0; i < courses.length; i++) {
         const course = courses[i];
 
-        /* Validate course */
+        /* Validate required fields present */
         if (!course || !course.courseID || !course.semester || !course.year) {
             return res.status(400).json({
-                error: `Course ${i}: Missing courseID, semester, or year`
+                message: `Missing courseID, semester, or year`,
+                course: course
+            });
+        }
+
+        /* Validate grade is a number */
+        if (course.grade && isNaN(course.grade)) {
+            return res.status(400).json({
+                message: `Grade must be a number`,
+                course: course
+            });
+        }
+
+        /* Validate section is a number */
+        if (course.section && isNaN(course.section)) {
+            return res.status(400).json({
+                message: `Section must be a number`,
+                course: course
+            });
+        }
+
+        /* Validate semester is valid */
+        if (isNaN(course.year)) {
+            return res.status(400).json({
+                message: `Year must be a number`,
+                course: course
+            });
+        }
+
+        /* Validate year is no greater than current year */
+        var date = new Date();
+        date.setDate(date.getDate() + 1);
+        if (course.year > date.getFullYear()) {
+            return res.status(400).json({
+                message: `Year cannot be greater than current year`,
+                course: course
             });
         }
 
@@ -49,19 +85,27 @@ exports.addCourse = async (req, res) => {
             grade: course.grade,
             section: course.section
         }));
-
-        /* Save the user to the database */
-        user.save().then(() => {
-            return res.status(200).json({
-                message: 'Course added to current degree plan'
-            });
-        }).catch((err) => {
-            console.log(err);
-            return res.status(500).json({
-                error: 'Internal Server Error'
-            });
-        });
     }
+
+    /* Save the user to the database */
+    user.save().then(() => {
+        return res.status(201).json({
+            message: 'Course added to current degree plan'
+        });
+    }).catch((err) => {
+        /* Handle validation errors from invalid input */
+        if (err.name === 'ValidationError') {
+            return res.status(400).json({
+                message: 'V' + err.message.substring(6, err.message.length)
+            });
+        }
+
+        /* Handle other errors */
+        console.log(err.message);
+        return res.status(500).json({
+            message: 'Internal Server Error'
+        });
+    });
 };
 
 /* Modify a course in the user's current degree plan */
