@@ -13,6 +13,7 @@ import { Homepage } from './pages/homepage/homepage';
 import { PasswordReset } from './pages/password-reset/password-reset';
 import { Verification } from './pages/verification/verification';
 import { ChangePassword } from './pages/change-password/change-password';
+import { ClassHistory } from './pages/classhistory/classhistory';
 
 const router = createBrowserRouter([
   {
@@ -45,6 +46,10 @@ const router = createBrowserRouter([
       {
         path: "/change-password",
         element: <ChangePassword />
+      }, 
+      {
+        path: "/class-history",
+        element: <ClassHistory />
       }
     ]
   }
