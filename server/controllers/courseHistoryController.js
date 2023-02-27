@@ -1,5 +1,23 @@
 const userCourse = require('../models/userCourseModel');
 
+/* Get all courses the user has previously taken */
+exports.getCourses = async (req, res) => {
+    const user = req.user;
+
+    /* Return the user's completed courses */
+    return res.status(200).json({
+        courses: user.completedCourses
+    });
+};
+
+/* Get all courses the user has previously taken that match the query */
+exports.queryCourses = async (req, res) => {
+    // TODO: Implement (optional)
+    return res.status(501).json({
+        error: 'Not Implemented'
+    });
+};
+
 /* Add a course to the user's current degree plan */
 exports.addCourse = async (req, res) => {
     const user = req.user;
