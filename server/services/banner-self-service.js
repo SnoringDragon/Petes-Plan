@@ -236,6 +236,84 @@ class BannerSelfService {
 
         return { failed, requisites: results };
     }
+
+    async getRestrictions({ term, subject }) {
+        const response = await this._fetch('bzwkschd.p_display_restrictions', {
+            method: 'POST',
+            body: `term_in=${term}&sel_subj=None_Selected&sel_subj=${subject}`,
+            headers: { 'content-type': 'application/x-www-form-urlencoded' }
+        });
+
+        const $ = cheerio.load(await response.text());
+
+        // this page is formatted as repeating <b> and <blockquote> tags
+        const courseTitles = $('.pagebodydiv > b');
+        const courseBodies = $('.pagebodydiv > blockquote');
+
+        if (courseTitles.length !== courseBodies.length)
+            throw new Error(`unexpected response from server`);
+
+        const restrictionRegex = new RegExp(
+            // match beginning of section text, with wildcard to account for various different texts
+            String.raw`^(Must|May not) be[ -~]+the following ` +
+            // capture the type of restriction (doesn't have a colon), followed by a colon and optional non-linebreak whitespace
+            String.raw`([^:]+):[^\S\r\n]*` +
+            // list of restrictions, repeat of either empty line or some text that has spaces before it
+            String.raw`((?:[^\S\r\n]*\r?\n|[^\S\r\n]+[ -~]+)+)`
+        , 'gm');
+
+        return courseTitles.map((i, title) => {
+            const [, subject, courseNumber, name, crn] = $(title).text().trim()
+                .match(/^(\w+)\s+(\w+)\s+(.+?)\s+-\s+CRN\s(\d+)$/);
+
+            restrictionRegex.lastIndex = 0; // reset regex last match
+
+            const restrictionsText = $(courseBodies[i]).text().trim();
+
+            const restrictions = {};
+
+            for (let [, restrictionHeader, type, restrictionBody] of restrictionsText.matchAll(restrictionRegex)) {
+                const restrictionList = new Set(restrictionBody.split(/\r?\n/g)
+                    .map(str => str.trim())
+                    .filter(x => x));
+                type = type.toLowerCase();
+                const isBlocklist = restrictionHeader === 'May not';
+
+                if (type.startsWith('fields of study')) type = 'fieldsOfStudy';
+                if (type === 'student attributes') type = 'studentAttributes';
+
+                /*
+                list of possible types. each type contains a set of values
+
+                majors: self-explanatory
+                minors: self-explanatory (not frequently used)
+                concentrations: self-explanatory (not frequently used)
+                fieldsOfStudy: major, minor, or concentrations
+                classifications: student classification
+                    for undergraduates: format is "{class}: {hour range}" (e.g. "Freshman: 0 - 14 hours")
+                    for graduates: is "Graduate"
+                    for professional students: "Professional {year} Year" (e.g. "Professional First Year") (not sure if year is credit based)
+                levels: "Undergraduate", "Graduate", or "Professional"
+                colleges: both colleges and schools appear to be in this section
+                programs: degree or certificate program. usually in form of "{program name}-{program type}" (e.g. "Computer Science-BS"), but not always
+                studentAttributes: not sure what this is used for, appears to only contain 3 possible values:
+                    "Professional Masters", "Prof Masters Programs", or "PWL Instance"
+                campuses: have seen values "West Lafayette Continuing Ed", "Lafayette", and "Vincennes"
+                    can probably ignore any value that isn't "West Lafayette Continuing Ed"
+                degrees: degree type (e.g. "Bachelor of Arts", "Doctor of Pharmacy", etc.)
+                cohorts: various collections, examples include "Honors College", "Data Mine Corporate Partners",
+                    "Purdue Promise", "Engineering Goss Scholars"
+                 */
+
+                restrictions[type] = {
+                    isBlocklist,
+                    values: new Set(restrictionList)
+                };
+            }
+
+            return { subject, courseNumber, name, crn, restrictions };
+        }).toArray();
+    }
 }
 
 module.exports = new BannerSelfService();
