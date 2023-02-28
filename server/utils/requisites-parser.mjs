@@ -18,9 +18,16 @@ class ThrowingErrorListener extends antlr4.error.ErrorListener {
     static INSTANCE = new ThrowingErrorListener();
 }
 
+/**
+ * Abstract class representing multiple requisites
+ */
 export class Group {
     constructor(children, { requiredCredits = null  } = {}) {
         this.children = children;
+        /**
+         * required number of credits to satisfy this group
+         * @type {number|null}
+         */
         this.requiredCredits = requiredCredits;
     }
 
@@ -30,18 +37,27 @@ export class Group {
     }
 }
 
+/**
+ * And group, if a child is not satisfied then this group is not satisfied
+ */
 export class And extends Group {
     toJSON() {
         return { ...super.toJSON(), type: 'and' };
     }
 }
 
+/**
+ * Or group, if all children are not satisfied then this group is not satisfied
+ */
 export class Or extends Group {
     toJSON() {
         return { ...super.toJSON(), type: 'or' };
     }
 }
 
+/**
+ * PickN group, need to have n or more children satisfied
+ */
 export class PickN extends Group {
     constructor(children, n, options) {
         super(children, options);
@@ -53,9 +69,29 @@ export class PickN extends Group {
     }
 }
 
+/**
+ * Requisite that is satisfied by a single course
+ */
 export class Course {
-    constructor({ department, startNumber, endNumber = startNumber, minGrade, isCorequisite = false, requiredCourses = null, requiredCredits = null }) {
-        this.department = department;
+    constructor({ subject, number, minGrade = null, isCorequisite = false }) {
+        this.subject = subject;
+        this.number = number;
+        this.isCorequisite = isCorequisite;
+        this.minGrade = minGrade;
+    }
+
+    toJSON() {
+        return { ...this, type: 'course' };
+    }
+}
+
+/**
+ * Requisite that is satisfied by multiple courses, such as a range of courses, any course of a subject,
+ *  or in rare cases multiple credits in one (variable-title) course
+ */
+export class CourseGroup {
+    constructor({ subject, startNumber = null, endNumber = startNumber, minGrade = null, isCorequisite = false, requiredCourses = null, requiredCredits = null }) {
+        this.subject = subject;
         this.startNumber = startNumber;
         this.endNumber = endNumber;
         this.isCorequisite = isCorequisite;
@@ -65,10 +101,13 @@ export class Course {
     }
 
     toJSON() {
-        return { ...this, type: 'course' };
+        return { ...this, type: 'course_group' };
     }
 }
 
+/**
+ * Some requisite text that is not a course (for example, a SAT exam)
+ */
 export class NonCourse {
     constructor(text) {
         this.text = text;
@@ -89,6 +128,9 @@ export class NonCourse {
 //     }
 // }
 
+/**
+ * A student level, either 'graduate' or 'professional'
+ */
 export class StudentLevel {
     constructor(level) {
         this.level = level;
@@ -146,11 +188,11 @@ export class RequisitesParser {
                 minGrade = minGrade.replace('[may be taken concurrently]', '').trim();
             }
 
-            const [department, name] = courseName.split(/\s+/);
+            const [subject, number] = courseName.split(/\s+/);
 
             return new Course({
-                department,
-                startNumber: name,
+                subject,
+                number,
                 minGrade,
                 isCorequisite
             });
@@ -200,8 +242,8 @@ export class RequisitesParser {
         }
 
         if (tree instanceof CourseRequirementsParser.CourseContext) {
-            const courseNameParts = tree.children[0].getText().split(/\s+/g);
-            const department = courseNameParts[0];
+            const courseNameParts = tree.children[0].getText().trim().split(/\s+/g);
+            const subject = courseNameParts[0];
             const startNumber = courseNameParts[1];
             const endNumber = courseNameParts[3];
 
@@ -222,8 +264,16 @@ export class RequisitesParser {
                     isCorequisite = true;
             });
 
+            // startNumber undefined, this is only a course subject (therefore course range)
+            // endNumber not undefined, this is a course range
+            if (startNumber === undefined || endNumber !== undefined ||
+                requiredCourses !== null || requiredCredits !== null)
+                return new CourseGroup({
+                    subject, startNumber, endNumber, isCorequisite, minGrade, requiredCourses, requiredCredits
+                });
+
             return new Course({
-                department, startNumber, endNumber, isCorequisite, minGrade, requiredCourses, requiredCredits
+                subject, number: startNumber, isCorequisite, minGrade
             });
         }
 
@@ -254,10 +304,21 @@ export class RequisitesParser {
         // replace group with one child with just the child
         if (tree instanceof Group && tree.children.length === 1) {
             const child = this.simplifyTree(tree.children[0]);
-            if (child instanceof Course || child instanceof Group) {
-                // make sure requiredCredits property is transferred
+            // make sure requiredCredits property is transferred
+            if (child instanceof CourseGroup || child instanceof Group) {
+                // take max of required credits for CourseGroup and normal Group
                 if (typeof child.requiredCredits === 'number' || typeof tree.requiredCredits === 'number')
                     child.requiredCredits = Math.max(child.requiredCredits, tree.requiredCredits);
+            } else if (child instanceof Course && typeof tree.requiredCredits === 'number') {
+                // convert course to CourseGroup
+                return new CourseGroup({
+                    subject: child.subject,
+                    startNumber: child.number,
+                    endNumber: child.number,
+                    minGrade: child.minGrade,
+                    isCorequisite: child.isCorequisite,
+                    requiredCredits: child.requiredCredits
+                })
             }
             return child;
         }
