@@ -78,7 +78,7 @@ class BannerSelfService {
      * @returns {Promise<{
      *     name: string,
      *     value: string
-     * }>}
+     * }[]>}
      */
     async getCatalogTerms() {
         const response = await this._fetch('bwckctlg.p_disp_cat_term_date');
@@ -98,7 +98,10 @@ class BannerSelfService {
      * Get course search options for a course term
      *
      * @param term course term
-     * @returns {Promise<{subjects: { name: string, value: string }[]}>}
+     * @returns {Promise<{
+     *  subjects: { name: string, value: string }[],
+     *  colleges: { name: string, value: string }[],
+     * }>}
      */
     async getOptionsForTerm(term) {
         // get course search page
