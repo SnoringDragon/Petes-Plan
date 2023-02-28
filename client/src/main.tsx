@@ -8,27 +8,19 @@ import App from './App';
 import './index.scss';
 import { Dashboard } from './pages/dashboard/dashboard';
 import { Login } from './pages/login/login';
-import { SignUp } from './pages/sign_up/sign_up'
 import { Register } from './pages/register/register';
+import { Homepage } from './pages/homepage/homepage';
+import { PasswordReset } from './pages/password-reset/password-reset';
+import { Verification } from './pages/verification/verification';
+import { ChangePassword } from './pages/change-password/change-password';
 
 const router = createBrowserRouter([
   {
     path: '/',
     element: <App />,
     children: [{
-      index: true,
-      element: <Dashboard />
-    },
-    {
-      path: '/login',
-      element: <Login />
-    },
-    {
-      path: '/sign_up',
-      element: <SignUp />
-    }
         index: true,
-        element: <Dashboard />
+        element: <Homepage />
       },
       {
         path: '/login',
@@ -37,6 +29,22 @@ const router = createBrowserRouter([
       {
         path: '/register',
         element: <Register />
+      },
+      {
+        path: '/dashboard',
+        element: <Dashboard />
+      },
+      {
+        path: "/password-reset",
+        element: <PasswordReset />
+      },
+      {
+        path: "/verification",
+        element: <Verification />
+      },
+      {
+        path: "/change-password",
+        element: <ChangePassword />
       }
     ]
   }

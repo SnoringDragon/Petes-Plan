@@ -1,9 +1,9 @@
 const mongoose = require('mongoose');
 
-const APTestSchema = new mongoose.Schema({
+const apTestSchema = new mongoose.Schema({
     name: String,
-    credits: [courseSchema][Number],
+    credits: [Number][String], //2D array: [score][courses cleared]
     courseID: String
 });
 
-module.exports = mongoose.model('APTest', APTestSchema);
+module.exports = mongoose.model('APTest', apTestSchema);

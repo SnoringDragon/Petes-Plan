@@ -7,21 +7,15 @@ import CardActions from '@material-ui/core/CardActions';
 import CardHeader from '@material-ui/core/CardHeader';
 import Button from '@material-ui/core/Button';
 import Checkbox from '@material-ui/core/Checkbox';
+import { useNavigate } from 'react-router-dom';
 
-export function Login() {
+export function ChangePassword() {
+    const navigate = useNavigate()
     return (<div className="w-full h-full flex items-center justify-center">
         <Card className="-mt-16">
             <CardHeader title="Login" className="text-center bg-zinc-800 text-white" />
             <CardContent>
                 <div className="p-4">
-                    <TextField
-                        fullWidth
-                        id="username"
-                        type="email"
-                        label="Username"
-                        placeholder="Username"
-                        margin="normal"
-                    />
                     <TextField
                         fullWidth
                         id="password"
@@ -30,13 +24,14 @@ export function Login() {
                         placeholder="Password"
                         margin="normal"
                     />
-                    <Checkbox
-                    //handleChange={handleChangeA}
-                    //isChecked={isCheckedA}
+                    <TextField
+                        fullWidth
+                        id="passwordCheck"
+                        type="password"
+                        label="Confirm Password"
+                        placeholder="passwordCheck"
+                        margin="normal"
                     />
-                    <text>Remember me</text> 
-                    <p></p>
-                    <a href='/password-reset'><u>Forgot your password?</u></a >
                 </div>
             </CardContent>
             <CardActions>
@@ -44,8 +39,9 @@ export function Login() {
                     variant="contained"
                     size="large"
                     color="secondary"
+                    onClick={() =>  navigate('/dashboard')    }
                     className="w-full">
-                    Login
+                    Change Password
                 </Button>
             </CardActions>
         </Card>

@@ -10,10 +10,10 @@ const mongoose = require('mongoose');
 
 const universitySchema = new mongoose.Schema({
     name: String,
-    colleges: [collegeSchema],
-    requirements: [courseSchema],
+    colleges: [String], //array of college names,
+    requirements: [String], //array of courseIDs
     emailDomain: String,
-    users: [userSchema]
+    users: [String] //array of emails
 });
 
 module.exports = mongoose.model('University', universitySchema);
