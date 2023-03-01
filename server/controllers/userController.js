@@ -257,7 +257,7 @@ exports.delete = async (req, res) => {
 
 /* Update a user's details */
 exports.update = async (req, res) => {
-    var user = req.user;
+    const user = req.user;
     var updated = false;
 
     /* Check for updated name */
