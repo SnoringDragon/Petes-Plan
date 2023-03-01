@@ -3,6 +3,26 @@ const sleep = require('../utils/sleep');
 const Course = require('../models/courseModel');
 const ProcessedCourse = require('../models/processedCoursesModel');
 
+const computeCourseSearchString = (subject, courseNumber) => {
+    if (typeof courseNumber === 'number') courseNumber = `${courseNumber}`;
+
+    let str = [`${subject} ${courseNumber}`, `${subject}${courseNumber}`]; // for full course number searches
+
+    // ends in 00 -> add short course number (e.g. CS 18000 -> CS 180)
+    if (courseNumber.slice(-2) === '00') {
+        const num = courseNumber.slice(0, 3);
+        str.push(`${subject} ${num}`, `${subject}${num}`);
+    }
+
+    // all zeros and ends in a single number -> convert to 'k' format (e.g. ECE 20001 -> ECE 2k1)
+    if (/^\d0{3}[1-9]$/.test(courseNumber)) {
+        const num = `${courseNumber[0]}k${courseNumber[4]}`;
+        str.push(`${subject} ${num}`, `${subject}${num}`);
+    }
+
+    return str.join(' ');
+};
+
 async function fetchIndividualSubject(term, subject, colleges) {
     console.log('fetching term', term.name, 'subject', subject.name);
 
@@ -35,7 +55,7 @@ async function fetchIndividualSubject(term, subject, colleges) {
                 subject: subject.value,
                 courseID: course.number,
                 name: course.longTitle ?? course.shortTitle,
-                fullCourseID: `${subject.value} ${course.number}`,
+                    searchCourseID: computeCourseSearchString(subject.value, course.number),
                 minCredits: course.minCredits,
                 maxCredits: course.maxCredits,
                 attributes: course.attributes,
