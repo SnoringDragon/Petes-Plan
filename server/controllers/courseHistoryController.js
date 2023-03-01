@@ -39,7 +39,7 @@ exports.addCourse = async (req, res) => {
         /* Validate required fields present */
         if (!course || !course.courseID || !course.semester || !course.year) {
             return res.status(400).json({
-                message: `Missing courseID, semester, or year`,
+                message: 'Missing courseID, semester, or year',
                 course: course
             });
         }
@@ -47,7 +47,7 @@ exports.addCourse = async (req, res) => {
         /* Validate grade is a number */
         if (course.grade && isNaN(course.grade)) {
             return res.status(400).json({
-                message: `Grade must be a number`,
+                message: 'Grade must be a number',
                 course: course
             });
         } else course.grade = null;
@@ -55,15 +55,23 @@ exports.addCourse = async (req, res) => {
         /* Validate section is a number */
         if (course.section && isNaN(course.section)) {
             return res.status(400).json({
-                message: `Section must be a number`,
+                message: 'Section must be a number',
                 course: course
             });
         } else course.section = null;
 
-        /* Validate semester is valid */
+        /* Validate year is valid */
         if (isNaN(course.year)) {
             return res.status(400).json({
-                message: `Year must be a number`,
+                message: 'Year must be a number',
+                course: course
+            });
+        }
+
+        /* Validate semester is valid */
+        if (course.semester !== 'Fall' && course.semester !== 'Spring' && course.semester !== 'Summer') {
+            return res.status(400).json({
+                message: 'Semester must be Fall, Spring, or Summer',
                 course: course
             });
         }
@@ -73,9 +81,21 @@ exports.addCourse = async (req, res) => {
         date.setDate(date.getDate() + 1);
         if (course.year > date.getFullYear()) {
             return res.status(400).json({
-                message: `Year cannot be greater than current year`,
+                message: 'Year cannot be greater than current year',
                 course: course
             });
+        }
+
+        /* Validate semester is no greater than current semester */
+        if (course.year === date.getFullYear()) {
+            if ((course.semester === 'Fall' && date.getMonth() < 8)
+                    || (course.semester === 'Spring' && date.getMonth() < 1)
+                    || (course.semester === 'Summer' && date.getMonth() < 5)) {
+                return res.status(400).json({
+                    message: 'Semester cannot be greater than current semester',
+                    course: course
+                });
+            }
         }
 
         /* Add the course to the user's current degree plan */
@@ -94,14 +114,6 @@ exports.addCourse = async (req, res) => {
             message: 'Course added to current degree plan'
         });
     }).catch((err) => {
-        /* Handle validation errors from invalid input */
-        if (err.name === 'ValidationError') {
-            return res.status(400).json({
-                message: 'V' + err.message.substring(6, err.message.length)
-            });
-        }
-
-        /* Handle other errors */
         console.log(err.message);
         return res.status(500).json({
             message: 'Internal Server Error'
