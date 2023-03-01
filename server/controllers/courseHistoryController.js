@@ -191,5 +191,43 @@ exports.modifyCourse = async (req, res) => {
 
 /* Delete a course from the user's current degree plan */
 exports.deleteCourse = async (req, res) => {
+    const user = req.user;
+    const ids = req.body._ids;
 
+    /* Check if courses are provided */
+    if (!ids || !(ids instanceof Array) || ids.length === 0) {
+        return res.status(400).json({
+            message: 'Missing array of _ids'
+        });
+    }
+
+    /* Remove each provided course */
+    for (let i = 0; i < ids.length; i++) {
+        const _id = ids[i];
+
+        /* Get corresponding course in user's current degree plan */
+        const course = await user.completedCourses.id(_id);
+
+        /* Validate course exists in current degree plan */
+        if (!course) {
+            return res.status(400).json({
+                message: `Invalid course _id`,
+                _id: _id
+            });
+        }
+
+        course.remove();
+    }
+
+    /* Save the user to the database */
+    user.save().then(() => {
+        return res.status(200).json({
+            message: 'Course(s) removed from current degree plan'
+        });
+    }).catch((err) => {
+        console.log(err.message);
+        return res.status(500).json({
+            message: 'Internal Server Error'
+        });
+    });
 };
