@@ -1,5 +1,6 @@
 const express = require('express');
 const jsonParser = require('body-parser').json();
+const cors = require('cors');
 
 require('dotenv').config()
 
@@ -11,6 +12,7 @@ async function main() {
 
     const app = express();
 
+    app.use(cors());
     app.use(jsonParser);
 
     /* Load files in ./routes */
