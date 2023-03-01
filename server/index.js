@@ -1,6 +1,8 @@
 const express = require('express');
 const jsonParser = require('body-parser').json();
 const cors = require('cors');
+const fetchCourses = require('./scripts/fetch-courses');
+const {scheduleRepeat} = require("./utils/scheduler");
 
 require('dotenv').config()
 
@@ -18,12 +20,16 @@ async function main() {
     /* Load files in ./routes */
     require('./routes/index')(app);
 
+    if (process.argv.includes('--update-courses'))
+        fetchCourses().catch(console.error);
+
+    scheduleRepeat(() => {
+        fetchCourses().catch(console.error);
+    }, process.env.COURSE_FETCH_TIME);
+
     /* Start the server */
     app.listen(port, () => {
         console.log('listening on port', port);
-
-        if (process.argv.includes('--update-courses'))
-            require('./scripts/fetch-courses')();
     });
 }
 
