@@ -11,11 +11,21 @@ class SelfServiceCourseSummary {
         this.number = course.CourseNumber;
         this.shortTitle = course.CourseShortTitle;
         this.longTitle = course.CourseLongTitle;
-        this.description = course.CourseDescription;
+        this.description = course.CourseDescription // rarely a course does not have a description (ex: EDPS 90100)
+            ?.replace(/\s*\bCredit Hours: \d+\.\d+\.\s*/g, '') ?? '';
         this.effectiveDate = course.CourseEffectiveDate; // not sure what this is
         this.creditBasis = course.CourseCreditBasis; // not sure what this is, appears to be "Regular"
-        this.minCredits = course.CourseCreditMinimumValue;
-        this.maxCredits = course.CourseCreditMaximumValue ?? course.CourseCreditMinimumValue;
+        this.minCredits = +course.CourseCreditMinimumValue;
+        this.maxCredits = +(course.CourseCreditMaximumValue ?? course.CourseCreditMinimumValue);
+
+        // sanity check on credits values
+        if (this.maxCredits < this.minCredits)
+            this.maxCredits = this.minCredits;
+        if (Number.isNaN(this.maxCredits))
+            this.maxCredits = 0;
+        if (Number.isNaN(this.minCredits))
+            this.minCredits = 0;
+
         const attributes = Array.isArray(course.CourseAttribute) ? course.CourseAttribute : [course.CourseAttribute];
         this.attributes = attributes.filter(x => x)
             .map(({ RAPCode, RAPName }) => ({ code: RAPCode, name: RAPName }))

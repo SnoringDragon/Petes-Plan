@@ -75,7 +75,7 @@ export class PickN extends Group {
 export class Course {
     constructor({ subject, number, minGrade = null, isCorequisite = false }) {
         this.subject = subject;
-        this.number = number;
+        this.courseID = number;
         this.isCorequisite = isCorequisite;
         this.minGrade = minGrade;
     }
@@ -92,8 +92,8 @@ export class Course {
 export class CourseGroup {
     constructor({ subject, startNumber = null, endNumber = startNumber, minGrade = null, isCorequisite = false, requiredCourses = null, requiredCredits = null }) {
         this.subject = subject;
-        this.startNumber = startNumber;
-        this.endNumber = endNumber;
+        this.startCourseID = startNumber;
+        this.endCourseID = endNumber;
         this.isCorequisite = isCorequisite;
         this.minGrade = minGrade;
         this.requiredCourses = requiredCourses;

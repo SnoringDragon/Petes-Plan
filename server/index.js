@@ -21,6 +21,9 @@ async function main() {
     /* Start the server */
     app.listen(port, () => {
         console.log('listening on port', port);
+
+        if (process.argv.includes('--update-courses'))
+            require('./scripts/fetch-courses')();
     });
 }
 
