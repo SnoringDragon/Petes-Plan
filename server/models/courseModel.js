@@ -11,7 +11,7 @@ const courseSchema = new mongoose.Schema({
     courseID: String,
     credits: Number,
     description: String,
-    requirements: [String], //array of courseIDs
+    requirements: Object,
     semesters: {
         type: [semesterSchema],  
     }
