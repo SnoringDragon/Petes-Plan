@@ -11,6 +11,12 @@ class UserService extends Api {
             localStorage.setItem('token', result.token);
     }
 
+    async register(email: string, password: string, name: string) {
+        return this.post('/api/user/signup', {
+            email, password, name
+        });
+    }
+
     async logout() {
         return this.post('/api/user/logout');
     }
