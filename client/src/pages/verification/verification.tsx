@@ -6,9 +6,9 @@ export function Verification() {
 
     return (
     <>
-    <div> An email has been sent to reset your password. </div>
+    <div className="text-center mt-10"> An email has been sent to reset your password.
     <p></p>
-    <a href='/'><u>Return to homepage.</u></a >
+    <a href='/'><u>Return to homepage.</u></a > </div>
     </>
     );
 }   
