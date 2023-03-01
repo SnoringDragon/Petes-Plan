@@ -257,5 +257,30 @@ exports.delete = async (req, res) => {
 
 /* Update a user's details */
 exports.update = async (req, res) => {
-    // https://mongoosejs.com/docs/documents.html - TODO: Update Using Queries
+    var user = req.user;
+    var updated = false;
+
+    /* Check for updated name */
+    if (req.body.name && !(req.body.name === user.name)) {
+        user.name = req.body.name;
+        updated = true;
+    }
+
+    /* Save the user */
+    if (updated) {
+        user.save().then(() => {
+            return res.status(200).json({
+                message: 'User updated successfully'
+            });
+        }).catch((err) => {
+            console.log(err);
+            return res.status(500).json({
+                message: 'Internal Server Error'
+            });
+        });
+    } else {
+        return res.status(200).json({
+            message: 'No changes made'
+        });
+    }
 };
