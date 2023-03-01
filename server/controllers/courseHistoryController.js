@@ -211,7 +211,7 @@ exports.deleteCourse = async (req, res) => {
         /* Validate course exists in current degree plan */
         if (!course) {
             return res.status(400).json({
-                message: `Invalid course _id`,
+                message: 'Invalid course _id',
                 _id: _id
             });
         }
