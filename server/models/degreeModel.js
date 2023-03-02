@@ -7,7 +7,7 @@ const degreeSchema = new mongoose.Schema({
         enum: ['major', 'minor', 'concentration', 'certificate']
     },
     requirements: [String], //array of courseIDs
-    concentrations: [degreeSchema]
+    concentrations: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Degree' }]
 });
 
 module.exports = mongoose.model('Degree', degreeSchema);
