@@ -7,7 +7,7 @@ const User = require('../models/userModel');
 const verify = util.promisify(jwt.verify);
 
 module.exports.authenticate = async (req, res, next) => {
-    const errorPayload = { error: true, message: 'Invalid user session' };
+    const errorPayload = { message: 'Invalid user session' };
 
     const authorization = req.headers.authorization;
 

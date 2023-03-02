@@ -3,9 +3,10 @@ const mongoose = require('mongoose');
 const userCourseSchema = new mongoose.Schema({
     courseID: String,
     grade: Number,
-    semester: ['Spring', 'Summer', 'Fall'],
+    semester: { type: String, enum: ['Spring', 'Summer', 'Fall'] },
     year: Number,
-    sections: [Number] //list of crns
+    section: Number // CRN
 })
+exports.schema = userCourseSchema;
 
 module.exports = mongoose.model('UserCourse', userCourseSchema);
