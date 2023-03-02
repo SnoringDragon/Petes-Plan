@@ -48,6 +48,13 @@ export function Modify_Profile_Page() {
                     className="w-full">
                     Apply Chnages
                 </Button>
+                <Button
+                    variant="contained"
+                    size="large"
+                    color="secondary"
+                    className="w-full">
+                    Delete Account
+                </Button>
             </CardActions>
         </Card>
     </div>)
