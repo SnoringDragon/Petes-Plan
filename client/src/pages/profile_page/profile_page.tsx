@@ -8,17 +8,29 @@ import Button from '@material-ui/core/Button';
 import React, { useRef, useState } from 'react';
 import UserService from '../../services/UserService';
 
+type State = {
+    name: string
+    email: string
+    password: string
+};
+
+const initialState: State = {
+    name: " Patricia Casaca",
+    email: " pmagalha@purdue.edu",
+    password: " ******"
+};
+
 export function Profile_Page() {
     return (<div className="w-full h-full flex items-center justify-center">
         <Card className="-mt-16">
             <CardHeader title="Profile Page" className="text-center bg-zinc-800 text-white" />
             <CardContent>
                 <div className="p-4">
-                    <text><u>Name: </u> Patricia Casaca</text>
+                    <text><u>Name:</u> {initialState.name}</text>
                     <p></p>
-                    <text><u><br />Email: </u> pmagalha@purdue.edu</text>
+                    <text><u><br />Email:</u> {initialState.email}</text>
                     <p></p>
-                    <text><u><br />Password: </u> ******</text>
+                    <text><u><br />Password:</u> {initialState.password}</text>
                     <p></p>
                     <a href='/password-reset'><u>To change your password, click here.</u></a >
                     <p></p>

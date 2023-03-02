@@ -25,6 +25,11 @@ const userSchema = new mongoose.Schema({
         degrees: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Degree' }], // degrees in the degree plan
         courses: [userCourseSchema]     // courses in the degree plan
         
+    }],
+    apTests: [{
+        test: { type: mongoose.Schema.Types.ObjectId, ref: 'APTest' },
+        score: Number,
+        _id: false
     }]
 });
 
