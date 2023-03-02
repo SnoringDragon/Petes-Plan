@@ -23,6 +23,9 @@ async function main() {
     if (process.argv.includes('--update-courses'))
         fetchCourses().catch(console.error);
 
+    if (process.argv.includes('--update-ap'))
+        require('./scripts/fetch-ap')().catch(console.error);
+
     scheduleRepeat(() => {
         fetchCourses().catch(console.error);
     }, process.env.COURSE_FETCH_TIME);
