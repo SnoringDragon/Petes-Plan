@@ -8,6 +8,16 @@ import Button from '@material-ui/core/Button';
 import React, { useRef, useState } from 'react';
 import UserService from '../../services/UserService';
 
+type State = {
+    name: string
+    email: string
+};
+
+const initialState: State = {
+    name: "Patricia Casaca",
+    email: "pmagalha@purdue.edu"
+};
+
 export function Modify_Profile_Page() {
     return (<div className="w-full h-full flex items-center justify-center">
         <Card className="-mt-16">
@@ -18,26 +28,14 @@ export function Modify_Profile_Page() {
                         fullWidth
                         id="name"
                         type="name"
-                        label="Name"
-                        placeholder="Name"
+                        label={initialState.name}
+                        placeholder="name"
                         margin="normal"
                     />
-                    <TextField
-                        fullWidth
-                        id="email"
-                        type="email"
-                        label="Email"
-                        placeholder="Email"
-                        margin="normal"
-                    />
-                    <TextField
-                        fullWidth
-                        id="password"
-                        type="password"
-                        label="Password"
-                        placeholder="Password"
-                        margin="normal"
-                    />
+                    <p></p>
+                    <text><u><br />Email: </u> {initialState.email}</text>
+                    <p></p>
+                    <a href='/password-reset'><u><br />To change your password, click here.</u></a >
                 </div>
             </CardContent>
             <CardActions>
@@ -45,14 +43,14 @@ export function Modify_Profile_Page() {
                     variant="contained"
                     size="large"
                     color="secondary"
-                    className="w-full">
-                    Apply Chnages
+                    className="w-half">
+                    Apply Changes
                 </Button>
                 <Button
                     variant="contained"
                     size="large"
                     color="secondary"
-                    className="w-full">
+                    className="w-half">
                     Delete Account
                 </Button>
             </CardActions>
