@@ -1,6 +1,6 @@
-const deepmerge = require('deepmerge');
 const cheerio = require('cheerio');
 const { XMLParser } = require('fast-xml-parser');
+const BaseService = require('./base-service');
 
 // documentation on banner student self service
 // https://my.suu.edu/help/article/1423/student-ss-87-user-guide/attachment/
@@ -42,7 +42,7 @@ class SelfServiceCourseSummary {
 /**
  * Class for fetching information from Ellucian Banner Student Self Service
  */
-class BannerSelfService {
+class BannerSelfService extends BaseService {
     /**
      * Create new Banner Self Service API
      *
@@ -52,34 +52,7 @@ class BannerSelfService {
     constructor(options = {
         baseUrl: 'https://selfservice.mypurdue.purdue.edu/prod'
     }) {
-        const { baseUrl, ...opts } = options;
-        this._options = opts;
-        this._baseUrl = baseUrl;
-        // dynamic import es module
-        this._fetchFunc = import('node-fetch');
-    }
-
-    /**
-     * Fetch with options
-     *
-     * @param {string} url
-     * @param {RequestInit} opts
-     * @returns {Promise<Response>}
-     * @private
-     */
-    async _fetch(url, opts = {}) {
-        const response = await (await this._fetchFunc).default(`${this._baseUrl}/${url}`,
-            deepmerge(this._options, opts)); // merge default options with override options
-
-        // failed response (4xx, 5xx)
-        if (!response.ok) {
-            const err = new Error(`HTTP status code ${response.status}`);
-            err.response = response;
-            err.status = response.status;
-            throw err;
-        }
-
-        return response;
+        super(options);
     }
 
     /**
