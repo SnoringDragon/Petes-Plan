@@ -73,7 +73,7 @@ async function fetchIndividualSubject(term, subject, colleges) {
     console.log('successfully parsed course data for semester', term.name, 'subject', subject.value);
 }
 
-module.exports = async ({ batchSize = 7, sleepTime = 750, numYears = 2 } = {}) => {
+module.exports = async ({ batchSize = 10, sleepTime = 750, numYears = 6 } = {}) => {
     const terms = await selfService.getCatalogTerms();
 
     const alreadyProcessed = await ProcessedCourse.find().lean();
