@@ -100,6 +100,8 @@ module.exports = async ({ batchSize = 10, sleepTime = 750, numYears = 6 } = {}) 
                 await sleep(sleepTime);
             }
         }));
+
+        await sleep(sleepTime);
     }
 
     console.log('finished course sync');
