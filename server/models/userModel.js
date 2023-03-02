@@ -20,6 +20,12 @@ const userSchema = new mongoose.Schema({
     verificationToken: String,          // token used to verify the user's email address
     tokenBlacklist: [String],
     completedCourses: [userCourseSchema], // courses that the user has completed
+    degreePlans: [{
+        name: String,                   // name of degree plan
+        degrees: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Degree' }], // degrees in the degree plan
+        courses: [userCourseSchema]     // courses in the degree plan
+        
+    }]
 });
 
 /* modify secret key by xor-ing it with hash of user's password
