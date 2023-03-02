@@ -13,6 +13,9 @@ import { Homepage } from './pages/homepage/homepage';
 import { PasswordReset } from './pages/password-reset/password-reset';
 import { Verification } from './pages/verification/verification';
 import { ChangePassword } from './pages/change-password/change-password';
+import { Future_Plan_Study } from './pages/future_plan_study/future_plan_study';
+import { Modify_Future_Plan_Study } from './pages/modify_future_plan_study/modify_future_plan_study';
+import { Course_Description } from './pages/course_description/course_description';
 
 const router = createBrowserRouter([
   {
@@ -45,6 +48,18 @@ const router = createBrowserRouter([
       {
         path: "/change-password",
         element: <ChangePassword />
+      },
+      {
+        path: '/future_plan_study',
+        element: <Future_Plan_Study />
+      },
+      {
+        path: "/modify_future_plan_study",
+        element: <Modify_Future_Plan_Study />
+      },
+      {
+        path: "/course_description",
+        element: <Course_Description />
       }
     ]
   }
