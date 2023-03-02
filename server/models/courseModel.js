@@ -62,7 +62,7 @@ const populateRequirements = async (courses, depth = 1) => {
 
     // fetch courses in single batch (saves db access time)
     const reqCourses = courses.flatMap(c => getCoursesFromRequirements(c.requirements));
-    const reqCourseModels = await model.find({ $or: reqCourses });
+    const reqCourseModels = await model.find({ $or: reqCourses }).lean();
 
     const reqCourseMap = {};
 
