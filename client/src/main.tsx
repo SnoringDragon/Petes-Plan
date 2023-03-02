@@ -14,6 +14,7 @@ import { PasswordReset } from './pages/password-reset/password-reset';
 import { Verification } from './pages/verification/verification';
 import { ChangePassword } from './pages/change-password/change-password';
 import { ClassHistory } from './pages/classhistory/classhistory';
+import { FuturePlan } from './pages/futureplan/futureplan';
 
 const router = createBrowserRouter([
   {
@@ -50,6 +51,10 @@ const router = createBrowserRouter([
       {
         path: "/class-history",
         element: <ClassHistory />
+      },
+      {
+        path: "future-plan",
+        element: <FuturePlan />
       }
     ]
   }
