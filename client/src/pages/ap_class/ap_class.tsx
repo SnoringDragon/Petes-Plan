@@ -9,10 +9,16 @@ import Button from '@material-ui/core/Button';
 import Checkbox from '@material-ui/core/Checkbox';
 
 type State = {
-    course: string
-    description: string
-    semester: string
-}
+    score3: string
+    score4: string
+    score5: string
+};
+
+const initialState: State = {
+    score3: "SPAN 10100 & 10200",
+    score4: "SPAN 10100, 10200 & 20100",
+    score5: "SPAN 10100, 10200, 20100 & 20200"
+};
 export function AP_Class() {
     return (<div className="w-full h-full flex items-center justify-center">
         <Card className="-mt-16">
@@ -21,15 +27,15 @@ export function AP_Class() {
                 <div className="p-4">
                     <text><u>Score: 3</u></text>
                     <p></p>
-                    <text>SPAN 10100 & 10200 </text>
+                    <text>{initialState.score3}</text>
                     <p> </p>
                     <text><u>Score: 4</u></text>
                     <p></p>
-                    <text>SPAN 10100, 10200 & 20100 </text>
+                    <text>{initialState.score4}</text>
                     <p> </p>
                     <text><u>Score: 5</u></text>
                     <p></p>
-                    <text>SPAN 10100, 10200, 20100 & 20200 </text>
+                    <text>{initialState.score5}</text>
                 </div>
             </CardContent>
         </Card>
