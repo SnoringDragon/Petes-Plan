@@ -8,8 +8,33 @@ import Button from '@material-ui/core/Button';
 import React from 'react';
 import { useState } from 'react';
 
+var text: String = "";
+
+function getText(text: Array<String>, coursename: String, cre: String, link: String) {
+    // co = 
+    // {
+    //     name: coursename,
+    //     credit: cre,
+    //     link: link 
+    // }
+
+    text.push()
+    //var ne: String = prev.concat(text.toString());
+    //text = ne;
+}
+
 export function FuturePlan() {
-    const [visibility, setVisibility] = useState(false)
+    const [visibility, setVisibility] = useState(false);
+    const [courses, setCourses] = useState([]);
+
+    var classes =
+    [
+        {
+            name: "CS18000:",
+            credit: "4.00",
+            link: "https://selfservice.mypurdue.purdue.edu/prod/bzwsrch.p_catalog_detail?term=202320&subject=CS&cnbr=18000&enhanced=Y"
+        }
+    ]
 
     return (<Layout>
 
@@ -101,6 +126,5 @@ export function FuturePlan() {
                 </div>
             </div>
         </div>
-
     </Layout>);
 }
