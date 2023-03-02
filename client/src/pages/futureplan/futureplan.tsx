@@ -7,6 +7,7 @@ import CardHeader from '@material-ui/core/CardHeader';
 import Button from '@material-ui/core/Button';
 import React from 'react';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 var text: String = "";
 
@@ -24,6 +25,7 @@ function getText(text: Array<String>, coursename: String, cre: String, link: Str
 }
 
 export function FuturePlan() {
+    const navigate = useNavigate()
     const [visibility, setVisibility] = useState(false);
     const [courses, setCourses] = useState([]);
 
@@ -118,6 +120,7 @@ export function FuturePlan() {
                                 variant="contained"
                                 size="large"
                                 color="primary"
+                                onClick={() =>  navigate('/course_description')    }
                                 className="w-full h-6">
                                 Add to History
                             </Button>
