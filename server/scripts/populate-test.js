@@ -23,9 +23,15 @@ let requirements = [['MA 261', 'MA 35100', 'CS 18000', 'CS 18200', 'CS 24000', '
 ['CS 37300','CS 38100', 'CS 47100', 'STAT 41600', 'CS 34800', 'CS 35200']];
 // let concentrations = names.slice(3);
 
+
+function handleError() {
+    console.log("populate track working");
+}
+
+module.exports = async () => { function populateAll() {
 const cseTrack = degreeModel.create({ name: names[3], type: types[1], requirements: requirements[3]}, function (err) {
     if (err) return handleError(err);
-    // saved!
+        
     });
 
 const cgvtTrack = degreeModel.create({ name: names[4], type: types[1], requirements: requirements[4]}, function (err) {
@@ -73,3 +79,6 @@ const ai = degreeModel.create({ name: names[2], type: types[0], requirements: re
     if (err) return handleError(err);
             // saved!
     });
+}
+}
+mongoose.model('Instructor', instructorSchema);
