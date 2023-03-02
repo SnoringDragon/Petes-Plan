@@ -56,6 +56,13 @@ export abstract class Api {
         }
 
         const result = await fetch(new URL(input.toString(), import.meta.env.VITE_API_URL), init);
+
+        // session bad or expired, remove token
+        if (result.status === 401) {
+            localStorage.removeItem('token');
+            sessionStorage.removeItem('token');
+        }
+
         const data = await result.json();
 
         if (result.ok)
