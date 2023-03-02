@@ -17,9 +17,9 @@ const courseSchema = new mongoose.Schema({
     subject: String, // CS, MA, etc.
     courseID: String, // 18000, 24000, etc
 
-    // array of various ways to represent this course ID, used for search index
-    // example: ['ECE 20001', 'ECE20001', 'ECE 2k1', 'ECE2k1']
-    // example: ['CS 18000', 'CS18000', 'CS 180', 'CS180']
+    // string of various ways to represent this course ID, used for search index
+    // example: 'ECE 20001 ECE20001 ECE 2k1 ECE2k1']
+    // example: 'CS 18000 CS18000 CS 180 CS180'
     searchCourseID: String,
 
     minCredits: Number,
@@ -35,7 +35,17 @@ const courseSchema = new mongoose.Schema({
     // }
 });
 
+// unique index on combination of subject and courseID; faster search and prevent duplicates
 courseSchema.index({ subject: 1, courseID: 1 }, { unique: true });
+
+// text index on name, description, and search fields
+/* example search:
+await courseModel.find({
+    $text: { $search: 'cryptography' }
+}).sort({
+    score: { $meta: 'textScore' }
+})
+ */
 courseSchema.index({
     name: 'text',
     searchCourseID: 'text',
