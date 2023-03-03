@@ -1,6 +1,6 @@
 import React, { useReducer, useEffect, useState, useRef } from 'react';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import TextField from '@material-ui/core/TextField';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
@@ -25,7 +25,7 @@ export function Login() {
         UserService.login(usernameRef.current?.value ?? '',
             passwordRef.current?.value ?? '', rememberMe)
             .then(() => {
-                navigate('/'); // success, navigate to home
+                navigate('/dashboard'); // success, navigate to home
             })
             .catch(err => {
                 setError(err.message ?? err); // show error to user
@@ -34,6 +34,9 @@ export function Login() {
                 setLoading(false); // set ui not loading
             });
     };
+
+    if (UserService.isLoggedIn())
+        setTimeout(() => navigate('/dashboard'), 1);
 
     return (<div className="w-full h-full flex items-center justify-center">
         <Card className="-mt-16">
@@ -64,7 +67,10 @@ export function Login() {
                     />
                     <text>Remember me</text>
                     <p></p>
-                    <a href='/password-reset'><u>Forgot your password?</u></a >
+                    <div className="flex">
+                        <Link to="/password-reset" className="mr-auto">Forgot your password?</Link>
+                        <Link to="/register">Need an account?</Link>
+                    </div>
                     {
                         error && <div className="mt-4 text-red-500">Error: {error}</div>
                     }

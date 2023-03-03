@@ -20,6 +20,7 @@ import { Modify_Profile_Page } from './pages/modify_profile_page/modify_profile_
 import { Profile_Page } from './pages/profile_page/profile_page';
 import { AP_Class } from './pages/ap_class/ap_class';
 import { Major_Requirements } from './pages/major_requirements/major_requirements';
+import { VerifyEmail } from './pages/verify-email/verify-email';
 
 const router = createBrowserRouter([
   {
@@ -27,7 +28,7 @@ const router = createBrowserRouter([
     element: <App />,
     children: [{
       index: true,
-      element: <Homepage />
+      element: <Login />
     },
     {
       path: '/login',
@@ -36,6 +37,10 @@ const router = createBrowserRouter([
     {
       path: '/register',
       element: <Register />
+    },
+    {
+      path: '/verify-email',
+      element: <VerifyEmail />
     },
     {
       path: '/dashboard',
