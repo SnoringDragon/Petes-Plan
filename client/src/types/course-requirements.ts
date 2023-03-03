@@ -2,7 +2,7 @@ interface AbstractRequirement {
     type: string
 }
 
-interface AbstractRequirementGroup extends AbstractRequirement {
+export interface AbstractRequirementGroup extends AbstractRequirement {
     children: Requirement[],
     // if set, this group also requires a certain amount of credits from the courses inside it
     // this requirement must be met alongside the group requirement

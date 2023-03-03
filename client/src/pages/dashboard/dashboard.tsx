@@ -4,6 +4,8 @@ import { useNavigate } from 'react-router-dom';
 
 export function Dashboard() {
     return (<Layout>
-        <div>dashboard</div>
+        <div>
+            dashboard
+        </div>
     </Layout>);
 }

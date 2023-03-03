@@ -50,7 +50,8 @@ class TransferCreditService extends BaseService {
                     const scoreText = $(scoreCell).text();
                     const courseText = courses[i];
 
-                    const subject = courseText.match(/^[A-Z&]+\b/)?.[0];
+                    const subject = courseText.match(/^[A-Z&]+\b/)?.[0]
+                        ?.replace(/[^A-Z]/g, '');
                     const courseNumbers = courseText.match(/\b[0-9X]+\b/g);
 
                     if (isNaN(scoreText) || !subject)
