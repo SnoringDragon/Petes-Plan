@@ -16,6 +16,10 @@ export function Course_Description() {
     const [course, setCourse] = useState<ApiCourse | null>(null);
 
     useEffect(() => {
+        console.log('test');
+    }, [])
+
+    useEffect(() => {
         const subject = searchParams.get('subject') ?? '';
         const courseID = searchParams.get('courseID') ?? '';
 

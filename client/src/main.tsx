@@ -23,6 +23,7 @@ import { Profile_Page } from './pages/profile_page/profile_page';
 import { AP_Class } from './pages/ap_class/ap_class';
 import { Major_Requirements } from './pages/major_requirements/major_requirements';
 import { VerifyEmail } from './pages/verify-email/verify-email';
+import { CourseSearch } from './pages/course-search/course-search';
 
 const router = createBrowserRouter([
   {
@@ -71,6 +72,10 @@ const router = createBrowserRouter([
     {
       path: "/course_description",
       element: <Course_Description />
+    },
+    {
+      path: '/course-search',
+      element: <CourseSearch />
     },
     {
       path: "/profile_page",

@@ -15,6 +15,8 @@ export function Prerequisites(props: { prerequisites: Requirement, isChild?: boo
     const isChild = props.isChild;
     const depth = props.depth ?? 0;
 
+    if (data === null) return (<span>'None'</span>);
+
     if (data.type === 'course')
         return (<span>
             <Link to={`/course_description?subject=${data.subject}&courseID=${data.courseID}`}>
