@@ -5,7 +5,7 @@ import CardContent from '@material-ui/core/CardContent';
 import CardActions from '@material-ui/core/CardActions';
 import CardHeader from '@material-ui/core/CardHeader';
 import Button from '@material-ui/core/Button';
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import UserService from '../../services/UserService';
 import { Layout } from '../../components/layout/layout';
 import { Link } from 'react-router-dom';
@@ -13,7 +13,9 @@ import { Link } from 'react-router-dom';
 export function Profile_Page() {
     const [userData, setUserData] = useState<{ email: string, name: string } | null>(null);
 
-    UserService.getUserData().then(data => setUserData(data));
+    useEffect(() => {
+        UserService.getUserData().then(data => setUserData(data));
+    }, []);
 
     return (<Layout><div className="w-full h-full flex items-center justify-center">
         <Card className="-mt-16">

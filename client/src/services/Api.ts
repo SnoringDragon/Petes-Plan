@@ -24,6 +24,16 @@ export abstract class Api {
         });
     }
 
+    protected async put<T=any>(input: RequestInfo | URL, body: any = {}) : Promise<T> {
+        return this.fetch(input, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(body)
+        });
+    }
+
     protected async fetch(input: RequestInfo | URL, init?: RequestInit) {
         const localToken = localStorage.getItem('token');
         const sessionToken = sessionStorage.getItem('token');

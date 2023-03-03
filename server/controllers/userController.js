@@ -193,8 +193,9 @@ exports.resetRequest = async (req, res) => {
         /* Send a reset email */
         mailer.sendEmail(email, 'Password Reset', 'resetPassword', {
             name: user.name,
-            email: email,
-            token: await token
+            email: encodeURIComponent(email),
+            token: encodeURIComponent(await token),
+            baseUrl: process.env.BASE_URL
         });
     }
 
