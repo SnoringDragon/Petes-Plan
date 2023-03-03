@@ -121,9 +121,9 @@ exports.addCourse = async (req, res) => {
             const course = courses[i];
 
             /* Check if course is valid */
-            if (!course.courseID || !course.semester || !course.year) {
+            if (!course.courseID || !course.semester || !course.year || !course.subject) {
                 return res.status(400).json({
-                    message: 'Course must contain courseID, semester, and year',
+                    message: 'Course must contain courseID, semester, subject, and year',
                     course: course
                 });
             }
@@ -146,25 +146,19 @@ exports.addCourse = async (req, res) => {
             }
 
             /* Check if courseID is valid */
-            const courseIDParts = course.courseID.split(' ');
-            if (courseIDParts.length !== 2) {
-                return res.status(400).json({
-                    message: 'Invalid courseID, must be in the form of "CS 1234"',
-                    course: course
-                });
-            }
+            // const courseIDParts = course.courseID.split(' ');
+            // if (courseIDParts.length !== 2) {
+            //     return res.status(400).json({
+            //         message: 'Invalid courseID, must be in the form of "CS 1234"',
+            //         course: course
+            //     });
+            // }
 
             /* Check if course is in database */
-            const coursematches = await Course.find({ subject: courseIDParts[0], courseID: courseIDParts[1] });
+            const coursematches = await Course.find({ subject: course.subject, courseID: course.courseID });
             if (coursematches.length === 0) {
                 return res.status(400).json({
                     message: 'Course does not exist',
-                    course: course
-                });
-            } else if (coursematches.length > 1) {
-                console.log("Multiplle courses share courseID:\n" + coursematches);
-                return res.status(500).json({
-                    message: 'Internal Server Error, too many courses with same courseID',
                     course: course
                 });
             }
@@ -183,7 +177,8 @@ exports.addCourse = async (req, res) => {
             degreePlan.courses.push({
                 courseID: course.courseID,
                 semester: course.semester,
-                year: course.year
+                year: course.year,
+                subject: course.subject
             });
         }
     }
@@ -201,25 +196,31 @@ exports.addCourse = async (req, res) => {
         for (let i = 0; i < degrees.length; i++) {
             const degree = degrees[i];
 
-            /* Check if degree is valid */
-            if (!degree.name || !degree.type) {
-                return res.status(400).json({
-                    message: 'Degree must contain name and type',
-                    degree: degree
-                });
-            }
+            let docs;
+            if (degree?._id) {
+                docs = [await Degree.findOne({ _id: degree?._id })];
+            } else {
 
-            /* Check if type is valid */
-            if (degree.type !== 'major' && degree.type !== 'minor'
+                /* Check if degree is valid */
+                if (!degree.name || !degree.type) {
+                    return res.status(400).json({
+                        message: 'Degree must contain name and type',
+                        degree: degree
+                    });
+                }
+
+                /* Check if type is valid */
+                if (degree.type !== 'major' && degree.type !== 'minor'
                     && degree.type !== 'concentration' && degree.type !== 'certificate') {
-                return res.status(400).json({
-                    message: 'Invalid type, must be major, minor, concentration, or certificate',
-                    degree: degree
-                });
-            }
+                    return res.status(400).json({
+                        message: 'Invalid type, must be major, minor, concentration, or certificate',
+                        degree: degree
+                    });
+                }
 
-            /* Check if degree exists */
-            const docs = await Degree.find({ name: degree.name, type: degree.type });
+                /* Check if degree exists */
+                docs = await Degree.find({name: degree.name, type: degree.type});
+            }
             if (docs.length === 0) {
                 return res.status(400).json({
                     message: 'Degree does not exist',
