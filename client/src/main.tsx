@@ -19,6 +19,7 @@ import { Course_Description } from './pages/course_description/course_descriptio
 import { Modify_Profile_Page } from './pages/modify_profile_page/modify_profile_page';
 import { Profile_Page } from './pages/profile_page/profile_page';
 import { AP_Class } from './pages/ap_class/ap_class';
+import { Major_Requirements } from './pages/major_requirements/major_requirements';
 
 const router = createBrowserRouter([
   {
@@ -75,6 +76,10 @@ const router = createBrowserRouter([
     {
       path: "/ap_class",
       element: <AP_Class />
+    },
+    {
+      path: "/major_requirements",
+      element: <Major_Requirements />
     }
     ]
   }
