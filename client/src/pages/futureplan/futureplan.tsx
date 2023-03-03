@@ -27,20 +27,23 @@ function getText(text: Array<String>, coursename: String, cre: String, link: Str
 export function FuturePlan() {
     const navigate = useNavigate()
     const [visibility, setVisibility] = useState(false);
+    const [vis, setVis] = useState(false);
     const [courses, setCourses] = useState([]);
+    
+    var cl: String = "Object Oriented Programming"
 
-    var classes =
-    [
-        {
-            name: "CS18000:",
-            credit: "4.00",
-            link: "https://selfservice.mypurdue.purdue.edu/prod/bzwsrch.p_catalog_detail?term=202320&subject=CS&cnbr=18000&enhanced=Y"
-        }
-    ]
+    // var classes =
+    // [
+    //     {
+    //         name: "CS18000:",
+    //         credit: "4.00",
+    //         link: "https://selfservice.mypurdue.purdue.edu/prod/bzwsrch.p_catalog_detail?term=202320&subject=CS&cnbr=18000&enhanced=Y"
+    //     }
+    // ]
 
     return (<Layout>
 
-        <div className="grid grid-cols-2 grid-flow-row gap-x-16 gap-y-2">
+        <div className="grid grid-cols-2 gap-y-2">
             <div className="w-full h-full ml-1 mt-10 flex items-center justify-left">
                 <Card className="-mt-16 ">
                     <CardHeader title="Search Courses" className="text-center h-10 bg-zinc-800 text-white" />
@@ -105,7 +108,7 @@ export function FuturePlan() {
                                 {"Object Oriented Programming"}
                                 <br></br>
                                 <p></p>
-                                <a href='https://selfservice.mypurdue.purdue.edu/prod/bzwsrch.p_catalog_detail?term=202320&subject=CS&cnbr=18000&enhanced=Y'><u>Credit Hours: 4.00</u></a >
+                                <a href='/course_descriptions'><u>Credit Hours: 4.00</u></a >
                             </div>
                             <TextField
                                 id="grade"
@@ -120,7 +123,7 @@ export function FuturePlan() {
                                 variant="contained"
                                 size="large"
                                 color="primary"
-                                onClick={() =>  navigate('/course_description')    }
+                                onClick={() => setVis(!vis)}
                                 className="w-full h-6">
                                 Add to History
                             </Button>
@@ -128,6 +131,30 @@ export function FuturePlan() {
                     </Card>
                 </div>
             </div>
+            <div className="overfill-auto col-start-2 flex row-start-2 justify-right">
+                <div className="w-full h-full ml-1 mt-24  items-center justify-right">
+                    <Card className="-mt-16 w-10/12">
+                        <CardHeader title="Enrolled Courses" className="text-center h-10 bg-zinc-800 text-white" />
+                        <CardContent>
+                            <div className={`p-1 h-16 text-center ${vis ? 'visible' : 'invisible'}`}>
+                                {cl}
+                                <br></br>
+                                {"Credit: 4.00\n"}
+                            </div>
+                        </CardContent>
+                        <CardActions>
+                            <Button
+                                variant="contained"
+                                size="large"
+                                color="secondary"
+                                className="w-full h-6">
+                                Save
+                            </Button>
+                        </CardActions>
+                    </Card>
+                </div>
+            </div>
         </div>
+        
     </Layout>);
 }
