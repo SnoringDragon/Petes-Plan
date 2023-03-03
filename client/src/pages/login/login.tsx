@@ -1,5 +1,6 @@
-import React, { useReducer, useEffect } from 'react';
+import React, { useReducer, useEffect, useState, useRef } from 'react';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
+import { Link, useNavigate } from "react-router-dom";
 import TextField from '@material-ui/core/TextField';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
@@ -7,8 +8,38 @@ import CardActions from '@material-ui/core/CardActions';
 import CardHeader from '@material-ui/core/CardHeader';
 import Button from '@material-ui/core/Button';
 import Checkbox from '@material-ui/core/Checkbox';
+import UserService from '../../services/UserService';
 
 export function Login() {
+    const [isLoading, setLoading] = useState(false);
+    const [error, setError] = useState<any>('');
+    const [rememberMe, setRememberMe] = useState(false);
+    const usernameRef = useRef({value: null});
+    const passwordRef = useRef({value: null});
+
+    const navigate = useNavigate();
+
+    UserService.clearTokens();
+
+    const login = () => {
+        setLoading(true); // set ui loading
+        setError(''); // clear previous error
+        UserService.login(usernameRef.current?.value ?? '',
+            passwordRef.current?.value ?? '', rememberMe)
+            .then(() => {
+                navigate('/dashboard'); // success, navigate to home
+            })
+            .catch(err => {
+                setError(err.message ?? err); // show error to user
+            })
+            .finally(() => {
+                setLoading(false); // set ui not loading
+            });
+    };
+
+    if (UserService.isLoggedIn())
+        setTimeout(() => navigate('/dashboard'), 1);
+
     return (<div className="w-full h-full flex items-center justify-center">
         <Card className="-mt-16">
             <CardHeader title="Login" className="text-center bg-zinc-800 text-white" />
@@ -21,6 +52,7 @@ export function Login() {
                         label="Username"
                         placeholder="Username"
                         margin="normal"
+                        inputRef={usernameRef}
                     />
                     <TextField
                         fullWidth
@@ -29,14 +61,21 @@ export function Login() {
                         label="Password"
                         placeholder="Password"
                         margin="normal"
+                        inputRef={passwordRef}
                     />
                     <Checkbox
-                    //handleChange={handleChangeA}
-                    //isChecked={isCheckedA}
+                    onChange={() => setRememberMe(!rememberMe)}
+                    checked={rememberMe}
                     />
-                    <text>Remember me</text> 
+                    <text>Remember me</text>
                     <p></p>
-                    <a href='/password-reset'><u>Forgot your password?</u></a >
+                    <div className="flex">
+                        <Link to="/password-reset" className="mr-auto">Forgot your password?</Link>
+                        <Link to="/register">Need an account?</Link>
+                    </div>
+                    {
+                        error && <div className="mt-4 text-red-500">Error: {error}</div>
+                    }
                 </div>
             </CardContent>
             <CardActions>
@@ -44,7 +83,9 @@ export function Login() {
                     variant="contained"
                     size="large"
                     color="secondary"
-                    className="w-full">
+                    className="w-full"
+                    onClick={login}
+                    disabled={isLoading}>
                     Login
                 </Button>
             </CardActions>

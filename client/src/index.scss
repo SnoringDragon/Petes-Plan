@@ -5,3 +5,8 @@
 html, body, #root, #root > div {
   height: 100%;
 }
+
+a {
+  @apply underline cursor-pointer;
+
+}

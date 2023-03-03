@@ -18,9 +18,8 @@ exports.signup = async (req, res) => {
     /* Check if the user has provided an email, password, and name */
     if (!req.body.email || !req.body.password || !req.body.name) {
         return res.status(400).json({
-            error: 'Missing email, password, or name'
+            message: 'Missing email, password, or name'
         });
-        return;
     }
     
     /* Validate email address */
@@ -28,17 +27,21 @@ exports.signup = async (req, res) => {
     const email = req.body.email.toLowerCase();
     if (!email.match(emailRegex)) {
         return res.status(400).json({
-            error: 'Invalid email address'
+            message: 'Invalid email address'
         });
-        return;
+    }
+
+    if (email.split('@')[1] !== 'purdue.edu') {
+        return res.status(400).json({
+            message: 'This application is only available for select universities'
+        });
     }
 
     /* Check if the user already exists */
     if (await User.exists({ email: email })) {
         return res.status(400).json({
-            error: 'User already exists'
+            message: 'User already exists'
         });
-        return;
     }
 
     /* Populate the user object */
@@ -57,8 +60,9 @@ exports.signup = async (req, res) => {
             /* Send a verification email */
             mailer.sendEmail(email, 'Email Verification', 'verifyEmail', {
                 name: req.body.name,
-                email: email,
-                token: await token
+                baseUrl: process.env.BASE_URL,
+                email: encodeURIComponent(email),
+                token: encodeURIComponent(await token)
             });
 
             return res.status(201).json({
@@ -67,7 +71,7 @@ exports.signup = async (req, res) => {
         }).catch((error) => {
             console.log(error);
             return res.status(500).json({
-                error: 'Could not create user'
+                message: 'Could not create user'
             });
         });
     });
@@ -75,32 +79,37 @@ exports.signup = async (req, res) => {
 
 /* Verify a user's email */
 exports.verifyEmail = async (req, res) => {
+    const email = req.body.email ?? req.query.email;
+    const token = req.body.token ?? req.query.token;
+
     /* Checks if the email and token are provided */
-    if (!req.query.email || !req.query.token) {
+    if (!email || !token) {
         return res.status(400).json({
-            error: 'Missing email or token'
+            message: 'Missing email or token'
         });
-        return;
     }
 
-    User.find({ email: req.query.email.toLowerCase() }, (err, docs) => {
+    User.find({ email: email.toLowerCase() }, async (err, docs) => {
         if (err) {
             console.log(err);
             return res.status(500).json({
-                error: 'Internal Server Error'
+                message: 'Internal Server Error'
             });
         }
         const user = docs[0];
 
         /* Check if the user exists and token matches */
-        if (user && (user.verified === false) && (user.verificationToken === req.query.token)) {
+        if (user && (user.verified === false) && (user.verificationToken === token)) {
+            if (!await user.validatePassword(req.body.password))
+                return res.status(400).json({ message: 'Invalid password' });
+
             /* Update the user's details */
             user.verified = true;
             user.verificationToken = '';
             user.save().catch((err) => {
                 console.log(err);
                 return res.status(500).json({
-                    error: 'Internal Server Error'
+                    message: 'Internal Server Error'
                 });
             });
 
@@ -109,7 +118,7 @@ exports.verifyEmail = async (req, res) => {
             });
         } else {
             return res.status(400).json({
-                error: 'Invalid email token pair'
+                message: 'Invalid email token pair'
             });
         }
     });
@@ -117,34 +126,32 @@ exports.verifyEmail = async (req, res) => {
 
 /* Login a user */
 exports.login = async (req, res) => {
-    const user = await User.findOne({ email: req.body.email.toLowerCase() });
+    /* Check if the user has provided an email and password */
+    if (!req.body.email || !req.body.password)
+        return res.status(400).json({
+            message: 'Missing email or password'
+        });
+        
+    /* Validate email address */
+    const email = req.body.email.toLowerCase();
+    if (!email.match(emailRegex))
+        return res.status(400).json({
+            message: 'Invalid email address'
+        });
+
+    const user = await User.findOne({ email: email });
 
     // no user with that email
-    if (!user)
+    if (!user || !user.verified || !await user.validatePassword(req.body.password))
         return res.status(400).json({
-            error: true,
-            message: 'Invalid email'
-        });
-
-    if (!user.verified)
-        return res.status(400).json({
-            error: true,
-            message: 'Email has not been verified yet'
-        });
-
-    // invalid password
-    if (!await user.validatePassword(req.body.password, hash))
-        return res.status(400).json({
-            error: true,
-            message: 'Invalid password'
+            message: 'Invalid email password pair'
         });
 
     await user.filterBlacklist();
 
     // return token as signed payload
-    return res.json({
-        error: false,
-        token: await jwt.sign(user.toJSON(), user.permuteKey(secret), {
+    return res.status(201).json({
+        token: jwt.sign({ _id: user._id }, user.permuteKey(secret), {
             expiresIn: req.body.remember ? '30 days' : '1 day'
         }),
         // whether the token should be stored in localStorage or sessionStorage
@@ -157,7 +164,7 @@ exports.resetRequest = async (req, res) => {
     /* Check if the user has provided an email */
     if (!req.body.email) {
         return res.status(400).json({
-            error: 'No email provided'
+            message: 'No email provided'
         });
         return;
     }
@@ -166,7 +173,7 @@ exports.resetRequest = async (req, res) => {
     const email = req.body.email.toLowerCase();
     if (!email.match(emailRegex)) {
         return res.status(400).json({
-            error: 'Invalid email address'
+            message: 'Invalid email address'
         });
         return;
     }
@@ -182,15 +189,16 @@ exports.resetRequest = async (req, res) => {
         user.save().catch((error) => {
             console.log(error);
             return res.status(500).json({
-                error: 'Internal Server Error'
+                message: 'Internal Server Error'
             });
         });
 
         /* Send a reset email */
         mailer.sendEmail(email, 'Password Reset', 'resetPassword', {
             name: user.name,
-            email: email,
-            token: await token
+            email: encodeURIComponent(email),
+            token: encodeURIComponent(await token),
+            baseUrl: process.env.BASE_URL
         });
     }
 
@@ -204,7 +212,7 @@ exports.resetPassword = async (req, res) => {
     /* Check if the user has provided an email, token, and new password */
     if (!req.body.email || !req.body.token || !req.body.password) {
         return res.status(400).json({
-            error: 'Missing email, token, or password'
+            message: 'Missing email, token, or password'
         });
     }
 
@@ -212,7 +220,7 @@ exports.resetPassword = async (req, res) => {
     const email = req.body.email.toLowerCase();
     if (!email.match(emailRegex)) {
         return res.status(400).json({
-            error: 'Invalid email address'
+            message: 'Invalid email address'
         });
     }
 
@@ -225,7 +233,7 @@ exports.resetPassword = async (req, res) => {
         user.save().catch((err) => {
             console.log(err);
             return res.status(500).json({
-                error: 'Internal Server Error'
+                message: 'Internal Server Error'
             });
         });
 
@@ -234,7 +242,7 @@ exports.resetPassword = async (req, res) => {
         });
     } else {
         return res.status(400).json({
-            error: 'Invalid email token pair'
+            message: 'Invalid email token pair'
         });
     }
 };
@@ -243,15 +251,50 @@ exports.resetPassword = async (req, res) => {
 exports.logout = async (req, res) => {
     req.user.tokenBlacklist.push(req.token);
     req.user.filterBlacklist();
-    return res.json({ error: false });
+    return res.status(200).json({
+        message: 'Logged out successfully'
+    });
 };
 
 /* Delete a user */
 exports.delete = async (req, res) => {
-    await user.deleteOne({ email: req.body.email.toLowerCase() });
+    User.deleteOne({ email: req.user.email }, () => {
+        return res.status(200).json({
+            message: 'User deleted successfully'
+        });
+    });
 };
 
 /* Update a user's details */
 exports.update = async (req, res) => {
-    // https://mongoosejs.com/docs/documents.html - TODO: Update Using Queries
+    const user = req.user;
+    var updated = false;
+
+    /* Check for updated name */
+    if (req.body.name && !(req.body.name === user.name)) {
+        user.name = req.body.name;
+        updated = true;
+    }
+
+    /* Save the user */
+    if (updated) {
+        user.save().then(() => {
+            return res.status(200).json({
+                message: 'User updated successfully'
+            });
+        }).catch((err) => {
+            console.log(err);
+            return res.status(500).json({
+                message: 'Internal Server Error'
+            });
+        });
+    } else {
+        return res.status(200).json({
+            message: 'No changes made'
+        });
+    }
+};
+
+exports.getUser = (req, res) => {
+    res.json(req.user);
 };

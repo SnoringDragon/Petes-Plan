@@ -15,47 +15,87 @@ import { Verification } from './pages/verification/verification';
 import { ChangePassword } from './pages/change-password/change-password';
 import { ClassHistory } from './pages/classhistory/classhistory';
 import { FuturePlan } from './pages/futureplan/futureplan';
+import { Future_Plan_Study } from './pages/future_plan_study/future_plan_study';
+import { Modify_Future_Plan_Study } from './pages/modify_future_plan_study/modify_future_plan_study';
+import { Course_Description } from './pages/course_description/course_description';
+import { Modify_Profile_Page } from './pages/modify_profile_page/modify_profile_page';
+import { Profile_Page } from './pages/profile_page/profile_page';
+import { AP_Class } from './pages/ap_class/ap_class';
+import { Major_Requirements } from './pages/major_requirements/major_requirements';
+import { VerifyEmail } from './pages/verify-email/verify-email';
 
 const router = createBrowserRouter([
   {
     path: '/',
     element: <App />,
     children: [{
-        index: true,
-        element: <Homepage />
-      },
-      {
-        path: '/login',
-        element: <Login />
-      },
-      {
-        path: '/register',
-        element: <Register />
-      },
-      {
-        path: '/dashboard',
-        element: <Dashboard />
-      },
-      {
-        path: "/password-reset",
-        element: <PasswordReset />
-      },
-      {
-        path: "/verification",
-        element: <Verification />
-      },
-      {
-        path: "/change-password",
-        element: <ChangePassword />
-      }, 
-      {
-        path: "/class-history",
-        element: <ClassHistory />
-      },
-      {
-        path: "future-plan",
-        element: <FuturePlan />
-      }
+      index: true,
+      element: <Login />
+    },
+    {
+      path: '/login',
+      element: <Login />
+    },
+    {
+      path: '/register',
+      element: <Register />
+    },
+    {
+      path: '/verify-email',
+      element: <VerifyEmail />
+    },
+    {
+      path: '/dashboard',
+      element: <Dashboard />
+    },
+    {
+      path: "/password-reset",
+      element: <PasswordReset />
+    },
+    {
+      path: "/verification",
+      element: <Verification />
+    },
+    {
+      path: "/change-password",
+      element: <ChangePassword />
+    },
+    {
+      path: '/future_plan_study',
+      element: <Future_Plan_Study />
+    },
+    {
+      path: "/modify_future_plan_study",
+      element: <Modify_Future_Plan_Study />
+    },
+    {
+      path: "/course_description",
+      element: <Course_Description />
+    },
+    {
+      path: "/profile_page",
+      element: <Profile_Page />
+    },
+    {
+      path: "/modify_profile_page",
+      element: <Modify_Profile_Page />
+    },
+    {
+      path: "/ap_class",
+      element: <AP_Class />
+    },
+    {
+      path: "/major_requirements",
+      element: <Major_Requirements />
+    },
+    {
+      path: "/class-history",
+      element: <ClassHistory />
+    },
+    {
+      path: "future-plan",
+      element: <FuturePlan />
+    }
     ]
   }
 ]);
