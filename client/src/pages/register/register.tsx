@@ -52,7 +52,6 @@ export function Register() {
                         label="Confirm Password"
                         placeholder="Confirm Password"
                         margin="normal"
-
                     />
                 </div>
             </CardContent>

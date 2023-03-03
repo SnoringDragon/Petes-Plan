@@ -9,21 +9,6 @@ import React from 'react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-var text: String = "";
-
-function getText(text: Array<String>, coursename: String, cre: String, link: String) {
-    // co = 
-    // {
-    //     name: coursename,
-    //     credit: cre,
-    //     link: link 
-    // }
-
-    text.push()
-    //var ne: String = prev.concat(text.toString());
-    //text = ne;
-}
-
 export function FuturePlan() {
     const navigate = useNavigate()
     const [visibility, setVisibility] = useState(false);
@@ -32,14 +17,7 @@ export function FuturePlan() {
     
     var cl: String = "Object Oriented Programming"
 
-    // var classes =
-    // [
-    //     {
-    //         name: "CS18000:",
-    //         credit: "4.00",
-    //         link: "https://selfservice.mypurdue.purdue.edu/prod/bzwsrch.p_catalog_detail?term=202320&subject=CS&cnbr=18000&enhanced=Y"
-    //     }
-    // ]
+
 
     return (<Layout>
 
@@ -134,7 +112,7 @@ export function FuturePlan() {
             <div className="overfill-auto col-start-2 flex row-start-2 justify-right">
                 <div className="w-full h-full ml-1 mt-24  items-center justify-right">
                     <Card className="-mt-16 w-10/12">
-                        <CardHeader title="Enrolled Courses" className="text-center h-10 bg-zinc-800 text-white" />
+                        <CardHeader title="Planned Courses" className="text-center h-10 bg-zinc-800 text-white" />
                         <CardContent>
                             <div className={`p-1 h-16 text-center ${vis ? 'visible' : 'invisible'}`}>
                                 {cl}
