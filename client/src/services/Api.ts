@@ -10,32 +10,30 @@ export abstract class Api {
         }
     }
 
+    protected async fetchBody(input: RequestInfo | URL, method: string, body: any = {}) {
+        return this.fetch(input, {
+            method,
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(body)
+        });
+    }
+
     protected async get<T=any>(input: RequestInfo | URL) : Promise<T> {
         return this.fetch(input);
     }
 
-    protected async delete<T=any>(input: RequestInfo | URL) : Promise<T> {
-        return this.fetch(input, { method: 'DELETE' });
+    protected async delete<T=any>(input: RequestInfo | URL, body: any = {}) : Promise<T> {
+        return this.fetchBody(input, 'DELETE', body);
     }
 
     protected async post<T=any>(input: RequestInfo | URL, body: any = {}) : Promise<T> {
-        return this.fetch(input, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(body)
-        });
+        return this.fetchBody(input, 'POST', body);
     }
 
     protected async put<T=any>(input: RequestInfo | URL, body: any = {}) : Promise<T> {
-        return this.fetch(input, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(body)
-        });
+        return this.fetchBody(input, 'PUT', body);
     }
 
     protected async fetch(input: RequestInfo | URL, init?: RequestInit) {

@@ -98,7 +98,7 @@ const router = createBrowserRouter([
       element: <ClassHistory />
     },
     {
-      path: "future-plan",
+      path: "/future-plan",
       element: <FuturePlan />
     }
     ]
