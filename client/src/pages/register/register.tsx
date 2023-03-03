@@ -39,7 +39,7 @@ export function Register() {
 
     useEffect(() => {
         if (UserService.isLoggedIn())
-            return navigate('/dashboard');
+            return navigate('/');
         UserService.clearTokens();
     }, []);
 

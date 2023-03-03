@@ -10,7 +10,7 @@ export function HeaderBar() {
         Pete's Plan
         {isLoggedIn && <div className="ml-auto flex">
             <Button color="inherit" onClick={() => {
-                UserService.logout().then(() => navigate('/'))
+                UserService.logout().then(() => navigate('/login'))
             }}>Logout</Button>
             <Button color="inherit" onClick={() => navigate('/profile_page')}>Profile</Button>
         </div>}

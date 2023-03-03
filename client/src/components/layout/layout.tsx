@@ -8,7 +8,7 @@ export function Layout({ children }: PropsWithChildren<{}>) {
 
     useEffect(() => {
         if (!UserService.isLoggedIn())
-            navigate('/');
+            navigate('/login');
     }, []);
 
     return (<div className="flex flex-1">

@@ -21,7 +21,7 @@ export function Login() {
 
     useEffect(() => {
         if (UserService.isLoggedIn())
-            return navigate('/dashboard');
+            return navigate('/');
         UserService.clearTokens();
     }, []);
 
@@ -31,7 +31,7 @@ export function Login() {
         UserService.login(usernameRef.current?.value ?? '',
             passwordRef.current?.value ?? '', rememberMe)
             .then(() => {
-                navigate('/dashboard'); // success, navigate to home
+                navigate('/'); // success, navigate to home
             })
             .catch(err => {
                 setError(err.message ?? err); // show error to user

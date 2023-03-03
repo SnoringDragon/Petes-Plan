@@ -39,7 +39,7 @@ export function ChangePassword() {
                     variant="contained"
                     size="large"
                     color="secondary"
-                    onClick={() =>  navigate('/dashboard')    }
+                    onClick={() =>  navigate('/')    }
                     className="w-full">
                     Change Password
                 </Button>
