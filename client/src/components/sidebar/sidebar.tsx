@@ -1,6 +1,7 @@
-import { FaHome, FaCheck, FaCalculator, FaLongArrowAltRight } from 'react-icons/fa';
+import { FaHome, FaCheck, FaCalculator, FaLongArrowAltRight, FaSearch, FaHistory } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import { useState } from 'react';
+import logoUrl from '../../assets/purduepete-transparent.png';
 
 export function Sidebar() {
     const [expanded, setExpanded] = useState(false);
@@ -12,19 +13,24 @@ export function Sidebar() {
             icon: FaHome
         },
         {
-            to: '/requirements',
-            label: 'Requirements',
-            icon: FaCheck
+            to: '/course-search',
+            label: 'Course Search',
+            icon: FaSearch
         },
         {
-            to: '/calculator',
-            label: 'Grade Calculator',
+            to: '/class-history',
+            label: 'Class History',
+            icon: FaHistory
+        },
+        {
+            to: '/ap_class',
+            label: 'AP Grades',
             icon: FaCalculator
         }
     ];
 
     return (<div className="flex flex-col border-r border-slate-600 p-2 bg-neutral-700">
-        <Link to="/">logo</Link>
+        <Link to="/"><img className="w-16" src={logoUrl} /></Link>
         {links.map((link, i) => (
             <Link key={i} to={link.to} className="ml-4 mr-2 my-4 flex items-center">
                 <link.icon className="w-5 h-5" />
