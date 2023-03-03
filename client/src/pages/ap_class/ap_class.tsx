@@ -1,43 +1,80 @@
-import React, { useReducer, useEffect } from 'react';
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
-import TextField from '@material-ui/core/TextField';
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
-import CardActions from '@material-ui/core/CardActions';
-import CardHeader from '@material-ui/core/CardHeader';
-import Button from '@material-ui/core/Button';
-import Checkbox from '@material-ui/core/Checkbox';
+import React, { useEffect, useState } from 'react';
+import { ApiAPTest, ApiUserAPTest } from '../../types/ap-test';
+import ApService from '../../services/ApService';
+import { Layout } from '../../components/layout/layout';
+import { Accordion, AccordionDetails, AccordionSummary, Button } from '@material-ui/core';
+import { FaChevronDown } from 'react-icons/fa';
+import { Link } from 'react-router-dom';
 
-type State = {
-    score3: string
-    score4: string
-    score5: string
-};
 
-const initialState: State = {
-    score3: "SPAN 10100 & 10200",
-    score4: "SPAN 10100, 10200 & 20100",
-    score5: "SPAN 10100, 10200, 20100 & 20200"
-};
 export function AP_Class() {
-    return (<div className="w-full h-full flex items-center justify-center">
-        <Card className="-mt-16">
-            <CardHeader title="AP Spanish Language" className="text-center bg-zinc-800 text-white" />
-            <CardContent>
-                <div className="p-4">
-                    <text><u>Score: 3</u></text>
-                    <p></p>
-                    <text>{initialState.score3}</text>
-                    <p> </p>
-                    <text><u>Score: 4</u></text>
-                    <p></p>
-                    <text>{initialState.score4}</text>
-                    <p> </p>
-                    <text><u>Score: 5</u></text>
-                    <p></p>
-                    <text>{initialState.score5}</text>
+    const [apTests, setApTests] = useState<ApiAPTest[]>([]);
+    const [userApTests, setUserApTests] = useState<ApiUserAPTest[]>([]);
+
+    const [modified, setModified] = useState<string[]>([]);
+
+    useEffect(() => {
+        Promise.all([ApService.getApTests(), ApService.getUserApTests()])
+            .then(data => {
+                setApTests(data[0]);
+                setUserApTests(data[1]);
+            })
+    }, []);
+
+    const setSelected = (apTest: ApiAPTest, score: 1 | 2 | 3 | 4 | 5) => {
+        // remove this test with different scores
+        const newTests = userApTests.filter(test => !(test.test._id === apTest._id && test.score !== score));
+        setUserApTests([...newTests, {
+            test: apTest,
+            score
+        }]);
+        setModified([...modified, apTest._id]);
+    };
+
+    const saveTest = (test: ApiAPTest) => {
+        ApService.modifyUserApTests(userApTests.map(test => ({
+            test: test.test._id,
+            score: test.score
+        })))
+            .then(() => {
+                setModified(modified.filter(id => id !== test._id));
+            });
+    };
+
+    return (<Layout><div className="w-full flex flex-col items-center justify-center">
+        {apTests.map((test, i) => (<Accordion key={i} className="w-1/2 mb-2">
+            <AccordionSummary expandIcon={<FaChevronDown className="text-sm" />}>
+                AP {test.name}
+            </AccordionSummary>
+            <AccordionDetails className="flex flex-col items-center">
+                <div className="flex border-y border-gray-300 mb-4">
+                    <div className="flex flex-col border-x border-gray-300">
+                        <div className="border-b border-gray-300 p-2">Score</div>
+                        <div className="p-2">Equivalent Course</div>
+                    </div>
+                    {test.credits.map((credit, i) => {
+                        const isSelected = userApTests.find(other => other.score === credit.score &&
+                            other.test._id === test._id);
+
+                        return (<div className={`flex flex-col border-r border-gray-300 cursor-pointer transition ${isSelected ? 'bg-slate-200' : ''}`} key={i}
+                                     onClick={() => setSelected(test, credit.score)}>
+                            <div className="border-b border-gray-300 p-2 text-center">{credit.score}</div>
+                            <div className="p-2 px-6">
+                                {credit.courses.map((course, i) => (<>{i !== 0 && '&'} <Link
+                                    to={`/course_description?subject=${course.subject}&courseID=${course.courseID}`}>
+                                    {course.subject} {course.courseID}
+                                </Link> </>))}
+                            </div>
+                        </div>);
+                    })}
                 </div>
-            </CardContent>
-        </Card>
-    </div>)
+                {
+                    modified.find(id => test._id === id) ?
+                        <Button className="w-1/2" color="secondary" variant="contained" onClick={() => saveTest(test)}>
+                            Save
+                        </Button> : null
+                }
+            </AccordionDetails>
+        </Accordion>))}
+    </div></Layout>)
 }
