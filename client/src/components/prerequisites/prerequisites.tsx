@@ -20,7 +20,7 @@ export function Prerequisites(props: { prerequisites: Requirement, userCourses: 
     const isChild = props.isChild;
     const depth = props.depth ?? 0;
 
-    if (data === null) return (<span>'None'</span>);
+    if (data === null) return (<span>None</span>);
 
     if (data.type === 'course') {
         const userCourse = props.userCourses.find(course => course.courseID === data.courseID &&
