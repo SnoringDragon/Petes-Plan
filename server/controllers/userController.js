@@ -290,3 +290,7 @@ exports.update = async (req, res) => {
         });
     }
 };
+
+exports.getUser = (req, res) => {
+    res.json(req.user);
+};

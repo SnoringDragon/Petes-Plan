@@ -14,6 +14,7 @@ module.exports = app => {
     router.post('/logout', authenticate, userController.logout);    /* Logout a user */
     router.delete('/delete', authenticate, userController.delete);  /* Delete a user */
     router.put('/update', authenticate, userController.update);     /* Update a user's details */
+    router.get('/', authenticate, userController.getUser);          /* get user info */
 
     /* Add above reuests as a subdirectory of /user */
     app.use('/api/user', router);

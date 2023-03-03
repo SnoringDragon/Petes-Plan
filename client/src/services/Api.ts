@@ -10,7 +10,7 @@ export abstract class Api {
         }
     }
 
-    protected async get(input: RequestInfo | URL) {
+    protected async get<T=any>(input: RequestInfo | URL) : Promise<T> {
         return this.fetch(input);
     }
 

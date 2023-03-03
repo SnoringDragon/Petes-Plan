@@ -33,6 +33,10 @@ class UserService extends Api {
             ?? localStorage.getItem('token'));
     }
 
+    getUserData() {
+        return this.get<{ name: string, email: string }>('/api/user');
+    }
+
     getLocalUserData() {
         try {
             // try to decode token payload
