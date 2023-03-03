@@ -5,6 +5,8 @@ import { ApiCourse } from '../../types/course-requirements';
 import { FaArrowLeft } from 'react-icons/fa';
 import { Prerequisites } from '../../components/prerequisites/prerequisites';
 import CourseService from '../../services/CourseService';
+import { UserCourse } from '../../types/user-course';
+import CourseHistoryService from '../../services/CourseHistoryService';
 
 export function Course_Description() {
     const [searchParams] = useSearchParams();
@@ -15,8 +17,11 @@ export function Course_Description() {
 
     const [course, setCourse] = useState<ApiCourse | null>(null);
 
+    const [userCourses, setUserCourses] = useState<UserCourse[]>([])
+
     useEffect(() => {
-        console.log('test');
+        CourseHistoryService.getCourses()
+            .then(res => setUserCourses(res.courses));
     }, [])
 
     useEffect(() => {
@@ -76,7 +81,7 @@ export function Course_Description() {
             </div> : null}
             <div className="mt-5 underline">Prerequisities:</div>
             <p></p>
-            <Prerequisites prerequisites={course.requirements} />
+            <Prerequisites prerequisites={course.requirements} userCourses={userCourses} />
         </div>
     </div></Layout>)
 }
