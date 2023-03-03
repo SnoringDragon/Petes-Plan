@@ -22,6 +22,8 @@ export function Prerequisites(props: { prerequisites: Requirement, userCourses: 
 
     if (data === null) return (<span>None</span>);
 
+    if (data.type === 'course_group') {} // TODO FIXME!!!
+
     if (data.type === 'course') {
         const userCourse = props.userCourses.find(course => course.courseID === data.courseID &&
             course.subject === data.subject);
