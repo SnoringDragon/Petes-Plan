@@ -14,6 +14,10 @@ export abstract class Api {
         return this.fetch(input);
     }
 
+    protected async delete<T=any>(input: RequestInfo | URL) : Promise<T> {
+        return this.fetch(input, { method: 'DELETE' });
+    }
+
     protected async post<T=any>(input: RequestInfo | URL, body: any = {}) : Promise<T> {
         return this.fetch(input, {
             method: 'POST',
