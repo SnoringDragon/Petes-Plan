@@ -1,4 +1,4 @@
-import { PropsWithChildren } from 'react';
+import { PropsWithChildren, useEffect } from 'react';
 import { Sidebar } from '../sidebar/sidebar';
 import { useNavigate } from 'react-router-dom';
 import UserService from '../../services/UserService';
@@ -6,9 +6,10 @@ import UserService from '../../services/UserService';
 export function Layout({ children }: PropsWithChildren<{}>) {
     const navigate = useNavigate();
 
-    if (!UserService.isLoggedIn())
-        setTimeout(() => navigate('/'), 1);
-
+    useEffect(() => {
+        if (!UserService.isLoggedIn())
+            navigate('/');
+    }, []);
 
     return (<div className="flex h-full">
         <Sidebar />
