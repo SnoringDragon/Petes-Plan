@@ -17,10 +17,14 @@ class UserService extends Api {
         });
     }
 
-    async logout() {
-        await this.post('/api/user/logout');
+    clearTokens() {
         sessionStorage.removeItem('token');
         localStorage.removeItem('token');
+    }
+
+    async logout() {
+        await this.post('/api/user/logout');
+        this.clearTokens();
     }
 
     async verifyEmail(email: string, token: string, password: string) {
@@ -47,6 +51,10 @@ class UserService extends Api {
 
     resetPassword(email: string, token: string, password: string) {
         return this.post('/api/user/resetpassword', { email, token, password });
+    }
+
+    deleteAccount() {
+        return this.delete('/api/user/delete');
     }
 
     getLocalUserData() {

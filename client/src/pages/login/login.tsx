@@ -19,6 +19,8 @@ export function Login() {
 
     const navigate = useNavigate();
 
+    UserService.clearTokens();
+
     const login = () => {
         setLoading(true); // set ui loading
         setError(''); // clear previous error
