@@ -250,7 +250,7 @@ exports.addCourse = async (req, res) => {
     }
 
     /* Save the user to the database */
-    req.user.populate('degreePlans.degrees');
+    req.user.populateAll();
     req.user.save().then(() => {
         return res.status(201).json({
             message: 'Successfully added degree(s)/course(s) to degree plan',
@@ -266,9 +266,102 @@ exports.addCourse = async (req, res) => {
 
 /* Removes courses from a degree plan */
 exports.removeCourse = async (req, res) => {
-    return res.status(200).json({
-        message: 'Successfully removed course from degree plan',
-        path: req.path
+    /* Check if degree plan _id is valid */
+    const degreePlan = req.user.degreePlans.id(req.path.split('/')[1]);
+    if (!degreePlan) {
+        return res.status(400).json({
+            message: 'Invalid degree plan _id',
+            _id: subdir[1]
+        });
+    }
+
+    /* Check if courses and/or degrees are provided */
+    const courses = req.body.courses;
+    const degrees = req.body.degrees;
+    if (!courses && !degrees) {
+        return res.status(400).json({
+            message: 'Missing courses or degrees'
+        });
+    }
+
+    /* Check if courses is a valid array */
+    if (courses && !(courses instanceof Array)) {
+        return res.status(400).json({
+            message: 'Courses must be an array'
+        });
+    }
+
+    /* Check if degrees is a valid array */
+    if (degrees && !(degrees instanceof Array)) {
+        return res.status(400).json({
+            message: 'Degrees must be an array'
+        });
+    }
+
+    /* Remove Courses */
+    if (courses) {
+        /* Remove each course */
+        for (let i = 0; i < courses.length; i++) {
+            const _id = courses[i];
+
+            /* Check if course in degree plan */
+            var found = false;
+            for (let j = 0; j < degreePlan.courses.length; j++) {
+                if (degreePlan.courses[j]._id.equals(_id)) {
+                    degreePlan.courses.splice(j, 1);
+                    found = true;
+                    break;
+                }
+            }
+
+            /* Check if course was found */
+            if (!found) {
+                return res.status(400).json({
+                    message: 'Course not in degree plan',
+                    _id: _id
+                });
+            }
+        }
+    }
+
+    /* Remove Degrees */
+    if (degrees) {
+        /* Remove each degree */
+        for (let i = 0; i < degrees.length; i++) {
+            const _id = degrees[i];
+
+            /* Check if degree in degree plan */
+            var found = false;
+            for (let j = 0; j < degreePlan.degrees.length; j++) {
+                if (degreePlan.degrees[j]._id.equals(_id)) {
+                    degreePlan.degrees.splice(j, 1);
+                    found = true;
+                    break;
+                }
+            }
+
+            /* Check if degree was found */
+            if (!found) {
+                return res.status(400).json({
+                    message: 'Degree not in degree plan',
+                    _id: _id
+                });
+            }
+        }
+    }
+
+    /* Save the user to the database */
+    req.user.populateAll();
+    req.user.save().then(() => {
+        return res.status(200).json({
+            message: 'Successfully removed course(s)/degree(s) from degree plan',
+            degreePlan: degreePlan
+        });
+    }).catch((err) => {
+        console.log(err);
+        return res.status(500).json({
+            message: 'Internal Server Error'
+        });
     });
 };
 
