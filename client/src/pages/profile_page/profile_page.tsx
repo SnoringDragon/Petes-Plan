@@ -7,36 +7,30 @@ import CardHeader from '@material-ui/core/CardHeader';
 import Button from '@material-ui/core/Button';
 import React, { useRef, useState } from 'react';
 import UserService from '../../services/UserService';
-
-type State = {
-    name: string
-    email: string
-    password: string
-};
-
-const initialState: State = {
-    name: " Patricia Casaca",
-    email: " pmagalha@purdue.edu",
-    password: " ******"
-};
+import { Layout } from '../../components/layout/layout';
+import { Link } from 'react-router-dom';
 
 export function Profile_Page() {
-    return (<div className="w-full h-full flex items-center justify-center">
+    const [userData, setUserData] = useState<{ email: string, name: string } | null>(null);
+
+    UserService.getUserData().then(data => setUserData(data));
+
+    return (<Layout><div className="w-full h-full flex items-center justify-center">
         <Card className="-mt-16">
             <CardHeader title="Profile Page" className="text-center bg-zinc-800 text-white" />
             <CardContent>
                 <div className="p-4">
-                    <text><u>Name:</u> {initialState.name}</text>
+                    <text><u>Name:</u> {userData?.name}</text>
                     <p></p>
-                    <text><u><br />Email:</u> {initialState.email}</text>
+                    <text><u><br />Email:</u> {userData?.email}</text>
                     <p></p>
-                    <text><u><br />Password:</u> {initialState.password}</text>
+                    <text><u><br />Password:</u> ********</text>
                     <p></p>
-                    <a href='/password-reset'><u>To change your password, click here.</u></a >
+                    <Link to='/password-reset'><u>To change your password, click here.</u></Link >
                     <p></p>
-                    <a href='/modify_profile_page'><u><br />To edit profile, click here.</u></a >
+                    <Link to='/modify_profile_page'><u><br />To edit profile, click here.</u></Link >
                 </div>
             </CardContent>
         </Card>
-    </div>)
+    </div></Layout>)
 }
