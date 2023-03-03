@@ -18,7 +18,9 @@ class UserService extends Api {
     }
 
     async logout() {
-        return this.post('/api/user/logout');
+        await this.post('/api/user/logout');
+        sessionStorage.removeItem('token');
+        localStorage.removeItem('token');
     }
 
     async verifyEmail(email: string, token: string, password: string) {
