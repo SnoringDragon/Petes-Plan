@@ -11,9 +11,9 @@ export function Layout({ children }: PropsWithChildren<{}>) {
             navigate('/');
     }, []);
 
-    return (<div className="flex h-full">
+    return (<div className="flex flex-1">
         <Sidebar />
-        <div className="p-4 w-full h-full">
+        <div className="p-4 w-full overflow-auto">
             {children}
         </div>
     </div>)
