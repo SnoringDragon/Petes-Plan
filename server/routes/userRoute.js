@@ -7,7 +7,7 @@ module.exports = app => {
 
     /* Add HTTP requests for managing user data */
     router.post('/signup', userController.signup);                  /* Create a new user */
-    router.get('/verifyemail', userController.verifyEmail);         /* Verify a user's email */
+    router.post('/verifyemail', userController.verifyEmail);         /* Verify a user's email */
     router.post('/login', userController.login);                    /* Login a user */
     router.post('/resetrequest', userController.resetRequest);      /* Send email to reset password */
     router.post('/resetpassword', userController.resetPassword);    /* Reset a user's password */

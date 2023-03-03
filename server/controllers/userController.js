@@ -57,8 +57,9 @@ exports.signup = async (req, res) => {
             /* Send a verification email */
             mailer.sendEmail(email, 'Email Verification', 'verifyEmail', {
                 name: req.body.name,
-                email: email,
-                token: await token
+                baseUrl: process.env.BASE_URL,
+                email: encodeURIComponent(email),
+                token: encodeURIComponent(await token)
             });
 
             return res.status(201).json({
@@ -75,15 +76,17 @@ exports.signup = async (req, res) => {
 
 /* Verify a user's email */
 exports.verifyEmail = async (req, res) => {
+    const email = req.body.email ?? req.query.email;
+    const token = req.body.token ?? req.query.token;
+
     /* Checks if the email and token are provided */
-    if (!req.query.email || !req.query.token) {
+    if (!email || !token) {
         return res.status(400).json({
             message: 'Missing email or token'
         });
-        return;
     }
 
-    User.find({ email: req.query.email.toLowerCase() }, (err, docs) => {
+    User.find({ email: email.toLowerCase() }, async (err, docs) => {
         if (err) {
             console.log(err);
             return res.status(500).json({
@@ -93,7 +96,10 @@ exports.verifyEmail = async (req, res) => {
         const user = docs[0];
 
         /* Check if the user exists and token matches */
-        if (user && (user.verified === false) && (user.verificationToken === req.query.token)) {
+        if (user && (user.verified === false) && (user.verificationToken === token)) {
+            if (!await user.validatePassword(req.body.password))
+                return res.status(400).json({ message: 'Invalid password' });
+
             /* Update the user's details */
             user.verified = true;
             user.verificationToken = '';
