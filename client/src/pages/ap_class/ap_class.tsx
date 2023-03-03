@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { ApiAPTest, ApiUserAPTest } from '../../types/ap-test';
 import ApService from '../../services/ApService';
 import { Layout } from '../../components/layout/layout';
-import { Accordion, AccordionDetails, AccordionSummary, Button } from '@material-ui/core';
+import { Accordion, AccordionDetails, AccordionSummary, Button, TextField } from '@material-ui/core';
 import { FaChevronDown } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 
@@ -12,6 +12,8 @@ export function AP_Class() {
     const [userApTests, setUserApTests] = useState<ApiUserAPTest[]>([]);
 
     const [modified, setModified] = useState<string[]>([]);
+
+    const [search, setSearch] = useState('');
 
     useEffect(() => {
         Promise.all([ApService.getApTests(), ApService.getUserApTests()])
@@ -42,7 +44,10 @@ export function AP_Class() {
     };
 
     return (<Layout><div className="w-full flex flex-col items-center justify-center">
-        {apTests.map((test, i) => (<Accordion key={i} className="w-1/2 mb-2">
+        <TextField className="w-1/2" label="Search" variant="outlined" onChange={ev => setSearch(ev.target.value)} value={search}
+                   InputProps={{className: 'text-white mb-5'}} inputProps={{style: {color:'white'}}}/>
+        {apTests.filter(test => test.name.toLowerCase().includes(search.toLowerCase()))
+            .map((test, i) => (<Accordion key={i} className="w-1/2 mb-2">
             <AccordionSummary expandIcon={<FaChevronDown className="text-sm" />}>
                 AP {test.name}
             </AccordionSummary>
