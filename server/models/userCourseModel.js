@@ -5,7 +5,8 @@ const userCourseSchema = new mongoose.Schema({
     grade: Number,
     semester: { type: String, enum: ['Spring', 'Summer', 'Fall'] },
     year: Number,
-    section: Number // CRN
+    section: Number, // CRN
+    courseData: { type: mongoose.Schema.Types.ObjectId, ref: 'Course' }
 })
 exports.schema = userCourseSchema;
 
