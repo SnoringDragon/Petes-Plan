@@ -1,3 +1,4 @@
+/* Returns all degree plans for the user */
 exports.getDegreePlans = (req, res) => {
     return res.status(200).json({
         message: 'Successfully retrieved degree plans',
@@ -5,6 +6,7 @@ exports.getDegreePlans = (req, res) => {
     });
 };
 
+/* Creates a new degree plan */
 exports.addDegreePlan = (req, res) => {
     /* Validate degree plan name is not empty */
     if (!req.body.name) {
@@ -42,6 +44,7 @@ exports.addDegreePlan = (req, res) => {
     });
 };
 
+/* Deletes existing degree plan(s) */
 exports.deleteDegreePlan = (req, res) => {
     const _ids = req.body._ids;
 
@@ -79,6 +82,7 @@ exports.deleteDegreePlan = (req, res) => {
     });
 };
 
+/* Adds courses to a degree plan */
 exports.addCourse = (req, res) => {
     return res.status(200).json({
         message: 'Successfully added course to degree plan',
@@ -86,6 +90,7 @@ exports.addCourse = (req, res) => {
     });
 };
 
+/* Updates course details or degrees in a degre plan */
 exports.modifyCourse = (req, res) => {
     return res.status(200).json({
         message: 'Successfully modified course in degree plan',
@@ -93,6 +98,7 @@ exports.modifyCourse = (req, res) => {
     });
 };
 
+/* Removes courses from a degree plan */
 exports.removeCourse = (req, res) => {
     return res.status(200).json({
         message: 'Successfully removed course from degree plan',
@@ -100,9 +106,28 @@ exports.removeCourse = (req, res) => {
     });
 };
 
+/* Returns data for a degree plan */
 exports.getDegreePlan = (req, res) => {
+    /* Check if path is valid */
+    const subdir = req.path.split('/');
+    if (subdir.length !== 2) {
+        return res.status(404).json({
+            message: 'Invalid Path'
+        });
+    }
+
+    /* Check if degree plan _id is valid */
+    const degreePlan = req.user.degreePlans.id(subdir[1]);
+    if (!degreePlan) {
+        return res.status(400).json({
+            message: 'Invalid degree plan _id',
+            _id: subdir[1]
+        });
+    }
+
+    /* Return degree plan data */
     return res.status(200).json({
         message: 'Successfully retrieved degree plan',
-        path: req.path
+        degreePlan: degreePlan
     });
 };
