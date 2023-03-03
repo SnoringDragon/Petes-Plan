@@ -27,7 +27,7 @@ export function Major_Requirements() {
         CourseHistoryService.getCourses().then(res => setUserCourses(res.courses));
     }, [searchParams]);
 
-    if (!degree) return ('Degree not found');
+    if (!degree) return (<span>'Degree not found'</span>);
 
     return (<Layout><div className="w-full h-full flex items-center justify-center">
         <Card className="-mt-16">
