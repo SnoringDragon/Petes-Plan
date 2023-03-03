@@ -15,8 +15,6 @@ import { Verification } from './pages/verification/verification';
 import { ChangePassword } from './pages/change-password/change-password';
 import { ClassHistory } from './pages/classhistory/classhistory';
 import { FuturePlan } from './pages/futureplan/futureplan';
-import { Future_Plan_Study } from './pages/future_plan_study/future_plan_study';
-import { Modify_Future_Plan_Study } from './pages/modify_future_plan_study/modify_future_plan_study';
 import { Course_Description } from './pages/course_description/course_description';
 import { Modify_Profile_Page } from './pages/modify_profile_page/modify_profile_page';
 import { Profile_Page } from './pages/profile_page/profile_page';
@@ -60,14 +58,6 @@ const router = createBrowserRouter([
     {
       path: "/change-password",
       element: <ChangePassword />
-    },
-    {
-      path: '/future_plan_study',
-      element: <Future_Plan_Study />
-    },
-    {
-      path: "/modify_future_plan_study",
-      element: <Modify_Future_Plan_Study />
     },
     {
       path: "/course_description",
