@@ -163,7 +163,7 @@ export function FuturePlan() {
                 />
                 {degrees.filter(d => d.name.toLowerCase().includes(degreeSearch.toLowerCase()))
                     .map((degree, i) => (<div key={i} className="my-2 flex">
-                        <span className="mr-auto">{degree.type[0].toUpperCase()}{degree.type.slice(1)} in {degree.name}</span>
+                        <Link to={`/major_requirements?id=${degree._id}`} className="mr-auto">{degree.type[0].toUpperCase()}{degree.type.slice(1)} in {degree.name}</Link>
                         <Button variant="contained" color="secondary" onClick={() => {
                             setDegreeModifications({
                                 ...degreeModifications,
@@ -221,7 +221,7 @@ export function FuturePlan() {
                     <div className="bg-white rounded px-4 pb-3 pt-4 text-black w-full mt-3">
                         <div className="text-2xl">Planned Degrees</div>
                         {degreePlan.degrees.map((degree, i) => (<div key={i} className="flex items-center py-2 border-b border-gray-300">
-                            <div className="mr-auto">{degree.type[0].toUpperCase()}{degree.type.slice(1)} in {degree.name}</div>
+                            <Link to={`/major_requirements?id=${degree._id}`} className="mr-auto">{degree.type[0].toUpperCase()}{degree.type.slice(1)} in {degree.name}</Link>
                             <Button variant="contained" color="secondary" onClick={() => {
                                 setDegreePlan({
                                     ...degreePlan,
@@ -234,7 +234,7 @@ export function FuturePlan() {
                             }}>Delete</Button>
                         </div>))}
                         {degreeModifications.add.map((degree, i) => (<div key={i} className="flex items-center py-2 border-b border-gray-300">
-                            <div className="mr-auto">{degree.type[0].toUpperCase()}{degree.type.slice(1)} in {degree.name}</div>
+                            <Link to={`/major_requirements?id=${degree._id}`} className="mr-auto">{degree.type[0].toUpperCase()}{degree.type.slice(1)} in {degree.name}</Link>
                             <Button variant="contained" color="secondary" onClick={() => {
                                 setDegreeModifications({
                                     ...degreeModifications,
