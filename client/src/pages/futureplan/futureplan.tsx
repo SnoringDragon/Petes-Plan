@@ -72,8 +72,7 @@ export function FuturePlan() {
         DegreeService.getDegrees().then(res => setDegrees(res));
         DegreePlanService.getPlans().then(res => {
             setDegreePlans(res.degreePlans);
-            if (res.degreePlans.length)
-                setDegreePlan(res.degreePlans[0]);
+            setDegreePlan(res.degreePlans.find(p => p._id === degreePlan?._id)!);
         });
     }
 
@@ -106,8 +105,12 @@ export function FuturePlan() {
                 <Button onClick={() => setCreateNewPlan(false)}>Cancel</Button>
                 <Button onClick={() => {
                     DegreePlanService.createDegreePlan(nameRef.current.value)
-                        .then(() => {
-                            DegreePlanService.getPlans().then(res => setDegreePlans(res.degreePlans));
+                        .then((newPlan) => {
+                            DegreePlanService.getPlans()
+                                .then(res => {
+                                    setDegreePlans(res.degreePlans);
+                                    setDegreePlan(res.degreePlans.find(p => p._id === newPlan.degreePlan._id)!)
+                                });
                             setCreateNewPlan(false);
                         })
                         .catch(err => setError(err?.message ?? err))
