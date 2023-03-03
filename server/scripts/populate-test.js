@@ -20,7 +20,8 @@ let requirements = [['MA 26100', 'MA 35100', 'CS 18000', 'CS 18200', 'CS 24000',
 ['CS 35400','CS 35500','CS 42600','CS 30700', 'CS 34800', 'CS 35200'],
 ['CS 30700', 'CS 35200', 'CS 40800', 'CS 40700', 'CS 34800', 'CS 35300', 'CS 35400'],
 ['CS 35200', 'CS 35400', 'CS 42200', 'CS 30700', 'CS 33400', 'CS 35300'],
-['CS 37300','CS 38100', 'CS 47100', 'STAT 41600', 'CS 34800', 'CS 35200']].map(x => x.map(c => { const [subject, courseID] = c.split(' '); return { subject, courseID } }));
+['CS 37300','CS 38100', 'CS 47100', 'STAT 41600', 'CS 34800', 'CS 35200'],
+['CS 18000', 'CS 18200', 'CS 24000', 'CS 25000', 'CS 25100', 'CS 25200']].map(x => x.map(c => { const [subject, courseID] = c.split(' '); return { subject, courseID } }));
 
 
 // let concentrations = names.slice(3);
@@ -45,6 +46,8 @@ const miTrack = await  degreeModel.create({ name: names[11], type: types[1], req
 const cs = await degreeModel.create({ name: names[0], type: types[0], requirements: requirements[0], concentrations: [cseTrack, cgvtTrack, disTrack, afTrack, plTrack, sTrack, seTrack, ssTrack, miTrack].map(x => x._id)});
 const ds = await degreeModel.create({ name: names[1], type: types[0], requirements: requirements[1]});
 const ai = await degreeModel.create({ name: names[2], type: types[0], requirements: requirements[2]});
+
+const csMinor = await degreeModel.create({ name: 'Computer Science', type: 'minor', requirements: requirements[12] })
 }
 
 await populateAll();
