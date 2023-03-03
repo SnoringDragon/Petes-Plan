@@ -13,7 +13,7 @@ export function Layout({ children }: PropsWithChildren<{}>) {
 
     return (<div className="flex flex-1">
         <Sidebar />
-        <div className="p-4 w-full overflow-auto">
+         <div className="p-4 w-full">
             {children}
         </div>
     </div>)
