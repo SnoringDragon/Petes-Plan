@@ -26,7 +26,7 @@ exports.signup = async (req, res) => {
     /* Validate email address */
     //TODO: Check if email matches a known university domain
     const email = req.body.email.toLowerCase();
-    if (!email.match(emailRegex)) {
+    if (!email.match(emailRegex) || !email.split('@')[1].equals('purdue.edu')) {
         return res.status(400).json({
             message: 'Invalid email address'
         });
