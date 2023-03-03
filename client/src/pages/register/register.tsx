@@ -5,7 +5,7 @@ import CardContent from '@material-ui/core/CardContent';
 import CardActions from '@material-ui/core/CardActions';
 import CardHeader from '@material-ui/core/CardHeader';
 import Button from '@material-ui/core/Button';
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import UserService from '../../services/UserService';
 import { Link, useNavigate } from 'react-router-dom';
 
@@ -37,8 +37,11 @@ export function Register() {
 
     const navigate = useNavigate();
 
-    if (UserService.isLoggedIn())
-        setTimeout(() => navigate('/dashboard'), 1);
+    useEffect(() => {
+        if (UserService.isLoggedIn())
+            return navigate('/dashboard');
+        UserService.clearTokens();
+    }, []);
 
     return (<div className="w-full h-full flex items-center justify-center">
         <Card className="-mt-16">

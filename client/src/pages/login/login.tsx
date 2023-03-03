@@ -19,7 +19,11 @@ export function Login() {
 
     const navigate = useNavigate();
 
-    UserService.clearTokens();
+    useEffect(() => {
+        if (UserService.isLoggedIn())
+            return navigate('/dashboard');
+        UserService.clearTokens();
+    }, []);
 
     const login = () => {
         setLoading(true); // set ui loading
@@ -36,9 +40,6 @@ export function Login() {
                 setLoading(false); // set ui not loading
             });
     };
-
-    if (UserService.isLoggedIn())
-        setTimeout(() => navigate('/dashboard'), 1);
 
     return (<div className="w-full h-full flex items-center justify-center">
         <Card className="-mt-16">
