@@ -20,17 +20,21 @@ exports.signup = async (req, res) => {
         return res.status(400).json({
             message: 'Missing email, password, or name'
         });
-        return;
     }
     
     /* Validate email address */
     //TODO: Check if email matches a known university domain
     const email = req.body.email.toLowerCase();
-    if (!email.match(emailRegex) || !email.split('@')[1].equals('purdue.edu')) {
+    if (!email.match(emailRegex)) {
         return res.status(400).json({
             message: 'Invalid email address'
         });
-        return;
+    }
+
+    if (email.split('@')[1] !== 'purdue.edu') {
+        return res.status(400).json({
+            message: 'This application is only available for select universities'
+        });
     }
 
     /* Check if the user already exists */
@@ -38,7 +42,6 @@ exports.signup = async (req, res) => {
         return res.status(400).json({
             message: 'User already exists'
         });
-        return;
     }
 
     /* Populate the user object */
