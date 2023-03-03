@@ -41,6 +41,14 @@ class UserService extends Api {
         return this.put('/api/user/update', data);
     }
 
+    requestReset(email: string) {
+        return this.post('/api/user/resetrequest', { email });
+    }
+
+    resetPassword(email: string, token: string, password: string) {
+        return this.post('/api/user/resetpassword', { email, token, password });
+    }
+
     getLocalUserData() {
         try {
             // try to decode token payload
