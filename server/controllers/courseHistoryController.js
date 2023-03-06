@@ -1,6 +1,8 @@
 const UserCourse = require('../models/userCourseModel');
 const User = require('../models/userModel');
 
+const isValidGrade = grade => /^(?:[A-D][-+]?|[EFPNSIWU]|(?:PI|PO|IN|WN|IX|WF|SI|IU|WU|AU|CR|NS))$/.test(grade)
+
 /* Get all courses the user has previously taken */
 exports.getCourses = async (req, res) => {
     const user = req.user;
@@ -37,28 +39,28 @@ exports.addCourse = async (req, res) => {
         const course = courses[i];
 
         /* Validate required fields present */
-        if (!course || !course.courseID || !course.semester || !course.year) {
+        if (!course || !course.courseID || !course.semester || !course.year || !course.subject) {
             return res.status(400).json({
                 message: 'Missing courseID, semester, or year',
                 course: course
             });
         }
 
-        /* Validate grade is a number */
-        if (course.grade && isNaN(course.grade)) {
+        /* Validate grade is valid https://www.purdue.edu/registrar/faculty/grading/grading-systems.html */
+        if (course.grade && !isValidGrade(course.grade)) {
             return res.status(400).json({
-                message: 'Grade must be a number',
+                message: 'Grade invalid',
                 course: course
             });
-        } else course.grade = null;
+        }
 
         /* Validate section is a number */
-        if (course.section && isNaN(course.section)) {
-            return res.status(400).json({
-                message: 'Section must be a number',
-                course: course
-            });
-        } else course.section = null;
+        // if (course.section && isNaN(course.section)) {
+        //     return res.status(400).json({
+        //         message: 'Section must be a number',
+        //         course: course
+        //     });
+        // } else course.section = null;
 
         /* Validate year is valid */
         if (isNaN(course.year)) {
@@ -99,13 +101,14 @@ exports.addCourse = async (req, res) => {
         }
 
         /* Add the course to the user's current degree plan */
-        user.completedCourses.push(new UserCourse({
+        user.completedCourses.push({
             courseID: course.courseID,
             semester: course.semester,
             year: course.year,
             grade: course.grade,
-            section: course.section
-        }));
+            // section: course.section,
+            subject: course.subject
+        });
     }
 
     /* Save the user to the database */
@@ -159,9 +162,9 @@ exports.modifyCourse = async (req, res) => {
 
         /* Validate grade is a new number */
         if ((typeof course.grade !== 'undefined') && (course.grade !== orgCourse.grade)) {
-            if (isNaN(course.grade)) {
+            if (!isValidGrade(course.grade)) {
                 return res.status(400).json({
-                    message: `Grade must be a number`,
+                    message: `Grade invalid`,
                     course: course
                 });
             }
@@ -170,16 +173,16 @@ exports.modifyCourse = async (req, res) => {
         }
 
         /* Validate section is a new number */
-        if ((typeof course.section !== 'undefined') && (course.section !== orgCourse.section)) {
-            if (isNaN(course.section)) {
-                return res.status(400).json({
-                    message: `Section must be a number`,
-                    course: course
-                });
-            }
-            orgCourse.section = course.section;
-            updated = true;
-        }
+        // if ((typeof course.section !== 'undefined') && (course.section !== orgCourse.section)) {
+        //     if (isNaN(course.section)) {
+        //         return res.status(400).json({
+        //             message: `Section must be a number`,
+        //             course: course
+        //         });
+        //     }
+        //     orgCourse.section = course.section;
+        //     updated = true;
+        // }
     }
 
     /* Save the user to the database */

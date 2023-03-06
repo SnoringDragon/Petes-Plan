@@ -82,4 +82,11 @@ userSchema.methods.validatePassword = async function (password) {
     return await bcrypt.compare(password, this.password);
 }
 
+userSchema.methods.populateAll = async function () {
+    await this.populate('degreePlans.degrees');
+    await this.populate('degreePlans.courses.courseData');
+    await this.populate('completedCourses.courseData');
+    await this.populate('apTests.test');
+}
+
 module.exports = mongoose.model('User', userSchema);

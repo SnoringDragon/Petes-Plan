@@ -20,7 +20,6 @@ exports.signup = async (req, res) => {
         return res.status(400).json({
             message: 'Missing email, password, or name'
         });
-        return;
     }
     
     /* Validate email address */
@@ -30,7 +29,12 @@ exports.signup = async (req, res) => {
         return res.status(400).json({
             message: 'Invalid email address'
         });
-        return;
+    }
+
+    if (email.split('@')[1] !== 'purdue.edu') {
+        return res.status(400).json({
+            message: 'This application is only available for select universities'
+        });
     }
 
     /* Check if the user already exists */
@@ -38,7 +42,6 @@ exports.signup = async (req, res) => {
         return res.status(400).json({
             message: 'User already exists'
         });
-        return;
     }
 
     /* Populate the user object */
@@ -57,8 +60,9 @@ exports.signup = async (req, res) => {
             /* Send a verification email */
             mailer.sendEmail(email, 'Email Verification', 'verifyEmail', {
                 name: req.body.name,
-                email: email,
-                token: await token
+                baseUrl: process.env.BASE_URL,
+                email: encodeURIComponent(email),
+                token: encodeURIComponent(await token)
             });
 
             return res.status(201).json({
@@ -75,15 +79,17 @@ exports.signup = async (req, res) => {
 
 /* Verify a user's email */
 exports.verifyEmail = async (req, res) => {
+    const email = req.body.email ?? req.query.email;
+    const token = req.body.token ?? req.query.token;
+
     /* Checks if the email and token are provided */
-    if (!req.query.email || !req.query.token) {
+    if (!email || !token) {
         return res.status(400).json({
             message: 'Missing email or token'
         });
-        return;
     }
 
-    User.find({ email: req.query.email.toLowerCase() }, (err, docs) => {
+    User.find({ email: email.toLowerCase() }, async (err, docs) => {
         if (err) {
             console.log(err);
             return res.status(500).json({
@@ -93,7 +99,10 @@ exports.verifyEmail = async (req, res) => {
         const user = docs[0];
 
         /* Check if the user exists and token matches */
-        if (user && (user.verified === false) && (user.verificationToken === req.query.token)) {
+        if (user && (user.verified === false) && (user.verificationToken === token)) {
+            if (!await user.validatePassword(req.body.password))
+                return res.status(400).json({ message: 'Invalid password' });
+
             /* Update the user's details */
             user.verified = true;
             user.verificationToken = '';
@@ -187,8 +196,9 @@ exports.resetRequest = async (req, res) => {
         /* Send a reset email */
         mailer.sendEmail(email, 'Password Reset', 'resetPassword', {
             name: user.name,
-            email: email,
-            token: await token
+            email: encodeURIComponent(email),
+            token: encodeURIComponent(await token),
+            baseUrl: process.env.BASE_URL
         });
     }
 
@@ -283,4 +293,8 @@ exports.update = async (req, res) => {
             message: 'No changes made'
         });
     }
+};
+
+exports.getUser = (req, res) => {
+    res.json(req.user);
 };

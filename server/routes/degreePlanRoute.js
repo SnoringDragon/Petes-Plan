@@ -11,9 +11,8 @@ module.exports = app => {
     router.delete('/delete', authenticate, controller.deleteDegreePlan);    /* Deletes existing degree plan */
 
     /* Add HTTP requests for managing courses in a degree plan */
-    router.post('/*/add', authenticate, controller.addCourse);              /* Adds a course to a degree plan */
-    router.post('/*/modify', authenticate, controller.modifyCourse);        /* Updates a course in a degree plan (e.g. grade, semester, etc.) */
-    router.delete('/*/remove', authenticate, controller.removeCourse);      /* Removes a course from a degree plan */
+    router.post('/*/add', authenticate, controller.addCourse);              /* Adds degrees/courses to a degree plan */
+    router.delete('/*/remove', authenticate, controller.removeCourse);      /* Removes degrees/courses from a degree plan */
     router.get('/*', authenticate, controller.getDegreePlan);               /* Returns degree plan data */
 
     /* Add above reuests as a subdirectory of /degreePlan */

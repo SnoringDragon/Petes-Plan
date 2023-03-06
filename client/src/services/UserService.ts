@@ -17,14 +17,44 @@ class UserService extends Api {
         });
     }
 
+    clearTokens() {
+        sessionStorage.removeItem('token');
+        localStorage.removeItem('token');
+    }
+
     async logout() {
-        return this.post('/api/user/logout');
+        await this.post('/api/user/logout');
+        this.clearTokens();
+    }
+
+    async verifyEmail(email: string, token: string, password: string) {
+        return this.post('/api/user/verifyemail', { email, token, password });
     }
 
     isLoggedIn() {
         // logged in if token valid
         return this.isValidToken(sessionStorage.getItem('token')
             ?? localStorage.getItem('token'));
+    }
+
+    getUserData() {
+        return this.get<{ name: string, email: string }>('/api/user');
+    }
+
+    setUserData(data: { name: string }) {
+        return this.put('/api/user/update', data);
+    }
+
+    requestReset(email: string) {
+        return this.post('/api/user/resetrequest', { email });
+    }
+
+    resetPassword(email: string, token: string, password: string) {
+        return this.post('/api/user/resetpassword', { email, token, password });
+    }
+
+    deleteAccount() {
+        return this.delete('/api/user/delete');
     }
 
     getLocalUserData() {

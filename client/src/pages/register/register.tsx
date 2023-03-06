@@ -5,8 +5,9 @@ import CardContent from '@material-ui/core/CardContent';
 import CardActions from '@material-ui/core/CardActions';
 import CardHeader from '@material-ui/core/CardHeader';
 import Button from '@material-ui/core/Button';
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import UserService from '../../services/UserService';
+import { Link, useNavigate } from 'react-router-dom';
 
 export function Register() {
     const [isLoading, setLoading] = useState(false);
@@ -34,6 +35,13 @@ export function Register() {
             })
     };
 
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        if (UserService.isLoggedIn())
+            return navigate('/');
+        UserService.clearTokens();
+    }, []);
 
     return (<div className="w-full h-full flex items-center justify-center">
         <Card className="-mt-16">
@@ -76,6 +84,11 @@ export function Register() {
                         margin="normal"
                         inputRef={confirmPasswordRef}
                     />
+
+                    <div className="flex">
+                        <Link to="/password-reset" className="mr-auto">Forgot your password?</Link>
+                        <Link to="/login">Already have an account?</Link>
+                    </div>
 
                     {error && <div className="mt-4 text-red-500">Error: {error}</div>}
                     {isSuccess && <div className="mt-4">
