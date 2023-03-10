@@ -315,6 +315,11 @@ class BannerSelfService extends BaseService {
         }).toArray();
     }
 
+    /**
+     * Get terms that are view only
+     *
+     * @returns {Promise<string[]>}
+     */
     async getViewOnlyTerms() {
         const result = await this._fetch('bwckschd.p_disp_dyn_sched');
 
@@ -326,6 +331,11 @@ class BannerSelfService extends BaseService {
         }).toArray();
     }
 
+    /**
+     * Get a list of proessors by term
+     * @param term
+     * @returns {Promise<{ first: string, last: string }>}
+     */
     async getProfessorsForTerm(term) {
         const result = await this._fetch('bwckgens.p_proc_term_date', {
             method: 'POST',
@@ -337,7 +347,7 @@ class BannerSelfService extends BaseService {
         return $('#instr_id option').map((i, option) => {
             if ($(option).attr('value') !== '%') {
                 const [last, first] = $(option).text().split(', ');
-                return { first, last };
+                return { first: first.trim(), last: last.trim() };
             }
         }).toArray();
     }
@@ -355,7 +365,7 @@ class BannerSelfService extends BaseService {
      *  courseID: string,
      *  isHybrid: boolean,
      *  sectionID: string,
-     *  crn: string,
+     *  crn: number,
      *  scheduledMeetings: {
      *      endDate: string,
      *      startDate: string,
@@ -404,9 +414,13 @@ class BannerSelfService extends BaseService {
             Recitation: 'REC',
             Presentation: 'PRS',
             Laboratory: 'LAB',
+            'Lab 1': 'LAB',
             'Laboratory Preparation': 'LBP',
             Clinic: 'CLN',
+            ...Object.fromEntries([...new Array(9)]
+                .map((_, i) => [`Clinic ${i}`, 'CLN'])), // not sure why there are so many clinic types
             Studio: 'SD',
+            'Studio 1': 'SD',
             Experiential: 'EX',
             Research: 'RES',
             'Individual Study': 'IND',
@@ -493,28 +507,36 @@ class BannerSelfService extends BaseService {
                 if (instructorContent.length === 1 && $(cells[6]).text().includes('TBA')) {
                     instructors = null;
                 } else {
-                    // expect even number of nodes due to alternating instructor, email
-                    if (instructorContent.length % 2 !== 0)
-                        throw new Error('unexpected result from server');
+                    instructors = [];
+                    let lastInstructorName = null;
 
-                    // subtract 2 since the first instructor has two extra nodes denoting they are the primary instructor
-                    instructors = [...new Array((instructorContent.length - 2) / 2)].map((_, i) => {
-                        const name = $(instructorContent[i > 0 ? i * 2 + 2 : 0]).text();
-                        const email = $(instructorContent[i * 2 + 3]).attr('href');
+                    instructorContent.map((i, el) => {
+                        if (el.type === 'text') {
+                            const text = el.data.replace(/[,()]/g, '') // remove separators
+                                    .replace(/\s+/g, ' ') // replace extra spaces
+                                    .trim();
+                            if (!text) return;
 
-                        return {
-                            name: name.replace(/[,(]/g, '') // remove separators
-                                .replace(/\s+/, ' ') // replace extra spaces
-                                .trim(),
-                            email: email.replace('mailto:', '')
-                        };
+                            if (lastInstructorName)
+                                instructors.push({
+                                    name: lastInstructorName
+                                });
+
+                            lastInstructorName = text;
+                        } else if (el.name === 'a') {
+                            instructors.push({
+                                name: lastInstructorName,
+                                email: el.attribs.href.replace('mailto:', '')
+                            });
+                            lastInstructorName = null;
+                        }
                     });
                 }
 
                 return { startTime, endTime, days, location, startDate, endDate, instructors };
             }).toArray();
 
-            return { crn, sectionName, linkID, requiredSection,
+            return { crn: +crn, sectionName, linkID, requiredSection,
                 subject, courseID, sectionID, isHybrid, credits, scheduledMeetings };
         });
     }
