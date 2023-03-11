@@ -1,7 +1,6 @@
 const courseModel = require('../models/courseModel');
 const usercourseModel = require('../models/userCourseModel');
 
-
 async function calculateGPA(userCourseModels) {
     let GPAQualPts = [];
     let qualityHours = [];
@@ -45,9 +44,15 @@ async function calculateGPA(userCourseModels) {
     }
     return indexPts/qualityHourSum
 }
-async function cumulativeGPA(userCourseModels) {
+async function cumulativeGPA() {
     //userCourseModels is doc array
     //hopefully this only pulls current user's courses
     let userCourseModels = await usercourseModel.find();
+    return calculateGPA(userCourseModels);
+}
+async function semesterGPA(semesterInput, yearInput) {
+    //userCourseModels is doc array
+    //hopefully this only pulls current user's courses
+    let userCourseModels = await usercourseModel.find({ semester: semesterInput, year: yearInput }).exec();
     return calculateGPA(userCourseModels);
 }
