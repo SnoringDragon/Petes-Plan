@@ -33,5 +33,7 @@ const sectionSchema = new mongoose.Schema({
 
 // only one section exists for a given semester and crn combo
 sectionSchema.index({ crn: 1, semester: 1 }, { unique: true });
+// speed up course search when given semester
+sectionSchema.index({ course: 1, semester: 1 });
 
 module.exports = mongoose.model('Section', sectionSchema);
