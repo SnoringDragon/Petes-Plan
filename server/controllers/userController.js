@@ -100,9 +100,6 @@ exports.verifyEmail = async (req, res) => {
 
         /* Check if the user exists and token matches */
         if (user && (user.verified === false) && (user.verificationToken === token)) {
-            if (!await user.validatePassword(req.body.password))
-                return res.status(400).json({ message: 'Invalid password' });
-
             /* Update the user's details */
             user.verified = true;
             user.verificationToken = '';

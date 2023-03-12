@@ -98,6 +98,7 @@ courseSchema.query.populateRequirements = async function (depth = 1) {
 courseSchema.index({ subject: 1, courseID: 1 }, { unique: true });
 
 // text index on name, description, and search fields
+//TODO: if they enter a course name, then implement smth where a course's designated URL, gives them all of the course data they asked
 /* example search:
 await courseModel.find({
     $text: { $search: 'cryptography' }
