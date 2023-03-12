@@ -73,11 +73,6 @@ async function fetchIndividualSubject(term, subject, colleges, semesterId) {
         }
     })));
 
-    if (!courseWriteResult.result.ok) {
-        console.error(courseWriteResult);
-        throw new Error('course bulk write failed')
-    }
-
     const courseIDList = await Course.find({
         $or: courseList.map(course => ({
             courseID: course.number,
@@ -133,11 +128,6 @@ async function fetchIndividualSubject(term, subject, colleges, semesterId) {
         };
     }));
 
-    if (!instructorWriteResult.result.ok) {
-        console.error(instructorWriteResult);
-        throw new Error('instructor bulk write failed')
-    }
-
     const instructorList = await Instructor.find({
         $or: instructorFilters
     });
@@ -175,11 +165,6 @@ async function fetchIndividualSubject(term, subject, colleges, semesterId) {
             upsert: true
         }
     })));
-
-    if (!sectionWriteResult.result.ok) {
-        console.error(sectionWriteResult);
-        throw new Error('section bulk write failed')
-    }
 
     console.log('successfully parsed course data for semester', term.name, 'subject', subject.value);
 }
