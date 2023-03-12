@@ -9,7 +9,8 @@ const sectionSchema = new mongoose.Schema({
     },
 
     name: String,
-    credits: Number,
+    minCredits: Number,
+    maxCredits: Number,
     isHybrid: Boolean,
     sectionID: String,
     crn: Number,

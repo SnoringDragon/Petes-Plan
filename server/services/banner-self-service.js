@@ -463,7 +463,9 @@ class BannerSelfService extends BaseService {
             const requiredSection = headerText.match(/Linked Sections Required\s*\((\w+)\)/)?.[1];
 
             const isHybrid = contentText.includes('Hybrid Instructional Method');
-            const credits = +(contentText.match(/(\d+\.\d+)/)?.[1] ?? 0);
+            let [, minCredits, maxCredits] = contentText.match(/(?:(\d+\.\d+)\s+TO\s+)?(\d+\.\d+)\s+Credits/);
+            maxCredits = +(maxCredits ?? 0);
+            minCredits = +(minCredits ?? maxCredits);
 
             const [, sectionName, crn, subject, courseID, sectionID] = $(header)
                 .find('a[href*=p_disp_detail_sched]')
@@ -542,7 +544,7 @@ class BannerSelfService extends BaseService {
             }).toArray();
 
             return { crn: +crn, sectionName, linkID, requiredSection,
-                subject, courseID, sectionID, isHybrid, credits, scheduledMeetings };
+                subject, courseID, sectionID, isHybrid, minCredits, maxCredits, scheduledMeetings };
         });
     }
 }
