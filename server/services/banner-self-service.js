@@ -411,8 +411,10 @@ class BannerSelfService extends BaseService {
 
         const SCHEDULE_TYPES = {
             Lecture: 'LEC',
+            'Lecture 1': 'LEC',
             Recitation: 'REC',
             Presentation: 'PRS',
+            'Presentation 1': 'PRS',
             Laboratory: 'LAB',
             'Lab 1': 'LAB',
             'Laboratory Preparation': 'LBP',
@@ -422,11 +424,14 @@ class BannerSelfService extends BaseService {
             Studio: 'SD',
             'Studio 1': 'SD',
             Experiential: 'EX',
+            'Experiential 1': 'EX',
             Research: 'RES',
             'Individual Study': 'IND',
+            'Individual Study 1': 'IND',
             'Distance Learning': 'DIS',
             'Practice Study Observation': 'PSO',
-            'Travel Time': 'PS5'
+            'Travel Time': 'PS5',
+            'Travel Time 1': 'PS5'
         };
 
         const result = await this._fetch('bwckschd.p_get_crse_unsec', {
