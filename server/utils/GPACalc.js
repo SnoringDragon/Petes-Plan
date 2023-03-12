@@ -6,7 +6,7 @@ async function calculateGPA(userCourseModels) {
     let qualityHours = [];
     // from letter grade to quality points
     let qualityHourSum = 0;
-    let qualityHour = 0
+    let qualityHour = 0;
     for (let i = 0; i < userCourseModels.length; i++) {
         if (!userCourseModels[i].grade.localeCompare("A+") || !userCourseModels[i].grade.localeCompare("A")) {
             GPAQualPts.push(4.0);
@@ -34,15 +34,15 @@ async function calculateGPA(userCourseModels) {
             GPAQualPts.push(0.0);
         }
         // P, N, I, PI, SI, W, WF, WN, WU, IN, IU, AU, NS are Not included
-        qualityHour = (await courseModel.findOne({ courseID: userCourseModels[i].courseID }).exec()).maxCredits
-        qualityHours.push(qualityHour)
-        qualityHourSum += qualityHour
+        qualityHour = (await courseModel.findOne({ courseID: userCourseModels[i].courseID }).exec()).maxCredits;
+        qualityHours.push(qualityHour);
+        qualityHourSum += qualityHour;
     }
-    indexPts = 0
+    indexPts = 0;
     for (let i = 0; i < qualityHours.length; i++) {
-        indexPts += qualityHours[i]*GPAQualPts
+        indexPts += qualityHours[i]*GPAQualPts;
     }
-    return indexPts/qualityHourSum
+    return indexPts/qualityHourSum;
 }
 async function cumulativeGPA() {
     //userCourseModels is doc array
@@ -55,4 +55,21 @@ async function semesterGPA(semesterInput, yearInput) {
     //hopefully this only pulls current user's courses
     let userCourseModels = await usercourseModel.find({ semester: semesterInput, year: yearInput }).exec();
     return calculateGPA(userCourseModels);
+}
+//if in major requirements, count it
+async function majorGPA(major) {
+    let majorDoc = await degreeModel.findOne({ name: major }).exec();
+    let requirements = majorDoc.requirements;
+    let userCourseModels = await usercourseModel.find();
+    let majorCourses = [];
+    let requirementNames = [];
+    for (let i = 0; i < requirements.length; i++) {
+        requirementNames.push(requirements.courseID);
+    }
+    for (let i = 0; i < userCourseModels.length; i++) {
+        if (requirementNames.contains(userCourseModels[i].courseID)) {
+            majorCourses.push(userCourseModels[i].courseID);
+        }
+    }
+    calculateGPA(majorCourses);
 }
