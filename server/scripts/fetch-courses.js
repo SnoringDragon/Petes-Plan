@@ -98,7 +98,12 @@ async function fetchIndividualSubject(term, subject, colleges, semesterId) {
     const instructorFilters = [];
     const nameToPartsMap = {};
 
-    const instructorWriteResult = await Instructor.bulkWrite(sectionInstructors.map(instructor => {
+    const uniqueInstructors = {};
+    sectionInstructors.forEach(instructor => {
+        uniqueInstructors[[instructor.name, instructor.email]] = instructor;
+    })
+
+    const instructorWriteResult = await Instructor.bulkWrite(Object.values(uniqueInstructors).map(instructor => {
         const professor = professors
             .find(prof => instructor.name === `${prof.first} ${prof.last}`);
 
