@@ -2,7 +2,7 @@ const courseModel = require('../models/courseModel');
 const usercourseModel = require('../models/userCourseModel');
 const degreeModel = require('../models/degreeModel');
 
-async function calculateGPA(userCourseModels) {
+exports.calculateGPA = async (req, res) => { 
     let GPAQualPts = [];
     let qualityHours = [];
     let qualityHourSum = 0;
@@ -45,33 +45,63 @@ async function calculateGPA(userCourseModels) {
         indexPts += qualityHours[i]*GPAQualPts[i];
     }
     return indexPts/qualityHourSum;
+    
 }
 
-async function cumulativeGPA() {
+exports.cumulativeGPA = async (req, res) =>  {
     //userCourseModels is doc array
     //hopefully this only pulls current user's courses
     let userCourseModels = await usercourseModel.find();
     return calculateGPA(userCourseModels);
 }
 
-async function semesterGPA(semesterInput, yearInput) {
+exports.semesterGPA = async (req, res) =>  {
     let userCourseModels = await usercourseModel.find({ semester: semesterInput, year: yearInput }).exec();
     return calculateGPA(userCourseModels);
 }
 
-async function majorGPA(major) {
-    let majorDoc = await degreeModel.findOne({ name: major }).exec();
-    let requirements = majorDoc.requirements;
-    let userCourseModels = await usercourseModel.find();
-    let majorCourses = [];
-    let requirementNames = [];
-    for (let i = 0; i < requirements.length; i++) {
-        requirementNames.push(requirements.courseID);
-    }
-    for (let i = 0; i < userCourseModels.length; i++) {
-        if (requirementNames.contains(userCourseModels[i].courseID)) {
-            majorCourses.push(userCourseModels[i].courseID);
+exports.majorGPAs = async (req, res) =>  {
+    //doesn't include concentration GPA
+    const GPAs = new Map();
+    for (let i = 0; i < req.user.degreePlans.degrees.length; i++) {
+        major = req.user.degreePlans.degrees[i].name;
+        if (req.user.degreePlans.degrees.type.localeCompare("concentration")) {
+            major = req.user.degreePlans.degrees[i];
+            let majorDoc = await degreeModel.findOne({ name: major }).exec();
+            let requirements = majorDoc.requirements;
+            let userCourseModels = await usercourseModel.find();
+            let majorCourses = [];
+            let requirementNames = [];
+            for (let i = 0; i < requirements.length; i++) {
+                requirementNames.push(requirements.courseID);
+            }
+            for (let i = 0; i < userCourseModels.length; i++) {
+                if (requirementNames.contains(userCourseModels[i].courseID)) {
+                    majorCourses.push(userCourseModels[i].courseID);
+                }
+            }
+            GPAs.set(major, calculateGPA(majorCourses));
         }
     }
-    calculateGPA(majorCourses);
+    
+    for (let i = 0; i < req.user.degreePlans.degrees.length; i++) {
+        major = req.user.degreePlans.degrees[i].name;
+        if (req.user.degreePlans.degrees.type.localeCompare("major")) {
+            major = req.user.degreePlans.degrees[i];
+            let majorDoc = await degreeModel.findOne({ name: major }).exec();
+            let requirements = majorDoc.requirements;
+            let userCourseModels = await usercourseModel.find();
+            let majorCourses = [];
+            let requirementNames = [];
+            for (let i = 0; i < requirements.length; i++) {
+                requirementNames.push(requirements.courseID);
+            }
+            for (let i = 0; i < userCourseModels.length; i++) {
+                if (requirementNames.contains(userCourseModels[i].courseID)) {
+                    majorCourses.push(userCourseModels[i].courseID);
+                }
+            }
+            GPAs.set(major, calculateGPA(majorCourses));
+        }
+    }
 }

@@ -24,7 +24,6 @@ const userSchema = new mongoose.Schema({
         name: String,                   // name of degree plan
         degrees: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Degree' }], // degrees in the degree plan
         courses: [userCourseSchema]     // courses in the degree plan
-        
     }],
     apTests: [{
         test: { type: mongoose.Schema.Types.ObjectId, ref: 'APTest' },
