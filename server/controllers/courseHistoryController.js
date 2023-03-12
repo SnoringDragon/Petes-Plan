@@ -39,9 +39,9 @@ exports.addCourse = async (req, res) => {
         const course = courses[i];
 
         /* Validate required fields present */
-        if (!course || !course.courseID || !course.semester || !course.year || !course.subject) {
+        if (!course || !course.courseID || !course.subject || !course.semester || !course.year) {
             return res.status(400).json({
-                message: 'Missing courseID, semester, or year',
+                message: 'Missing courseID, subject, semester, or year',
                 course: course
             });
         }
