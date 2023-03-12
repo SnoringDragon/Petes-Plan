@@ -58,7 +58,7 @@ async function fetchIndividualSubject(term, subject, colleges, semesterId) {
     const courseWriteResult = await Course.bulkWrite(courseList.map(course => ({
         updateOne: {
             filter: { subject: subject.value, courseID: course.number },
-            update: { '$setOnInsert': {
+            update: { $set: {
                 subject: subject.value,
                 courseID: course.number,
                 name: course.longTitle ?? course.shortTitle,
@@ -186,7 +186,7 @@ module.exports = async ({ batchSize = 10, sleepTime = 750, numYears = 6 } = {}) 
 
     const alreadyProcessed = await ProcessedCourse.find().lean();
 
-    for (const term of terms) {
+    for (const term of terms.reverse()) {
         const [semesterType, semesterYear] = term.name.split(/\s+/);
 
         if (isNaN(semesterYear) || !['Spring', 'Fall', 'Winter', 'Summer'].includes(semesterType)) {
