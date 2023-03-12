@@ -1,10 +1,10 @@
 const courseModel = require('../models/courseModel');
 const usercourseModel = require('../models/userCourseModel');
+const degreeModel = require('../models/degreeModel');
 
 async function calculateGPA(userCourseModels) {
     let GPAQualPts = [];
     let qualityHours = [];
-    // from letter grade to quality points
     let qualityHourSum = 0;
     let qualityHour = 0;
     for (let i = 0; i < userCourseModels.length; i++) {
@@ -32,31 +32,33 @@ async function calculateGPA(userCourseModels) {
             GPAQualPts.push(0.7);
         } else if (!userCourseModels[i].grade.localeCompare("E") || !userCourseModels[i].grade.localeCompare("F") || !userCourseModels[i].grade.localeCompare("IF")) {
             GPAQualPts.push(0.0);
+        } else {
+            continue; // P, N, I, PI, SI, W, WF, WN, WU, IN, IU, AU, NS are Not included
         }
-        // P, N, I, PI, SI, W, WF, WN, WU, IN, IU, AU, NS are Not included
         qualityHour = (await courseModel.findOne({ courseID: userCourseModels[i].courseID }).exec()).maxCredits;
         qualityHours.push(qualityHour);
         qualityHourSum += qualityHour;
     }
+    
     indexPts = 0;
     for (let i = 0; i < qualityHours.length; i++) {
         indexPts += qualityHours[i]*GPAQualPts;
     }
     return indexPts/qualityHourSum;
 }
+
 async function cumulativeGPA() {
     //userCourseModels is doc array
     //hopefully this only pulls current user's courses
     let userCourseModels = await usercourseModel.find();
     return calculateGPA(userCourseModels);
 }
+
 async function semesterGPA(semesterInput, yearInput) {
-    //userCourseModels is doc array
-    //hopefully this only pulls current user's courses
     let userCourseModels = await usercourseModel.find({ semester: semesterInput, year: yearInput }).exec();
     return calculateGPA(userCourseModels);
 }
-//if in major requirements, count it
+
 async function majorGPA(major) {
     let majorDoc = await degreeModel.findOne({ name: major }).exec();
     let requirements = majorDoc.requirements;
