@@ -21,7 +21,7 @@ async function calculateGPA(userCourseModels) {
         } else if (!userCourseModels[i].grade.localeCompare("C+")) {
             GPAQualPts.push(2.3);
         } else if (!userCourseModels[i].grade.localeCompare("C")) {
-            GPAQualPts.push(2);
+            GPAQualPts.push(2.0);
         } else if (!userCourseModels[i].grade.localeCompare("C-")) {
             GPAQualPts.push(1.7);
         } else if (!userCourseModels[i].grade.localeCompare("D+")) {
@@ -33,16 +33,16 @@ async function calculateGPA(userCourseModels) {
         } else if (!userCourseModels[i].grade.localeCompare("E") || !userCourseModels[i].grade.localeCompare("F") || !userCourseModels[i].grade.localeCompare("IF")) {
             GPAQualPts.push(0.0);
         } else {
-            continue; // P, N, I, PI, SI, W, WF, WN, WU, IN, IU, AU, NS are Not included
+            continue; // WIP, TR, P, N, I, PI, SI, W, WF, WN, WU, IN, IU, AU, NS are Not included
         }
         qualityHour = (await courseModel.findOne({ courseID: userCourseModels[i].courseID }).exec()).maxCredits;
         qualityHours.push(qualityHour);
         qualityHourSum += qualityHour;
     }
-    
+
     indexPts = 0;
     for (let i = 0; i < qualityHours.length; i++) {
-        indexPts += qualityHours[i]*GPAQualPts;
+        indexPts += qualityHours[i]*GPAQualPts[i];
     }
     return indexPts/qualityHourSum;
 }
