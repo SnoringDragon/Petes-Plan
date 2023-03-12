@@ -10,5 +10,7 @@ const instructorSchema = new mongoose.Schema({
     },
 });
 
+instructorSchema.index({ firstname: 1, lastname: 1 });
+
 
 module.exports = mongoose.model('Instructor', instructorSchema);
