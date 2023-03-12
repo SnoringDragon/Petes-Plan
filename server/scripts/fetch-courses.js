@@ -156,7 +156,8 @@ async function fetchIndividualSubject(term, subject, colleges, semesterId) {
             update: { $set: {
                 course: courseIDs[section.courseID],
                 name: section.sectionName,
-                credits: section.credits,
+                minCredits: section.minCredits,
+                maxCredits: section.maxCredits,
                 isHybrid: section.isHybrid,
                 sectionID: section.sectionID,
                 requires: section.requiredSection,
