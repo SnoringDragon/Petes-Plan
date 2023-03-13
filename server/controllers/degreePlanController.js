@@ -90,7 +90,8 @@ exports.deleteDegreePlan = async (req, res) => {
 /* Adds courses to a degree plan */
 exports.addCourse = async (req, res) => {
     /* Check if degree plan _id is valid */
-    const degreePlan = req.user.degreePlans.id(req.path.split('/')[1]);
+    const subdir = req.path.split('/');
+    const degreePlan = req.user.degreePlans.id(subdir[1]);
     if (!degreePlan) {
         return res.status(400).json({
             message: 'Invalid degree plan _id',
@@ -237,7 +238,6 @@ exports.addCourse = async (req, res) => {
             /* Check if degree is already in degree plan */
             for (let j = 0; j < degreePlan.degrees.length; j++) {
                 if (degreePlan.degrees[j]._id.equals(docs[0]._id)) {
-                    console.log('here');
                     return res.status(400).json({
                         message: 'Degree already in degree plan',
                         degree: degree
@@ -268,7 +268,8 @@ exports.addCourse = async (req, res) => {
 /* Removes courses from a degree plan */
 exports.removeCourse = async (req, res) => {
     /* Check if degree plan _id is valid */
-    const degreePlan = req.user.degreePlans.id(req.path.split('/')[1]);
+    const subdir = req.path.split('/');
+    const degreePlan = req.user.degreePlans.id(subdir[1]);
     if (!degreePlan) {
         return res.status(400).json({
             message: 'Invalid degree plan _id',
