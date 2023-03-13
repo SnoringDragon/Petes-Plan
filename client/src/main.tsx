@@ -23,6 +23,7 @@ import { Major_Requirements } from './pages/major_requirements/major_requirement
 import { VerifyEmail } from './pages/verify-email/verify-email';
 import { CourseSearch } from './pages/course-search/course-search';
 import { AllReq } from './pages/all_req/all_req';
+import { GradeCalc } from './pages/grade-calc/grade-calc';
 
 const router = createBrowserRouter([
   {
@@ -95,6 +96,10 @@ const router = createBrowserRouter([
     {
       path: "/all-req",
       element: <AllReq />
+    },
+    {
+      path: "/grade-calc",
+      element: <GradeCalc />
     }
     ]
   }
