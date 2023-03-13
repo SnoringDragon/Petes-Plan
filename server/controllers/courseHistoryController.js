@@ -162,7 +162,7 @@ exports.modifyCourse = async (req, res) => {
 
         /* Validate grade is a new number */
         if ((typeof course.grade !== 'undefined') && (course.grade !== orgCourse.grade)) {
-            if (!isValidGrade(course.grade)) {
+            if (!(isValidGrade(course.grade) || (course.grade === null))) {
                 return res.status(400).json({
                     message: `Grade invalid`,
                     course: course
