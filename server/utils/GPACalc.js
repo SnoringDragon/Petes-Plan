@@ -2,11 +2,12 @@ const courseModel = require('../models/courseModel');
 const usercourseModel = require('../models/userCourseModel');
 const degreeModel = require('../models/degreeModel');
 
-async function calculateGPA9(userCourseModels) { 
+async function calculateGPA(userCourseModels) { 
     let GPAQualPts = [];
     let qualityHours = [];
     let qualityHourSum = 0;
     let qualityHour = 0;
+    //userCourseModels is list of userCourseModel docs 
     for (let i = 0; i < userCourseModels.length; i++) {
         if (!userCourseModels[i].grade.localeCompare("A+") || !userCourseModels[i].grade.localeCompare("A")) {
             GPAQualPts.push(4.0);
@@ -55,28 +56,34 @@ exports.cumulativeGPA = async (req, res) =>  {
     return indexPts/qualityHourSum;
 }
 
-exports.semesterGPA = async (req, res) =>  {
-    let userCourseModels = await usercourseModel.find({ semester: semesterInput, year: yearInput }).exec();
+exports.semesterGPA = async (req, res, semesterInput, yearInput) =>  {
+    let userCourseModels = await req.user.completedCourses.find({ semester: semesterInput, year: yearInput}).exec();
     indexPts, qualityHourSum = calculateGPA(userCourseModels);
     return indexPts/qualityHourSum;
 }
 
 async function concentrationGPA(req, res, major) {
-    //cycle through all concentrations, see which ones apply to major -- if it applies, add it to major GPA
+    //cycle through all of user's concentrations, see which ones apply to major -- if it applies, add it to major GPA
     let majorDoc = await degreeModel.findOne({ name: major, type: 'major' }).exec();
-    major_concentrations = [];
-    major_concentrations_names = [];
+    let major_concentrations = [];
+    let major_concentrations_names = [];
+    
     concentrIndexPtsSum, concentrQualityHourSum = 0, 0
     //add all major concentrations and their names
-    for (let i = 0; i < majorDoc.concentrations.length; i++) {
+    for (let i = 0; i < degreeModel.concentrations.length; i++) {
         concentration = await this.findById(majorDoc.concentrations[i]).exec();
         major_concentrations.push(concentration);
         major_concentrations_names.push(concentration.name);
     } 
     //if the student is taking the concentration, calculateGPA for those courses
-    for (let i = 0; i < req.user.degreePlans.degrees; i++) {
+    for (let i = 0; i < req.user.degreePlans.degrees.length; i++) {
+        let concentrCourses = [];
         if (major_concentrations_names.contains(req.user.degreePlans.degrees[i].name)) {
-            let concentrIndexPts, concentrQualityHour = calculateGPA(major_concentrations[i].requirements)
+            //TODO: err handling
+            for (let i = 0; i < req.user.degreePlans.degrees[i].requirements.length; i++) {
+                majorCourses.push(await usercourseModel.findOne({courseID: req.user.degreePlans.degrees[i].requirements[i]}).exec());
+            }
+            let concentrIndexPts, concentrQualityHour = calculateGPA(concentrCourses);
             concentrIndexPtsSum+=concentrIndexPts;
             concentrQualityHourSum+=concentrQualityHour;
         }
@@ -87,8 +94,8 @@ async function concentrationGPA(req, res, major) {
 exports.majorGPA = async (req, res, major) =>  {
     //doesn't include concentration GPA
     let majorDoc = await degreeModel.findOne({ name: major, type: 'major' }).exec();
-    let requirements = majorDoc.requirements;
-    let userCourseModels = await usercourseModel.find();
+    let requirements = majorDoc.requirements; //series of requirements: Course objects
+    let userCourseModels = req.user.completedCourses;  //completed courses: UserCourse objects
     let majorCourses = [];
     let requirementIDs = [];
     //add all major requirements to requirementIDs 
@@ -98,7 +105,7 @@ exports.majorGPA = async (req, res, major) =>  {
     //if the completed courses are also in major requirements, include them
     for (let i = 0; i < userCourseModels.length; i++) {
         if (requirementIDs.contains(userCourseModels[i].courseID)) {
-            majorCourses.push(userCourseModels[i].courseID);
+            majorCourses.push(await courseModel.findOne({ coueseID: userCourseModels[i].courseID}));
         }
     }
     let majorIndexPts, majorQualityHourSum = calculateGPA(majorCourses);
