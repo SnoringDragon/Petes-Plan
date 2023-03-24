@@ -392,3 +392,44 @@ exports.getDegreePlan = async (req, res) => {
         degreePlan: degreePlan
     });
 };
+
+exports.getGradReqs = async (req, res) => {
+    /* Check if path is valid */
+    const subdir = req.path.split('/');
+    if (subdir.length !== 3) {
+        return res.status(404).json({
+            message: 'Invalid Path'
+        });
+    }
+
+    /* Check if degree plan _id is valid */
+    const user = await req.user.populate('degreePlans.degrees');
+    const degreePlan = req.user.degreePlans.id(subdir[1]);
+    if (!degreePlan) {
+        return res.status(400).json({
+            message: 'Invalid degree plan _id',
+            _id: subdir[1]
+        });
+    }
+
+    /* Iterate through degrees and add requirements */
+    var gradReqs = new Map();
+    for (let i = 0; i < degreePlan.degrees.length; i++) {
+        const degree = degreePlan.degrees[i];
+        for (let j = 0; j < degree.requirements.length; j++) {
+            gradReqs.set(degree.requirements[j], false);
+        }
+    }
+
+    /* Iterate through requirements and add to array */
+    var gradReqsArr = [];
+    gradReqs.forEach((value, key) => {
+        gradReqsArr.push(key);
+    });
+
+    /* Return total degree requirements */
+    return res.status(200).json({
+        message: 'Successfully retrieved degree requirements',
+        gradReqs: gradReqsArr
+    });
+};
