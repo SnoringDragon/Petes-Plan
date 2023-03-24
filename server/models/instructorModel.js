@@ -8,6 +8,11 @@ const instructorSchema = new mongoose.Schema({
         unique: true,
         sparse: true
     },
+    rateMyProfIds: {
+        type: [String],
+        unique: true,
+        sparse: true
+    }
 });
 
 instructorSchema.index({ firstname: 1, lastname: 1 });

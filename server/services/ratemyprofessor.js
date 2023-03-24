@@ -54,13 +54,13 @@ class RateMyProfessor {
     }
 
     /**
+     * Get ratings
      *
      * @param schoolID
      * @param count
      * @param text
      * @typedef {{
      *     id: string,
-     *     clarityRatingRounded: number,
      *     difficultyRatingRounded: number,
      *     helpfulRatingRounded: number,
      *     attendanceMandatory: string,
@@ -96,7 +96,7 @@ class RateMyProfessor {
      *     }
      * }>}
      */
-    getRatings({ schoolID = 'U2Nob29sLTc4Mw==', count = 10000, text = '*' }) {
+    getRatings({ schoolID = 'U2Nob29sLTc4Mw==', count = 10000, text = '*' } = {}) {
         return this._request(TeacherSearchQuery, {
             count,
             query: {
