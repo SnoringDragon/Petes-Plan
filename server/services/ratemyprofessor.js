@@ -23,10 +23,8 @@ const TeacherSearchQuery = gql`query TeacherSearchPaginationQuery(
                 ratingTags
                 comment
                 attendanceMandatory
-                clarityRatingRounded
                 difficultyRatingRounded
                 helpfulRatingRounded
-                #qualityRating
                 class
                 isForCredit
                 isForOnlineClass
