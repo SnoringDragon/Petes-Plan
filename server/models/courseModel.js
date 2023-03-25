@@ -133,6 +133,41 @@ courseSchema.methods.getSections = async function (semester) {
         ...nonLinkSections.map(section => [section])];
 }
 
+courseSchema.statics.parseCourseString = function (str, allowPartial=false) {
+    str = str.replace(/\p{P}/gu, '');
+    let subject = null;
+    let courseID = null;
+
+    if (allowPartial) {
+        [, subject, courseID] = str.match(/^([A-Z]+)?\s*(\d[A-Z\d]+)$/i) ?? [];
+    } else {
+        [, subject, courseID] = str.match(/^([A-Z]+)\s*(\d[A-Z\d]+)$/i) ?? [];
+    }
+
+    if (courseID) {
+        // k -> 000 (e.g. ECE 2k1 -> ECE 20001
+        courseID = courseID.replace(/k/ig, '000');
+
+        // append trailing zeroes
+        if (courseID.length === 3)
+            courseID += '00';
+
+        if (courseID.length !== 5)
+            courseID = null;
+    }
+
+    if (!courseID)
+        return null;
+
+    if (!subject && !courseID)
+        return null;
+
+    return {
+        subject: subject ?? null,
+        courseID: courseID ?? null
+    };
+};
+
 // unique index on combination of subject and courseID; faster search and prevent duplicates
 courseSchema.index({ subject: 1, courseID: 1 }, { unique: true });
 

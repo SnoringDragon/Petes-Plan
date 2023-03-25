@@ -3,11 +3,12 @@ const purdueDirectory = require('../services/purdue-directory');
 
 const Instructor = require('../models/instructorModel');
 const Semester = require('../models/semesterModel');
+const Course = require('../models/courseModel');
+const { RateMyProfRating } = require('../models/ratingModel');
 
 const sleep = require('../utils/sleep');
 const { nicknames, similarNames } = require('../utils/names');
 const { parseFullName } = require('parse-full-name');
-const ratings = require("../ratemyprof.json");
 
 
 const toTitleCase = src => {
@@ -165,12 +166,27 @@ const findInstructor = async ({ firstName, lastName, ratings, legacyId }, earlie
     return instructor;
 };
 
+const parseAttendanceMandatory = str => {
+    str = str.toLowerCase();
+
+    if (['y', 'mandatory'].includes(str)) return true;
+    if (['n', 'non mandatory'].includes(str)) return false;
+    return null;
+};
+
+const parseGrade = str => {
+    if (/^(?:[A-D][-+]?|[EFPNSIWU]|(?:PI|PO|IN|WN|IX|WF|SI|IU|WU|AU|CR|NS))$/.test(str)) return str;
+    str = str.toLowerCase();
+    if (str === 'pass') return 'P';
+    if (str === 'fail') return 'F';
+    return null;
+};
+
+
 module.exports = async ({ batchSize = 16 } = {}) => {
     console.log('fetching data from ratemyprofessor');
 
-    // const ratings = await rateMyProfessor.getRatings();
-
-    const ratings = require('../ratemyprof.json');
+    const ratings = await rateMyProfessor.getRatings();
 
     const semesters = await Semester.find();
     const earliestYear = Math.min(...semesters.map(s => s.year));
@@ -178,7 +194,7 @@ module.exports = async ({ batchSize = 16 } = {}) => {
     console.log('querying database for instructors')
 
     const searchInstructorIndices = [];
-    const result = await Promise.all(ratings.search.teachers.edges.map(async ({ node }, i) => {
+    const instructorResult = await Promise.all(ratings.search.teachers.edges.map(async ({ node }, i) => {
         const result = await findInstructor(node, earliestYear);
 
         if (result === null)
@@ -268,14 +284,14 @@ module.exports = async ({ batchSize = 16 } = {}) => {
                     instructor.nickname = toTitleCase(directoryData.nickname);
 
                 instructor.rateMyProfIds = [...instructor.rateMyProfIds, node.legacyId.toString()];
-                result[index][1] = instructor;
+                instructorResult[index][1] = instructor;
             }
         }
     }));
 
     const savedIds = new Set();
 
-    await Promise.all(result.map(async ([_, instructor]) => {
+    await Promise.all(instructorResult.map(async ([_, instructor]) => {
         if (instructor && (instructor.isModified() || instructor.$isNew) && !savedIds.has(instructor._id.toString())) {
             await instructor.save();
             savedIds.add(instructor._id.toString());
@@ -283,11 +299,98 @@ module.exports = async ({ batchSize = 16 } = {}) => {
     }))
 
     let failedInstructorCount = 0;
-    result.filter(([_, res]) => res === null).forEach(([node]) => {
+    instructorResult.filter(([_, res]) => res === null).forEach(([node]) => {
         ++failedInstructorCount;
         console.log('failed to find instructor for', node.firstName, node.lastName);
     })
 
     console.log('queried', ratings.search.teachers.edges.length, 'instructors, of which',
         failedInstructorCount, 'failed to map');
+
+    // build which courses we need to query
+    const reviewToCourseIdMap = {};
+    ratings.search.teachers.edges.forEach(({ node: teacher }) => {
+        const ratings = teacher.ratings.edges;
+        if (!ratings.length) return;
+
+        ratings.forEach(({ node: rating }) => {
+            reviewToCourseIdMap[rating.id] = Course.parseCourseString(rating.class, true);
+        });
+
+        // find if all courses this teacher has are the same subject
+        let commonSubject = ratings
+            .filter(({ node: rating }) => reviewToCourseIdMap[rating.id]?.subject);
+
+        commonSubject = commonSubject
+            .reduce((t, x) => x.subject === t ? t : null,
+                commonSubject[0]?.subject ?? null);
+
+        ratings.forEach(({ node: rating }) => {
+            if (reviewToCourseIdMap[rating.id] && !reviewToCourseIdMap[rating.id].subject) {
+                // teacher only has one subject, fix reviews that have only course number and no subject
+                if (commonSubject)
+                    reviewToCourseIdMap[rating.id].subject = commonSubject;
+                else
+                    reviewToCourseIdMap[rating.id] = null;
+            }
+        });
+    });
+
+    const courses = await Course.find({
+        $or: Object.values(reviewToCourseIdMap)
+            .filter(x => x)
+    });
+
+    const courseIdMap = {};
+    courses.forEach(course => {
+        courseIdMap[[course.subject, course.courseID]] = course;
+    });
+
+    console.log('removing old ratings...');
+
+    // remove deleted reviews
+    await RateMyProfRating.deleteMany({
+        typeSpecificId: {
+            $nin: Object.keys(reviewToCourseIdMap)
+        }
+    });
+
+    const updates = instructorResult.filter(([, instructor]) => instructor)
+        .flatMap(([teacher, instructor]) => {
+        return teacher.ratings.edges.map(({ node: rating }) => {
+            const parsedCourse = reviewToCourseIdMap[rating.id];
+            const course = parsedCourse ? courseIdMap[[parsedCourse.subject, parsedCourse.courseID]] : null;
+
+            return {
+                updateOne: {
+                    filter: {
+                        type: 'ratemyprofessor',
+                        typeSpecificId: rating.id
+                    },
+                    update: { $set: {
+                        instructor: instructor._id,
+                        course: course?._id ?? null,
+                        quality: rating.helpfulRatingRounded,
+                        difficulty: rating.difficultyRatingRounded,
+                        review: rating.comment,
+                        tags: rating.ratingTags.toLowerCase().split(/--/g).filter(x => x),
+                        isForCredit: rating.isForCredit,
+                        isForOnlineClass: rating.isForOnlineClass,
+                        isTextbookUsed: rating.textbookIsUsed,
+                        wouldTakeAgain: rating.iWouldTakeAgain,
+                        isAttendanceMandatory: parseAttendanceMandatory(rating.attendanceMandatory),
+                        grade: parseGrade(rating.grade)
+                    }},
+                    upsert: true
+                }
+            };
+        });
+    });
+
+    console.log('updating new ratings...');
+    console.log('this may take a long time:', updates.length, 'reviews to be processed');
+    await RateMyProfRating.bulkWrite(updates, { ordered: false });
+
+    console.log('updated ratemyprofessor ratings');
 };
+

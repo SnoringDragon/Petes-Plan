@@ -29,6 +29,8 @@ const ratingSchema = new mongoose.Schema({
         index: true
     },
 
+    grade: String,
+
     typeSpecificId: String
 
 }, { discriminatorKey: 'type' });
@@ -39,7 +41,7 @@ ratingSchema.index({ type: 1 });
 ratingSchema.index({ instructor: 1, course: 1 });
 
 // for each type, only have one type specific id
-ratingSchema.index({ type: 1, typeSpecificId: 1 }, {
+ratingSchema.index({ typeSpecificId: 1, type: 1 }, {
     unique: true,
     partialFilterExpression: { // only index documents where typeSpecificId is defined
         typeSpecificId: { $type: 'string' }
