@@ -11,9 +11,10 @@ const TeacherSearchQuery = gql`query TeacherSearchPaginationQuery(
       edges {
         cursor
         node {
-          id
+          legacyId
           firstName
           lastName
+          department
           ratings(first: 10000) {
             edges {
               node {
