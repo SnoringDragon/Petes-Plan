@@ -1,5 +1,7 @@
 const UserCourse = require('../models/userCourseModel');
 const User = require('../models/userModel');
+const Section = require('../models/sectionModel');
+const Semester = require('../models/semesterModel');
 
 const isValidGrade = grade => /^(?:[A-D][-+]?|[EFPNSIWU]|(?:PI|PO|IN|WN|IX|WF|SI|IU|WU|AU|CR|NS))$/.test(grade)
 
@@ -8,6 +10,8 @@ exports.getCourses = async (req, res) => {
     const user = req.user;
 
     /* Return the user's completed courses */
+    await user.populate('completedCourses.section');
+    await user.populate('completedCourses.courseData');
     return res.status(200).json({
         message: 'Successfully retrieved completed courses',
         courses: user.completedCourses
@@ -150,6 +154,7 @@ exports.modifyCourse = async (req, res) => {
         }
 
         /* Get corresponding course in user's current degree plan */
+        await user.populate('completedCourses.section');
         const orgCourse = await user.completedCourses.id(course._id);
 
         /* Validate course exists in current degree plan */
@@ -173,16 +178,32 @@ exports.modifyCourse = async (req, res) => {
         }
 
         /* Validate section is a new number */
-        // if ((typeof course.section !== 'undefined') && (course.section !== orgCourse.section)) {
-        //     if (isNaN(course.section)) {
-        //         return res.status(400).json({
-        //             message: `Section must be a number`,
-        //             course: course
-        //         });
-        //     }
-        //     orgCourse.section = course.section;
-        //     updated = true;
-        // }
+        if ((typeof course.section !== 'undefined') && ((orgCourse.section === undefined) || (course.section !== orgCourse.section.crn))) {
+            /* Validate section is a number */
+            if (isNaN(course.section)) {
+                return res.status(400).json({
+                    message: `Section must be a number`,
+                    course: course
+                });
+            }
+
+            /* Validate section is valid for selected semester */
+            var semester = await Semester.findOne({ semester: orgCourse.semester, year: orgCourse.year });
+            var section = await Section.findOne({
+                crn: course.section,
+                semester: semester,
+            });
+            await section.populate('semester');
+            if (!section || (section.semester.year !== orgCourse.year) || (section.semester.semester !== orgCourse.semester)) {
+                return res.status(400).json({
+                    message: `Course section not available for selected semester`,
+                    course: course
+                });
+            }
+
+            orgCourse.section = section;
+            updated = true;
+        }
     }
 
     /* Save the user to the database */
