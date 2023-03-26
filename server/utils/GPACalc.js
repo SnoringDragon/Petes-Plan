@@ -1,7 +1,7 @@
 const courseModel = require('../models/courseModel');
 const usercourseModel = require('../models/userCourseModel');
 const degreeModel = require('../models/degreeModel');
-let hashMap;
+let uniqueCourses;
 
 async function calculateGPA(userCourseModels) {
     let GPAQualPts = [];
@@ -10,9 +10,6 @@ async function calculateGPA(userCourseModels) {
     let creditHour = 0;
     //userCourseModels is list of userCourseModel docs 
     for (let i = 0; i < userCourseModels.length; i++) {
-        if (hashMap.get(userCourseModels[i].courseID)) {
-            break;
-        }
         if (!userCourseModels[i].grade.localeCompare("A+") || !userCourseModels[i].grade.localeCompare("A")) {
             GPAQualPts.push(4.0);
         } else if (!userCourseModels[i].grade.localeCompare("A-")) {
@@ -60,14 +57,12 @@ async function calculateGPA(userCourseModels) {
 exports.cumulativeGPA = async (req, res) => {
     //userCourseModels is doc array
     //hopefully this only pulls current user's courses
-    hashMap = Map();
     let userCourseModels = req.user.completedCourses;
     indexPts, creditHoursum = calculateGPA(userCourseModels);
     return indexPts / creditHoursum;
 }
 
 exports.semesterGPA = async (req, res, semesterInput, yearInput) => {
-    hashMap = Map();
     let userCourseModels = req.user.completedCourses.find({ semester: semesterInput, year: yearInput });
     userCourseModels.exec(function (err) {
         if (err) {
@@ -79,7 +74,6 @@ exports.semesterGPA = async (req, res, semesterInput, yearInput) => {
 }
 
 async function concentrationGPA(req, res, major) {
-    
     //cycle through all of user's concentrations, see which ones apply to major -- if it applies, add it to major GPA
     let majorDoc = degreeModel.findOne({ name: major, type: 'major' });
     majorDoc.exec(function (err) {
@@ -108,13 +102,14 @@ async function concentrationGPA(req, res, major) {
         let concentrCourses = [];
         if (major_concentrations_names.contains(req.user.degreePlans.degrees[i].name)) {
             for (let i = 0; i < req.user.degreePlans.degrees[i].requirements.length; i++) {
-                let course = usercourseModel.findOne({ courseID: req.user.degreePlans.degrees[i].requirements[i] });
+                let course = usercourseModel.findOne({ courseID: req.user.degreePlans.degrees[i].requirements[i].courseID });
                 course.exec(function (err, courseRet) {
                     if (err) {
-                        return "Error: Course does not exist.";
+                        return "Error: User did not take course OR Course does not exist.";
                     }
-                    if (courseRet) {
+                    if (courseRet && !(uniqueCourses.has(courseRet.courseID))) { //if course not already in uniqueCourses
                         concentrCourses.push(courseRet);
+                        uniqueCourses.set(courseRet.courseID, 1);
                     } 
                 });
             }
@@ -127,8 +122,8 @@ async function concentrationGPA(req, res, major) {
 }
 
 exports.majorGPA = async (req, res, major) => {
+    uniqueCourses = new Map();
     //doesn't include concentration GPA
-    hashMap = Map();
     let majorDoc = await degreeModel.findOne({ name: major, type: 'major' }).exec();
     let requirements = majorDoc.requirements; //series of requirements: Course objects
     let userCourseModels = req.user.completedCourses;  //completed courses: UserCourse objects
@@ -136,12 +131,14 @@ exports.majorGPA = async (req, res, major) => {
     let requirementIDs = [];
     //add all major requirements to requirementIDs 
     for (let i = 0; i < requirements.length; i++) {
-        requirementIDs.push(requirements.courseID);
+        requirementIDs.push(requirements[i].courseID);
     }
     //if the completed courses are also in major requirements, include them
     for (let i = 0; i < userCourseModels.length; i++) {
         if (requirementIDs.contains(userCourseModels[i].courseID)) {
-            majorCourses.push(await courseModel.findOne({ coueseID: userCourseModels[i].courseID }));
+            let completedCourse = await courseModel.findOne({ courseID: userCourseModels[i].courseID });
+            majorCourses.push(completedCourse);
+            uniqueCourses.set(userCourseModels[i].courseID, 1); //add class to uniqueClasses to eliminate double-couning
         }
     }
     let majorIndexPts, majorCreditHourSum = calculateGPA(majorCourses);
