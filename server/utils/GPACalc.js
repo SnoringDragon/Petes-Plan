@@ -1,6 +1,7 @@
 const courseModel = require('../models/courseModel');
 const usercourseModel = require('../models/userCourseModel');
 const degreeModel = require('../models/degreeModel');
+let hashMap;
 
 async function calculateGPA(userCourseModels) {
     let GPAQualPts = [];
@@ -9,6 +10,9 @@ async function calculateGPA(userCourseModels) {
     let creditHour = 0;
     //userCourseModels is list of userCourseModel docs 
     for (let i = 0; i < userCourseModels.length; i++) {
+        if (hashMap.get(userCourseModels[i].courseID)) {
+            break;
+        }
         if (!userCourseModels[i].grade.localeCompare("A+") || !userCourseModels[i].grade.localeCompare("A")) {
             GPAQualPts.push(4.0);
         } else if (!userCourseModels[i].grade.localeCompare("A-")) {
@@ -56,12 +60,14 @@ async function calculateGPA(userCourseModels) {
 exports.cumulativeGPA = async (req, res) => {
     //userCourseModels is doc array
     //hopefully this only pulls current user's courses
+    hashMap = Map();
     let userCourseModels = req.user.completedCourses;
     indexPts, creditHoursum = calculateGPA(userCourseModels);
     return indexPts / creditHoursum;
 }
 
 exports.semesterGPA = async (req, res, semesterInput, yearInput) => {
+    hashMap = Map();
     let userCourseModels = req.user.completedCourses.find({ semester: semesterInput, year: yearInput });
     userCourseModels.exec(function (err) {
         if (err) {
@@ -73,6 +79,7 @@ exports.semesterGPA = async (req, res, semesterInput, yearInput) => {
 }
 
 async function concentrationGPA(req, res, major) {
+    
     //cycle through all of user's concentrations, see which ones apply to major -- if it applies, add it to major GPA
     let majorDoc = degreeModel.findOne({ name: major, type: 'major' });
     majorDoc.exec(function (err) {
@@ -121,6 +128,7 @@ async function concentrationGPA(req, res, major) {
 
 exports.majorGPA = async (req, res, major) => {
     //doesn't include concentration GPA
+    hashMap = Map();
     let majorDoc = await degreeModel.findOne({ name: major, type: 'major' }).exec();
     let requirements = majorDoc.requirements; //series of requirements: Course objects
     let userCourseModels = req.user.completedCourses;  //completed courses: UserCourse objects
