@@ -24,6 +24,7 @@ import { VerifyEmail } from './pages/verify-email/verify-email';
 import { CourseSearch } from './pages/course-search/course-search';
 import { AllReq } from './pages/all_req/all_req';
 import { GradeCalc } from './pages/grade-calc/grade-calc';
+import { Section_Info } from './pages/section-info/section-info';
 
 const router = createBrowserRouter([
   {
@@ -100,6 +101,10 @@ const router = createBrowserRouter([
     {
       path: "/grade-calc",
       element: <GradeCalc />
+    }, 
+    {
+      path: "/section-info",
+      element: <Section_Info />
     }
     ]
   }
