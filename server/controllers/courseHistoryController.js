@@ -2,6 +2,8 @@ const UserCourse = require('../models/userCourseModel');
 const User = require('../models/userModel');
 const Section = require('../models/sectionModel');
 const Semester = require('../models/semesterModel');
+const Instructor = require('../models/instructorModel');
+const Course = require('../models/courseModel');
 
 const isValidGrade = grade => /^(?:[A-D][-+]?|[EFPNSIWU]|(?:PI|PO|IN|WN|IX|WF|SI|IU|WU|AU|CR|NS))$/.test(grade)
 
@@ -10,8 +12,7 @@ exports.getCourses = async (req, res) => {
     const user = req.user;
 
     /* Return the user's completed courses */
-    await user.populate('completedCourses.section');
-    await user.populate('completedCourses.courseData');
+    await user.populateAll();
     return res.status(200).json({
         message: 'Successfully retrieved completed courses',
         courses: user.completedCourses
@@ -46,6 +47,22 @@ exports.addCourse = async (req, res) => {
         if (!course || !course.courseID || !course.subject || !course.semester || !course.year) {
             return res.status(400).json({
                 message: 'Missing courseID, subject, semester, or year',
+                course: course
+            });
+        }
+
+        /* Validate courseID is a number */
+        if (isNaN(course.courseID)) {
+            return res.status(400).json({
+                message: 'CourseID must be a number',
+                course: course
+            });
+        }
+
+        var courseData = await Course.findOne({ courseID: course.courseID, subject: course.subject });
+        if (!courseData) {
+            return res.status(400).json({
+                message: 'Course does not exist',
                 course: course
             });
         }
@@ -110,8 +127,8 @@ exports.addCourse = async (req, res) => {
             semester: course.semester,
             year: course.year,
             grade: course.grade,
-            // section: course.section,
-            subject: course.subject
+            subject: course.subject,
+            courseData: courseData,
         });
     }
 
@@ -142,25 +159,25 @@ exports.modifyCourse = async (req, res) => {
     }
 
     /* Update each provided course */
+    await user.populateAll();
     for (let i = 0; i < courses.length; i++) {
         const course = courses[i];
 
         /* Validate required fields present */
         if (!course || !course._id) {
             return res.status(400).json({
-                message: `Missing course _id`,
+                message: 'Missing course _id',
                 course: course
             });
         }
 
         /* Get corresponding course in user's current degree plan */
-        await user.populate('completedCourses.section');
         const orgCourse = await user.completedCourses.id(course._id);
 
         /* Validate course exists in current degree plan */
         if (!orgCourse) {
             return res.status(400).json({
-                message: `Invalid course _id`,
+                message: 'Invalid course _id',
                 course: course
             });
         }
@@ -169,7 +186,7 @@ exports.modifyCourse = async (req, res) => {
         if ((typeof course.grade !== 'undefined') && (course.grade !== orgCourse.grade)) {
             if (!(isValidGrade(course.grade) || (course.grade === null))) {
                 return res.status(400).json({
-                    message: `Grade invalid`,
+                    message: 'Grade invalid',
                     course: course
                 });
             }
@@ -178,17 +195,17 @@ exports.modifyCourse = async (req, res) => {
         }
 
         /* Validate section is a new number */
+        var semester = await Semester.findOne({ semester: orgCourse.semester, year: orgCourse.year });
         if ((typeof course.section !== 'undefined') && ((orgCourse.section === undefined) || (course.section !== orgCourse.section.crn))) {
             /* Validate section is a number */
             if (isNaN(course.section)) {
                 return res.status(400).json({
-                    message: `Section must be a number`,
+                    message: 'Section must be a number',
                     course: course
                 });
             }
 
             /* Validate section is valid for selected semester */
-            var semester = await Semester.findOne({ semester: orgCourse.semester, year: orgCourse.year });
             var section = await Section.findOne({
                 crn: course.section,
                 semester: semester,
@@ -196,12 +213,70 @@ exports.modifyCourse = async (req, res) => {
             await section.populate('semester');
             if (!section || (section.semester.year !== orgCourse.year) || (section.semester.semester !== orgCourse.semester)) {
                 return res.status(400).json({
-                    message: `Course section not available for selected semester`,
+                    message: 'Course section not available for selected semester',
+                    course: course
+                });
+            }
+            orgCourse.section = section;
+
+            /* Select Meeting Time */
+            if (section.meetings.length === 1) {
+                orgCourse.meetingTime = 0;
+                if (section.meetings[0].instructors.length === 1) {
+                    orgCourse.instructor = section.meetings[0].instructors[0];
+                }
+            } else if ((section.meetings.length > 1) && course.meetingTime) {
+                // Validate meeting time is a number
+                if (isNaN(course.meetingTime) || !(parseInt(course.meetingTime) === course.meetingTime)) {
+                    return res.status(400).json({
+                        message: 'Meeting time must be an integer',
+                    });
+                }
+
+                // Validate meeting time is in range
+                if ((course.meetingTime < 0) || (course.meetingTime >= section.meetings.length)) {
+                    return res.status(400).json({
+                        message: 'Meeting time out of range',
+                    });
+                }
+
+                orgCourse.meetingTime = course.meetingTime;
+                if (section.meetings[course.meetingTime].instructors.length === 1) {
+                    orgCourse.instructor = section.meetings[course.meetingTime].instructors[0];
+                }
+            }
+
+            updated = true;
+        }
+
+        /* Validate instructor */
+        if ((typeof course.instructorEmail !== 'undefined') && ((!orgCourse.instructor && course.instructorEmail) || (course.instructorEmail !== orgCourse.instructor.email))) {
+            /* Verify email */
+            var instructor = await Instructor.findOne({ email: course.instructorEmail });
+            if (!instructor) {
+                return res.status(400).json({
+                    message: 'Instructor not found',
                     course: course
                 });
             }
 
-            orgCourse.section = section;
+            if (orgCourse.section) { /* Validate instructor is teaching this section */
+                if (!orgCourse.section.meetings[orgCourse.meetingTime].instructors.includes(instructor)) {
+                    return res.status(400).json({
+                        message: 'Instructor not teaching this section',
+                        course: course
+                    });
+                }
+            } else { /* Validate instructor is teaching this course */
+                if (!await Section.findOne({ course: orgCourse.courseData, semester: semester, "meetings.instructors": instructor })) {
+                    return res.status(400).json({
+                        message: 'Instructor not teaching this course',
+                        course: course
+                    });
+                }
+            }
+
+            orgCourse.instructor = instructor;
             updated = true;
         }
     }
