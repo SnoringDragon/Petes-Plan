@@ -192,6 +192,19 @@ export function ClassHistory() {
             <div className="overfill-auto flex flex-grow ml-8 h-full">
                 <div className="w-full h-full ml-1 mt-24  items-center justify-right">
                     <Card className="-mt-16 w-10/12">
+                        <CardHeader title="GPA" className="text-center h-10 bg-zinc-800 text-white" />
+                        <CardContent>
+                           <text>Overall GPA: </text> 
+                           <br></br>
+                           <text>Major GPA: </text>
+                        </CardContent>
+                    </Card>
+                </div>
+            </div>
+
+            <div className="overfill-auto flex flex-grow ml-8 h-full">
+                <div className="w-full h-full ml-1 mt-24  items-center justify-right">
+                    <Card className="-mt-16 w-10/12">
                         <CardHeader title="Completed Courses" className="text-center h-10 bg-zinc-800 text-white" />
                         <CardContent>
                             {userCourses.map((course, i) => (<div className="flex items-center mb-2" key={i}>
