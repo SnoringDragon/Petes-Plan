@@ -2,9 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { Layout } from '../../components/layout/layout';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { ApiCourse } from '../../types/course-requirements';
+import { ApiProfessor } from '../../types/professor';
 import { FaArrowLeft } from 'react-icons/fa';
 import { Prerequisites } from '../../components/prerequisites/prerequisites';
+import { Classes } from '../../components/classes/classes';
 import CourseService from '../../services/CourseService';
+import ProfessorService from '../../services/ProfessorService';
 import { UserCourse } from '../../types/user-course';
 import CourseHistoryService from '../../services/CourseHistoryService';
 
@@ -15,14 +18,16 @@ export function Professor() {
 
     const [error, setError] = useState('');
 
-    const [professor, setProfessor] = useState<ApiCourse | null>(null);
+    const [professor, setProfessor] = useState<ApiProfessor | null>(null);
 
+    // IDK
     const [userCourses, setUserCourses] = useState<UserCourse[]>([])
 
     useEffect(() => {
         CourseHistoryService.getCourses()
             .then(res => setUserCourses(res.courses));
     }, [])
+    // END 
 
     useEffect(() => {
         const professor = searchParams.get('professor') ?? '';
