@@ -25,6 +25,7 @@ import { CourseSearch } from './pages/course-search/course-search';
 import { AllReq } from './pages/all_req/all_req';
 import { GradeCalc } from './pages/grade-calc/grade-calc';
 import { Section_Info } from './pages/section-info/section-info';
+import { Instructor } from './pages/instructor/instructor';
 
 const router = createBrowserRouter([
   {
@@ -105,6 +106,10 @@ const router = createBrowserRouter([
     {
       path: "/section-info",
       element: <Section_Info />
+    }, 
+    {
+      path: "/instructor",
+      element: <Instructor />
     }
     ]
   }
