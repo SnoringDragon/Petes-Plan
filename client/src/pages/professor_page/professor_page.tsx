@@ -20,19 +20,18 @@ export function Professor() {
 
     const [professor, setProfessor] = useState<ApiProfessor | null>(null);
 
-    // IDK
+    /*
     const [userCourses, setUserCourses] = useState<UserCourse[]>([])
-
+    
     useEffect(() => {
         CourseHistoryService.getCourses()
             .then(res => setUserCourses(res.courses));
     }, [])
-    // END 
-
+    */
     useEffect(() => {
-        const professor = searchParams.get('professor') ?? '';
+        const name = searchParams.get('professorName') ?? '';
 
-        ProfessorService.getProfessor({ professor })
+        ProfessorService.getProfessor({ name })
             .then(res => {
                 if (!res) {
                     setProfessor(null);
@@ -65,7 +64,7 @@ export function Professor() {
             <div><span className="underline">Email:</span> {professor.email}</div>
             <div className="mt-5 underline">Classes:</div>
             <p></p>
-            <Classes classes={professor.classes} userCourses={userCourses} />
+            <Classes classes={professor.classes} />
             <div className="mt-5 underline">Rate my Professor link:</div>
             <div>{professor.rateMyProfessorLink} </div>
         </div>
