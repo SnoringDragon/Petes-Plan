@@ -100,6 +100,7 @@ async function concentrationGPA(req, res, major) {
     //if the student is taking the concentration, calculateGPA for those courses
     for (let i = 0; i < req.user.degreePlans.degrees.length; i++) {
         let concentrCourses = [];
+        //if user is taking a concentration that applies to the current major
         if (major_concentrations_names.contains(req.user.degreePlans.degrees[i].name)) {
             for (let i = 0; i < req.user.degreePlans.degrees[i].requirements.length; i++) {
                 let course = usercourseModel.findOne({ courseID: req.user.degreePlans.degrees[i].requirements[i].courseID });
