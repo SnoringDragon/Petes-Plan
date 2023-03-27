@@ -201,7 +201,22 @@ const parseGrade = str => {
 module.exports = async ({ batchSize = 16 } = {}) => {
     console.log('fetching data from ratemyprofessor');
 
-    const ratings = await rateMyProfessor.getRatings();
+    // ratemyprofessor is very inconsistent about how many ratings it returns
+    // fetch multiple times and use the highest amount returned
+    const result = await Promise.allSettled([...new Array(8)]
+        .map(() => rateMyProfessor.getRatings()));
+
+    if (result.every(({ status }) => status === 'rejected')) {
+        console.log('failed to fetch ratemyprofessor:', result[0].reason);
+        return;
+    }
+
+    const ratings = result.reduce((finalResult, currentResult) => {
+        if (currentResult.status === 'rejected') return finalResult;
+        const currentCount = currentResult.value.search.teachers.edges.length;
+        const finalCount = finalResult?.search?.teachers?.edges?.length ?? 0;
+        return currentCount > finalCount ? currentResult.value : finalResult;
+    }, null);
 
     const semesters = await Semester.find();
     const earliestYear = Math.min(...semesters.map(s => s.year));
