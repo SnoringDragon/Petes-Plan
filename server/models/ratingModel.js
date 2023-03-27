@@ -3,13 +3,11 @@ const mongoose = require('mongoose');
 const ratingSchema = new mongoose.Schema({
     instructor: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Instructor',
-        index: true // speed up fetching by instructor
+        ref: 'Instructor'
     },
     course: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Course',
-        index: true // speed up fetching by course
     },
     quality: {
         type: Number,
@@ -35,18 +33,26 @@ const ratingSchema = new mongoose.Schema({
 
 }, { discriminatorKey: 'type' });
 
+ratingSchema.index({ instructor: 'hashed' }); // speed up fetching by instructor
+
+ratingSchema.index({ course: 'hashed' }); // speed up fetching by course
+
 ratingSchema.index({ type: 1 });
 
 // speed up fetching by instructor, course combo
 ratingSchema.index({ instructor: 1, course: 1 });
 
 // for each type, only have one type specific id
-ratingSchema.index({ typeSpecificId: 1, type: 1 }, {
+ratingSchema.index({ type: 1, typeSpecificId: 1 }, {
     unique: true,
     partialFilterExpression: { // only index documents where typeSpecificId is defined
         typeSpecificId: { $type: 'string' }
     }
-})
+});
+
+ratingSchema.index({ typeSpecificId: 'hashed' }, {
+    background: false
+});
 
 const Rating = mongoose.model('Rating', ratingSchema);
 
