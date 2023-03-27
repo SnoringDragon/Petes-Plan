@@ -169,7 +169,7 @@ courseSchema.statics.parseCourseString = function (str, allowPartial=false) {
 };
 
 // unique index on combination of subject and courseID; faster search and prevent duplicates
-courseSchema.index({ subject: 1, courseID: 1 }, { unique: true });
+courseSchema.index({ subject: 1, courseID: 1 }, { unique: true, background: false });
 
 // text index on name, description, and search fields
 //TODO: if they enter a course name, then implement smth where a course's designated URL, gives them all of the course data they asked
