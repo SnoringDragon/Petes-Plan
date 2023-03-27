@@ -26,6 +26,7 @@ import { AllReq } from './pages/all_req/all_req';
 import { GradeCalc } from './pages/grade-calc/grade-calc';
 import { Section_Info } from './pages/section-info/section-info';
 import { Instructor } from './pages/instructor/instructor';
+import { SharedReq } from './pages/shared_req/shared_req';
 
 const router = createBrowserRouter([
   {
@@ -110,6 +111,10 @@ const router = createBrowserRouter([
     {
       path: "/instructor",
       element: <Instructor />
+    }, 
+    {
+      path: "/shared-req",
+      element: <SharedReq />
     }
     ]
   }
