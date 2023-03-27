@@ -289,12 +289,35 @@ module.exports = async ({ batchSize = 16 } = {}) => {
         }
     }));
 
+    // combine identical ids into same object to ensure consistent saves
+    const instructorIdMap = {};
+    instructorResult.forEach(([_, instructor], i) => {
+        const id = instructor?._id?.toString();
+
+        if (id && (id in instructorIdMap)) {
+            const otherInstructor = instructorIdMap[id];
+            otherInstructor.rateMyProfIds = [...new Set([
+                ...otherInstructor.rateMyProfIds,
+                ...instructor.rateMyProfIds
+            ])];
+            if (!otherInstructor.nickname && instructor.nickname)
+                otherInstructor.nickname = instructor.nickname;
+
+            instructorResult[i][1] = otherInstructor;
+            instructor = otherInstructor;
+        }
+
+        if (id && !(id in instructorIdMap)) {
+            instructorIdMap[id] = instructor;
+        }
+    });
+
     const savedIds = new Set();
 
-    await Promise.all(instructorResult.map(async ([_, instructor]) => {
+    await Promise.all(instructorResult.map(([_, instructor], i) => {
         if (instructor && (instructor.isModified() || instructor.$isNew) && !savedIds.has(instructor._id.toString())) {
-            await instructor.save();
             savedIds.add(instructor._id.toString());
+            return instructor.save();
         }
     }))
 
