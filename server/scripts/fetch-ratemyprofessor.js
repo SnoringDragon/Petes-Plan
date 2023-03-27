@@ -16,9 +16,10 @@ const toTitleCase = src => {
 };
 
 const queryInstructor = async (firstname, lastname, isNickname=false) => {
+    const lastPunctuationRegex = new RegExp('\\b' + lastname.replace(/\W/g, '\\W*') + '\\b', 'i');
     let result = await Instructor.find({
-        firstname: new RegExp('\\b' + firstname.replace(/\W/g, '\\W*') + '\\b', 'i'),
-        lastname: new RegExp('\\b' + lastname.replace(/\W/g, '\\W*') + '\\b', 'i')
+        firstname: new RegExp('\\b' + firstname.replace(/\W/g, '\\W*'), 'i'),
+        lastname: lastPunctuationRegex
     });
 
     if (result.length === 1)
@@ -26,9 +27,13 @@ const queryInstructor = async (firstname, lastname, isNickname=false) => {
 
     // too many found, try to narrow our regular expressions;
     const firstRegex = new RegExp('\\b' + firstname + '\\b', 'i');
+    const firstUnboundRegex = new RegExp('\\b' + firstname, 'i');
+    const firstPunctuationRegex = new RegExp('\\b' + firstname.replace(/\W/g, '\\W*') + '\\b', 'i');
     const lastRegex = new RegExp('\\b' + lastname + '\\b', 'i');
 
     const conditions = [
+        instructor => firstPunctuationRegex.test(instructor.firstname) && lastPunctuationRegex.test(instructor.lastname),
+        instructor => firstUnboundRegex.test(instructor.firstname) && lastRegex.test(instructor.lastname),
         instructor => firstRegex.test(instructor.firstname) && lastRegex.test(instructor.lastname),
         instructor => instructor.firstname === firstname && instructor.lastname === lastname
     ];
@@ -130,6 +135,16 @@ const queryInstructor = async (firstname, lastname, isNickname=false) => {
                 return filtered[0];
         }
     }
+
+    // try search by last name only
+    result = await Instructor.find({
+        lastname: lastRegex
+    });
+    result = result.filter(instructor => instructor.firstname.toLowerCase().includes(firstname.toLowerCase()) ||
+        firstname.toLowerCase().includes(instructor.firstname.toLowerCase()));
+
+    if (result.length === 1)
+        return result[0];
 
     return null;
 }
