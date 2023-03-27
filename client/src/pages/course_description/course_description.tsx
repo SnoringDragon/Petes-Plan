@@ -4,6 +4,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { ApiCourse } from '../../types/course-requirements';
 import { FaArrowLeft } from 'react-icons/fa';
 import { Prerequisites } from '../../components/prerequisites/prerequisites';
+import { Professor } from '../../components/professor/professor';
 import CourseService from '../../services/CourseService';
 import { UserCourse } from '../../types/user-course';
 import CourseHistoryService from '../../services/CourseHistoryService';
@@ -79,6 +80,9 @@ export function Course_Description() {
                 <span className="underline">Attributes:</span> &nbsp;
                 {course.attributes.map(attribute => attribute.name).join(', ')}
             </div> : null}
+            <div className="mt-5 underline">Professors:</div>
+            <p></p>
+            <Professor professors={course.professors} />
             <div className="mt-5 underline">Prerequisities:</div>
             <p></p>
             <Prerequisites prerequisites={course.requirements} userCourses={userCourses} />
