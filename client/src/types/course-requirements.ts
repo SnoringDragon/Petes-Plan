@@ -37,6 +37,7 @@ export interface ApiCourse {
     attributes: { code: string, name: string }[],
     description: string,
     professors: Professor,
+    section: string,
     requirements: Requirement
 }
 

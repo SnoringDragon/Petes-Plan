@@ -83,6 +83,9 @@ export function Course_Description() {
             <div className="mt-5 underline">Professors:</div>
             <p></p>
             <Professor professors={course.professors} />
+            <div className="mt-5 underline">Sections:</div>
+            <p></p>
+            <div>{course.section} </div>
             <div className="mt-5 underline">Prerequisities:</div>
             <p></p>
             <Prerequisites prerequisites={course.requirements} userCourses={userCourses} />
