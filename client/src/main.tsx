@@ -22,6 +22,7 @@ import { AP_Class } from './pages/ap_class/ap_class';
 import { Major_Requirements } from './pages/major_requirements/major_requirements';
 import { VerifyEmail } from './pages/verify-email/verify-email';
 import { CourseSearch } from './pages/course-search/course-search';
+import { Professor_Page } from './pages/professor_page/professor_page';
 
 const router = createBrowserRouter([
   {
@@ -90,6 +91,10 @@ const router = createBrowserRouter([
     {
       path: "/future-plan",
       element: <FuturePlan />
+    },
+    {
+      path: "/professor",
+      element: <Professor_Page />
     }
     ]
   }

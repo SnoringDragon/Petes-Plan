@@ -1,8 +1,7 @@
-import { Professor } from '../../types/course-requirements';
+import { ProfessorReq } from '../../types/course-requirements';
 import { Link } from 'react-router-dom';
 
-export function Professor(props: { professors: Professor }) {
-    // TODO: better looking prerequisites
+export function Professor(props: { professors: ProfessorReq }) {
 
     const data = props.professors;
 
@@ -10,7 +9,7 @@ export function Professor(props: { professors: Professor }) {
 
     if (data.type === 'professor') {
         return (<span className={`bg-opacity-25`}>
-            <Link to={`/professor?subject=${data.name}`}>
+            <Link to={`/professor?name=${data.name}`}>
                 {data.name}
             </Link>
         </span>);

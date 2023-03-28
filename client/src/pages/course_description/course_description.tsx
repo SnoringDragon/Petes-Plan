@@ -82,7 +82,8 @@ export function Course_Description() {
             </div> : null}
             <div className="mt-5 underline">Professors:</div>
             <p></p>
-            <Professor professors={course.professors} />
+            <div>{course.professors} </div>
+            {/*<Professor professors={course.professors} />*/}
             <div className="mt-5 underline">Sections:</div>
             <p></p>
             <div>{course.section} </div>

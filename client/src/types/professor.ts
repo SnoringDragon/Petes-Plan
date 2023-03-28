@@ -2,22 +2,24 @@ interface AbstractClasses {
     type: string
 }
 
+/*
 export interface AbstractClassesGroup extends AbstractClasses {
     children: Classes[],
     // if set, this group also requires a certain amount of credits from the courses inside it
     // this requirement must be met alongside the group requirement
     // requiredCredits: number | null
 }
-
-export type Classes = ProfessorRequirement;
+*/
+//export type Classes = ProfessorRequirement;
 
 export interface ApiProfessor {
     name: string,
     email: string,
-    classes: Classes
+    //classes: Classes
     rateMyProfessorLink: string
 }
 
+/*
 export interface ProfessorRequirement extends AbstractClasses {
     type: 'course',
     subject: string,
@@ -27,4 +29,5 @@ export interface ProfessorRequirement extends AbstractClasses {
     //     such as for regional-campus-only courses)
     course?: ApiProfessor | null
 }
+*/
 
