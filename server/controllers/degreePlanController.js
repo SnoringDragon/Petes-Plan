@@ -90,7 +90,8 @@ exports.deleteDegreePlan = async (req, res) => {
 /* Adds courses to a degree plan */
 exports.addCourse = async (req, res) => {
     /* Check if degree plan _id is valid */
-    const degreePlan = req.user.degreePlans.id(req.path.split('/')[1]);
+    const subdir = req.path.split('/');
+    const degreePlan = req.user.degreePlans.id(subdir[1]);
     if (!degreePlan) {
         return res.status(400).json({
             message: 'Invalid degree plan _id',
@@ -237,7 +238,6 @@ exports.addCourse = async (req, res) => {
             /* Check if degree is already in degree plan */
             for (let j = 0; j < degreePlan.degrees.length; j++) {
                 if (degreePlan.degrees[j]._id.equals(docs[0]._id)) {
-                    console.log('here');
                     return res.status(400).json({
                         message: 'Degree already in degree plan',
                         degree: degree
@@ -268,7 +268,8 @@ exports.addCourse = async (req, res) => {
 /* Removes courses from a degree plan */
 exports.removeCourse = async (req, res) => {
     /* Check if degree plan _id is valid */
-    const degreePlan = req.user.degreePlans.id(req.path.split('/')[1]);
+    const subdir = req.path.split('/');
+    const degreePlan = req.user.degreePlans.id(subdir[1]);
     if (!degreePlan) {
         return res.status(400).json({
             message: 'Invalid degree plan _id',
@@ -389,5 +390,108 @@ exports.getDegreePlan = async (req, res) => {
     return res.status(200).json({
         message: 'Successfully retrieved degree plan',
         degreePlan: degreePlan
+    });
+};
+
+/* Calculates the total requirements for a degree plan */
+exports.getGradReqs = async (req, res) => {
+    /* Check if path is valid */
+    const subdir = req.path.split('/');
+    if (subdir.length !== 3) {
+        return res.status(404).json({
+            message: 'Invalid Path'
+        });
+    }
+
+    /* Check if degree plan _id is valid */
+    const user = await req.user.populate('degreePlans.degrees');
+    const degreePlan = req.user.degreePlans.id(subdir[1]);
+    if (!degreePlan) {
+        return res.status(400).json({
+            message: 'Invalid degree plan _id',
+            _id: subdir[1]
+        });
+    }
+
+    /* Iterate through degrees and add requirements */
+    var gradReqs = new Map();
+    for (let i = 0; i < degreePlan.degrees.length; i++) {
+        const degree = degreePlan.degrees[i];
+        for (let j = 0; j < degree.requirements.length; j++) {
+            gradReqs.set(degree.requirements[j], false);
+        }
+    }
+
+    /* Iterate through requirements and add to array */
+    var gradReqsArr = [];
+    gradReqs.forEach((value, key) => {
+        gradReqsArr.push(key);
+    });
+
+    /* Return total degree requirements */
+    return res.status(200).json({
+        message: 'Successfully retrieved degree requirements',
+        gradReqs: gradReqsArr
+    });
+};
+
+/* Calculate the intersection of requiremtns between one degree and a degree plan */
+exports.getReqIntersection = async (req, res) => {
+    /* Check if path is valid */
+    const subdir = req.path.split('/');
+    if (subdir.length !== 3) {
+        return res.status(404).json({
+            message: 'Invalid Path'
+        });
+    }
+
+    /* Check if degree plan _id is valid */
+    const user = await req.user.populate('degreePlans.degrees');
+    const degreePlan = req.user.degreePlans.id(subdir[1]);
+    if (!degreePlan) {
+        return res.status(400).json({
+            message: 'Invalid degree plan _id',
+            _id: subdir[1]
+        });
+    }
+
+    /* Check if degree _id is present */
+    if (!req.body._id) {
+        return res.status(400).json({
+            message: 'Missing degree _id'
+        });
+    }
+
+    /* Check if degree _id is valid */
+    const compDegree = await Degree.findById(req.body._id);
+    if (!compDegree) {
+        return res.status(400).json({
+            message: 'Invalid degree _id',
+            _id: req.body._id
+        });
+    }
+
+    /* Iterate through degrees and add requirements */
+    var gradReqs = new Map();
+    for (let i = 0; i < degreePlan.degrees.length; i++) {
+        const degree = degreePlan.degrees[i];
+        for (let j = 0; j < degree.requirements.length; j++) {
+            gradReqs.set(degree.requirements[j].toString(), false);
+        }
+    }
+
+    /* Iterate through selected degree requirements and add to array if in map */
+    var gradReqsArr = [];
+    for (let i = 0; i < compDegree.requirements.length; i++) {
+        const req = compDegree.requirements[i];
+        if (gradReqs.has(req.toString())) {
+            gradReqsArr.push(req);
+        }
+    }
+
+    /* Return intersection of requirements */
+    return res.status(200).json({
+        message: 'Successfully retrieved requirements intersection',
+        reqs: gradReqsArr
     });
 };
