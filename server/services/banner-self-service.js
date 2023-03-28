@@ -431,7 +431,8 @@ class BannerSelfService extends BaseService {
             'Distance Learning': 'DIS',
             'Practice Study Observation': 'PSO',
             'Travel Time': 'PS5',
-            'Travel Time 1': 'PS5'
+            'Travel Time 1': 'PS5',
+            'Travel Time 2': 'PS5'
         };
 
         const result = await this._fetch('bwckschd.p_get_crse_unsec', {
