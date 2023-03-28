@@ -17,7 +17,12 @@ const instructorSchema = new mongoose.Schema({
 
 instructorSchema.index({ firstname: 1, lastname: 1 }, { background: false });
 instructorSchema.index({ firstname: 'text', lastname: 'text', nickname: 'text' }, {
-    default_language: 'none' // dont stem names
+    default_language: 'none', // dont stem names
+    weights: {
+        firstname: 1,
+        lastname: 2,
+        nickname: 2
+    }
 });
 instructorSchema.index({ rateMyProfIds: 1 }, {
     unique: true,
