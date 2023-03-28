@@ -31,7 +31,10 @@ const ratingSchema = new mongoose.Schema({
 
     typeSpecificId: String
 
-}, { discriminatorKey: 'type' });
+}, {
+    discriminatorKey: 'type',
+    timestamps: true
+});
 
 ratingSchema.index({ instructor: 'hashed' }); // speed up fetching by instructor
 

@@ -416,11 +416,13 @@ module.exports = async ({ batchSize = 16 } = {}) => {
 
             return {
                 updateOne: {
+                    timestamps: false,
                     filter: {
                         type: 'ratemyprofessor',
                         typeSpecificId: rating.id
                     },
                     update: { $set: {
+                        createdAt: new Date(rating.date),
                         instructor: instructor._id,
                         course: course?._id ?? null,
                         quality: rating.helpfulRatingRounded,
@@ -442,8 +444,16 @@ module.exports = async ({ batchSize = 16 } = {}) => {
 
     console.log('updating new ratings...');
     console.log('this may take a long time:', updates.length, 'reviews to be processed');
-    await RateMyProfRating.bulkWrite(updates, { ordered: false });
+    const bulkWriteResult = await RateMyProfRating.bulkWrite(updates, { ordered: false });
 
+    await RateMyProfRating.updateMany({
+        _id: {
+            $in: [...bulkWriteResult.getInsertedIds(), ...bulkWriteResult.getUpsertedIds()]
+                .map(({ _id }) => _id)
+        }
+    }, {
+        updatedAt: new Date()
+    }, { timestamps: false });
     console.log('updated ratemyprofessor ratings');
 };
 
