@@ -8,12 +8,9 @@ const { RateMyProfRating } = require('../models/ratingModel');
 
 const sleep = require('../utils/sleep');
 const { nicknames, similarNames } = require('../utils/names');
+const toTitleCase = require('../utils/title-case');
 const { parseFullName } = require('parse-full-name');
 
-
-const toTitleCase = src => {
-    return src.replace(/\w\S*/g, t => t[0].toUpperCase() + t.slice(1));
-};
 
 const queryInstructor = async (firstname, lastname, isNickname=false) => {
     const lastPunctuationRegex = new RegExp('\\b' + lastname.replace(/\W/g, '\\W*') + '\\b', 'i');
