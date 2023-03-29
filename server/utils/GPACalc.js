@@ -1,6 +1,7 @@
 const courseModel = require('../models/courseModel');
 const usercourseModel = require('../models/userCourseModel');
 const degreeModel = require('../models/degreeModel');
+const courseAttribute = require 
 let uniqueCourses;
 
 async function calculateGPA(userCourseModels) {
@@ -149,4 +150,7 @@ exports.majorGPA = async (req, res, major) => {
     return majorIndexPts / majorCreditHourSum;
 }
 
-
+courseAttributeSchema = new courseAttribute
+course = new courseModel("Object Oriented Progragrimming in Java", "CS", "CS 180000", "180", 3, 3, "Intro CS course");
+userCourseModels = new courseModel("Object Oriented Progragrimming in Java", "CS", "A", 2020);
+calculateGPA(userCourseModels)
