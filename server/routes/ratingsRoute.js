@@ -145,6 +145,10 @@ module.exports = app => {
             }
         }]);
 
+        // no reviews
+        if (!ratings[0].data.length)
+            return res.json({ data: [], metadata: null });
+
         const courseSelection = {
             courseID: 1,
             subject: 1,
@@ -162,7 +166,7 @@ module.exports = app => {
             Course.find({ _id: { $in: ratings[0].metadata.courses } }).select(courseSelection)
                 .then(res => ratings[0].metadata.courses = res),
             Instructor.find({ _id: { $in: ratings[0].metadata.instructors } })
-                .then(res => ratings[0].metadata.instructors = res)
+                .then(res => ratings[0].metadata.instructors = res.sort((a, b) => a.lastname.localeCompare(b.lastname)))
         ]);
 
         res.json(ratings[0]);
