@@ -1,8 +1,8 @@
-import { RatingSearch, RatingSearchResult } from '../../types/rating';
+import { RateMyProfRating, Rating, RatingSearch, RatingSearchResult } from '../../types/rating';
 import { useEffect, useState } from 'react';
 import RatingService from '../../services/RatingService';
-import { Box, Chip, MenuItem, OutlinedInput, Select } from '@material-ui/core';
-import { FaTimes } from 'react-icons/fa';
+import { Box, Chip, IconButton, MenuItem, OutlinedInput, Select, Tooltip } from '@material-ui/core';
+import { FaTimes, FaLaptop } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 
 function RatingSquare(props: {
@@ -47,6 +47,31 @@ function BarChart(props: {
         </div>
     </div>)
 }
+
+type Attribute = { name: string } & ({ value: string | null } |
+    { value: boolean | null, labels?: string[] });
+function AttributeList(props: { className?: string, attributes: Attribute[] }) {
+    return (<div className={`flex flex-wrap ${props.className ?? ''}`}>
+        {props.attributes.filter(x => x.value !== null).map(x => (<div key={x.name} className="text-base mr-2">
+            <span>{x.name}:</span> <span className="font-bold">
+            {typeof x.value === 'boolean' ? (x.labels ?? ['Yes', 'No'])[+x.value] : x.value}
+        </span>
+        </div>))}
+    </div>)
+}
+
+function TagList(props: { tags: string[], className?: string }) {
+    if (!props.tags.length) return null;
+
+    return (<div className={`flex flex-wrap text-sm ${props.className ?? ''}`}>
+        {props.tags.map(tag => (<div key={tag}
+                                       className="py-1.5 px-2 bg-opacity-25 bg-gray-500 rounded-full uppercase font-bold m-1">
+            <div className="scale-x-90 transform">{tag}</div>
+        </div>))}
+    </div>);
+}
+
+const isRateMyProfessor = (rating: Rating): rating is RateMyProfRating => rating.type === 'ratemyprofessor';
 
 export function Ratings(props: RatingSearch & { filter?: string[] }) {
     const { filter: defaultFilter, ...search } = props;
@@ -135,12 +160,7 @@ export function Ratings(props: RatingSearch & { filter?: string[] }) {
             <BarChart title="Difficulty Distribution" data={numDifficulty} className="flex-grow mx-4" />
         </div>
         <span className="font-bold mb-1">Tags for {name}</span>
-        <div className="flex flex-wrap mb-2">
-            {includedTags.map(tag => (<div key={tag.name}
-                                   className="py-1.5 px-2 bg-opacity-25 bg-gray-500 rounded-full uppercase font-bold m-1">
-                <div className="scale-x-90 transform">{tag.name}</div>
-            </div>))}
-        </div>
+        <TagList className="mb-2" tags={includedTags.map(t => t.name)} />
         <div className="flex items-center mb-6">
             <Select multiple
                     autoWidth
@@ -186,6 +206,7 @@ export function Ratings(props: RatingSearch & { filter?: string[] }) {
             </Select>
             <FaTimes className="ml-4 text-xl cursor-pointer" onClick={() => setFilter([])} />
         </div>
+        <div>
         {data.map(rating => (<div key={rating._id} className="bg-gray-500 bg-opacity-25 p-6 mb-4 flex">
             <div className="mr-6">
                 <RatingSquare rating={rating.quality} label="Quality" />
@@ -193,6 +214,11 @@ export function Ratings(props: RatingSearch & { filter?: string[] }) {
             </div>
             <div className="flex flex-col flex-1">
                 <div className="flex items-center font-bold">
+                    {(isRateMyProfessor(rating) && rating.isForOnlineClass) && <Tooltip arrow title="For online class">
+                        <IconButton disableRipple disableFocusRipple className="mr-1.5">
+                            <FaLaptop className="w-5 h-5 -m-1.5 text-white" />
+                        </IconButton>
+                    </Tooltip>}
                     <Link className="text-lg" to={isCourse ? `/` :
                         `/course_description?subject=${rating.course.subject}&courseID=${rating.course.courseID}`}>{ // TODO: add instructor link
                         isCourse ? `${rating.instructor.firstname} ${rating.instructor.lastname}` :
@@ -202,10 +228,29 @@ export function Ratings(props: RatingSearch & { filter?: string[] }) {
                         new Date(rating.createdAt).toLocaleDateString(undefined, { dateStyle: 'long' })
                     }</span>
                 </div>
-                <div className="text-lg">
-                    {rating.review}
+                <div className="text-lg flex flex-col flex-grow">
+                    <AttributeList className="my-1.5" attributes={[{
+                        name: 'Would Take Again',
+                        value: rating.wouldTakeAgain
+                    }, {
+                        name: 'Grade',
+                        value: rating.grade
+                    },...(isRateMyProfessor(rating) ? [{
+                        name: 'For Credit',
+                        value: rating.isForCredit
+                    }, {
+                        name: 'Attendance',
+                        value: rating.isAttendanceMandatory,
+                        labels: ['Not Mandatory', 'Mandatory']
+                    }, {
+                        name: 'Textbook Used',
+                        value: rating.isTextbookUsed
+                    }] : [])]} />
+                    <span>{rating.review}</span>
+                    <TagList tags={rating.tags} className="mt-auto" />
                 </div>
             </div>
         </div>))}
+        </div>
     </div>);
 }
