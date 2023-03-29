@@ -1,4 +1,4 @@
-import { RateMyProfRating, Rating, RatingSearch, RatingSearchResult } from '../../types/rating';
+import { BaseRating, RateMyProfRating, Rating, RatingSearch, RatingSearchResult } from '../../types/rating';
 import { useEffect, useState } from 'react';
 import RatingService from '../../services/RatingService';
 import { Box, Chip, CircularProgress, IconButton, MenuItem, OutlinedInput, Select, Tooltip } from '@material-ui/core';
@@ -73,6 +73,12 @@ function TagList(props: { tags: string[], className?: string }) {
 
 const isRateMyProfessor = (rating: Rating): rating is RateMyProfRating => rating.type === 'ratemyprofessor';
 
+const renderProfessor = (instructor: BaseRating['instructor']) => {
+    if (instructor.nickname)
+        return `${instructor.firstname} (${instructor.nickname}) ${instructor.lastname}`;
+    return `${instructor.firstname} ${instructor.lastname}`;
+};
+
 export function Ratings(props: RatingSearch & { filter?: string[] }) {
     const { filter: defaultFilter, ...search } = props;
 
@@ -102,9 +108,11 @@ export function Ratings(props: RatingSearch & { filter?: string[] }) {
     </div>);
     if (!ratings.data.length) return (<span>No ratings found.</span>);
 
+    const course = ratings.metadata.courses[0];
+    const instructor = ratings.metadata.instructors[0];
     const name = isCourse ?
-        `${ratings.metadata.courses[0].subject} ${ratings.metadata.courses[0].courseID}` :
-        `${ratings.metadata.instructors[0].firstname} ${ratings.metadata.instructors[0].lastname}`;
+        `${course.subject} ${course.courseID}` :
+        renderProfessor(instructor);
 
     let { avgQuality, avgDifficulty, count, wouldTakeAgain, numQuality, numDifficulty, tags } = ratings.metadata;
     let data = ratings.data;
@@ -187,7 +195,7 @@ export function Ratings(props: RatingSearch & { filter?: string[] }) {
 
                                 if (isCourse) {
                                     const instructor = ratings.metadata.instructors.find(({_id}) => _id === id)!;
-                                    label = `${instructor.firstname} ${instructor.lastname}`;
+                                    label = renderProfessor(instructor);
                                 } else {
                                     const course = ratings.metadata.courses.find(({_id}) => _id === id)!;
                                     label = `${course.subject} ${course.courseID}`;
@@ -205,7 +213,7 @@ export function Ratings(props: RatingSearch & { filter?: string[] }) {
                     <em>{isCourse ? 'Select Instructor' : 'Select Course'}</em>
                 </MenuItem>
                 {isCourse ? ratings.metadata.instructors.map(instructor => (<MenuItem key={instructor._id} value={instructor._id}>
-                    {instructor.firstname} {instructor.lastname}
+                    {renderProfessor(instructor)}
                 </MenuItem>)) :
                     ratings.metadata.courses.map(course => (<MenuItem key={course._id} value={course._id}>
                         {course.subject} {course.courseID}
@@ -233,7 +241,7 @@ export function Ratings(props: RatingSearch & { filter?: string[] }) {
                     </Tooltip>}
                     <Link className="text-lg" to={isCourse ? `/` :
                         `/course_description?subject=${rating.course.subject}&courseID=${rating.course.courseID}`}>{ // TODO: add instructor link
-                        isCourse ? `${rating.instructor.firstname} ${rating.instructor.lastname}` :
+                        isCourse ? renderProfessor(rating.instructor):
                             `${rating.course.subject} ${rating.course.courseID}`
                     }</Link>
                     <span className="ml-auto">{

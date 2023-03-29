@@ -10,6 +10,7 @@ export interface BaseRating {
         _id: string,
         firstname: string,
         lastname: string,
+        nickname: string,
         email: string,
         rateMyProfIds: string[]
     },
@@ -52,6 +53,7 @@ export type RatingSearchResult = {
             _id: string,
             firstname: string,
             lastname: string,
+            nickname: string,
             email: string,
             rateMyProfIds: string[]
         }[],
