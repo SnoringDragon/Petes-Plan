@@ -10,6 +10,7 @@ const sleep = require('../utils/sleep');
 const { nicknames, similarNames } = require('../utils/names');
 const toTitleCase = require('../utils/title-case');
 const { parseFullName } = require('parse-full-name');
+const { decode } = require('html-entities');
 
 
 const queryInstructor = async (firstname, lastname, isNickname=false) => {
@@ -425,7 +426,7 @@ module.exports = async ({ batchSize = 16 } = {}) => {
                         course: course?._id ?? null,
                         quality: rating.helpfulRatingRounded,
                         difficulty: rating.difficultyRatingRounded,
-                        review: rating.comment,
+                        review: decode(rating.comment),
                         tags: rating.ratingTags.toLowerCase().split(/--/g).filter(x => x),
                         isForCredit: rating.isForCredit,
                         isForOnlineClass: rating.isForOnlineClass,
