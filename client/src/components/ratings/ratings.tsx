@@ -1,7 +1,7 @@
 import { RateMyProfRating, Rating, RatingSearch, RatingSearchResult } from '../../types/rating';
 import { useEffect, useState } from 'react';
 import RatingService from '../../services/RatingService';
-import { Box, Chip, IconButton, MenuItem, OutlinedInput, Select, Tooltip } from '@material-ui/core';
+import { Box, Chip, CircularProgress, IconButton, MenuItem, OutlinedInput, Select, Tooltip } from '@material-ui/core';
 import { FaTimes, FaLaptop, FaChevronUp, FaChevronDown } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 
@@ -87,13 +87,19 @@ export function Ratings(props: RatingSearch & { filter?: string[] }) {
     useEffect(() => {
         setLoading(true);
         RatingService.getRatings(search)
-            .then(res => setRatings(res))
+            .then(res => {
+                setRatings(res);
+                setError('');
+            })
             .catch(err => setError(err?.message ?? err))
             .finally(() => setLoading(false));
     }, [(props as any).course, (props as any).courseID, (props as any).subject,
         (props as any).instructor, (props as any).email]);
 
-    if (loading || !ratings) return (<span>Loading</span>);
+    if (error) return (<span className="text-red-500">Failed to fetch ratings: {error}</span>)
+    if (loading || !ratings) return (<div className="flex w-full items-center justify-center my-4">
+        <CircularProgress color="inherit" />
+    </div>);
     if (!ratings.data.length) return (<span>No ratings found.</span>);
 
     const name = isCourse ?
