@@ -13,6 +13,8 @@ async function main() {
     const port = process.env.PORT;
     delete process.env.DB;
 
+    await require('./tasks')();
+
     const app = express();
 
     app.use(cors());
@@ -20,12 +22,6 @@ async function main() {
 
     /* Load files in ./routes */
     require('./routes/index')(app);
-
-    if (process.argv.includes('--update-courses'))
-        fetchCourses().catch(console.error);
-
-    if (process.argv.includes('--update-ratings'))
-        fetchRateMyProf().catch(console.error);
 
     if (process.argv.includes('--update-ap'))
         require('./scripts/fetch-ap')().catch(console.error);
