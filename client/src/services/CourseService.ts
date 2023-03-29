@@ -1,4 +1,5 @@
 import { Api } from './Api';
+import {Section} from "../types/course-requirements";
 
 class CourseService extends Api {
     getCourse(options: { courseID: string, subject: string }) {
@@ -6,7 +7,7 @@ class CourseService extends Api {
     }
 
     getCourseSections(options: { courseID: string, subject: string, semester: string }) {
-        return this.get(`/api/courses/sections/?${new URLSearchParams(options)}`);
+        return this.get<Section[][][]>(`/api/courses/sections/?${new URLSearchParams(options)}`);
     }
 
     searchCourse(query: string) {
