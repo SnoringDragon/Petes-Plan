@@ -83,6 +83,8 @@ module.exports = app => {
                         courses: {$addToSet: '$course'},
                         // get set of instructors in these reviews
                         instructors: {$addToSet: '$instructor'},
+                        numTakeAgain: { $sum: { $cond: [{$eq: ['$wouldTakeAgain', true]}, 1, 0] } },
+                        totalTakeAgain: { $sum: { $cond: [{$ne: ['$wouldTakeAgain', null]}, 1, 0] } },
                         // compute rating averages and summaries
                         ...Object.fromEntries(numericalRatingKeys.flatMap(key =>
                             [[`avg${toTitleCase(key)}`, {$avg: `$${key}`}], // compute average of this key
@@ -99,6 +101,10 @@ module.exports = app => {
                     $project: {
                         _id: 0,
                         count: 1,
+                        wouldTakeAgain: { $cond: [
+                            { $eq: ['$totalTakeAgain', 0] },
+                                null,
+                                {$divide: ['$numTakeAgain', '$totalTakeAgain']}] },
                         courses: { $setDifference: ['$courses', [null]] },
                         instructors: { $setDifference: ['$instructors', [null]] },
                         ...Object.fromEntries(numericalRatingKeys.flatMap(key => [
