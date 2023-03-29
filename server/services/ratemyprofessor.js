@@ -1,4 +1,4 @@
-const { request, gql } = require('graphql-request');
+const { GraphQLClient, gql } = require('graphql-request');
 
 const TeacherSearchQuery = gql`query TeacherSearchPaginationQuery(
   $count: Int!
@@ -48,8 +48,10 @@ const TeacherSearchQuery = gql`query TeacherSearchPaginationQuery(
 `;
 
 class RateMyProfessor {
-    async _request(document, variables) {
-        return request('https://www.ratemyprofessors.com/graphql', document, variables, {
+    async _request(document, variables, options) {
+        const client = new GraphQLClient('https://www.ratemyprofessors.com/graphql', options);
+
+        return client.request(document, variables, {
             authorization: 'Basic dGVzdDp0ZXN0'
         });
     }
@@ -60,6 +62,7 @@ class RateMyProfessor {
      * @param schoolID
      * @param count
      * @param text
+     * @param options
      * @typedef {{
      *     id: string,
      *     difficultyRatingRounded: number,
@@ -97,7 +100,7 @@ class RateMyProfessor {
      *     }
      * }>}
      */
-    getRatings({ schoolID = 'U2Nob29sLTc4Mw==', count = 10000, text = '*' } = {}) {
+    getRatings({ schoolID = 'U2Nob29sLTc4Mw==', count = 10000, text = '*' } = {}, options) {
         return this._request(TeacherSearchQuery, {
             count,
             query: {
@@ -105,7 +108,7 @@ class RateMyProfessor {
                 schoolID,
                 fallback: false
             }
-        });
+        }, options);
     }
 }
 
