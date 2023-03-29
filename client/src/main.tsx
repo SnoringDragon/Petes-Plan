@@ -22,6 +22,11 @@ import { AP_Class } from './pages/ap_class/ap_class';
 import { Major_Requirements } from './pages/major_requirements/major_requirements';
 import { VerifyEmail } from './pages/verify-email/verify-email';
 import { CourseSearch } from './pages/course-search/course-search';
+import { AllReq } from './pages/all_req/all_req';
+import { GradeCalc } from './pages/grade-calc/grade-calc';
+import { Section_Info } from './pages/section-info/section-info';
+import { Instructor } from './pages/instructor/instructor';
+import { SharedReq } from './pages/shared_req/shared_req';
 
 const router = createBrowserRouter([
   {
@@ -90,6 +95,26 @@ const router = createBrowserRouter([
     {
       path: "/future-plan",
       element: <FuturePlan />
+    },
+    {
+      path: "/all-req",
+      element: <AllReq />
+    },
+    {
+      path: "/grade-calc",
+      element: <GradeCalc />
+    }, 
+    {
+      path: "/section-info",
+      element: <Section_Info />
+    }, 
+    {
+      path: "/instructor",
+      element: <Instructor />
+    }, 
+    {
+      path: "/shared-req",
+      element: <SharedReq />
     }
     ]
   }

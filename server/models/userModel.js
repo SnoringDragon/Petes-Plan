@@ -82,9 +82,12 @@ userSchema.methods.validatePassword = async function (password) {
     return await bcrypt.compare(password, this.password);
 }
 
+// Populate all user data
 userSchema.methods.populateAll = async function () {
     await this.populate('degreePlans.degrees');
     await this.populate('degreePlans.courses.courseData');
+    await this.populate('completedCourses.section');
+    await this.populate('completedCourses.instructor');
     await this.populate('completedCourses.courseData');
     await this.populate('apTests.test');
 }

@@ -2,6 +2,7 @@ const express = require('express');
 const jsonParser = require('body-parser').json();
 const cors = require('cors');
 const fetchCourses = require('./scripts/fetch-courses');
+const fetchRateMyProf = require('./scripts/fetch-ratemyprofessor');
 const {scheduleRepeat} = require("./utils/scheduler");
 
 require('dotenv').config()
@@ -22,6 +23,9 @@ async function main() {
 
     if (process.argv.includes('--update-courses'))
         fetchCourses().catch(console.error);
+
+    if (process.argv.includes('--update-ratings'))
+        fetchRateMyProf().catch(console.error);
 
     if (process.argv.includes('--update-ap'))
         require('./scripts/fetch-ap')().catch(console.error);

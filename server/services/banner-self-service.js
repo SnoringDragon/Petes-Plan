@@ -39,6 +39,20 @@ class SelfServiceCourseSummary {
     }
 }
 
+const MONTHS = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'];
+
+const parseDate = dateString => {
+    const result = dateString.toLowerCase().match(/^([a-z]{3}) (\d{1,2}), (\d{4})$/);
+    if (!result)
+        throw new TypeError(`unknown date string ${dateString}`);
+
+    let [, month, day, year] = result;
+
+    const monthNum = MONTHS.indexOf(month);
+    if (monthNum === -1) throw new TypeError(`unknown month ${month}`);
+    return `${monthNum + 1}/${day}/${year}`;
+};
+
 /**
  * Class for fetching information from Ellucian Banner Student Self Service
  */
@@ -299,6 +313,240 @@ class BannerSelfService extends BaseService {
 
             return { subject, courseNumber, name, crn, restrictions };
         }).toArray();
+    }
+
+    /**
+     * Get terms that are view only
+     *
+     * @returns {Promise<string[]>}
+     */
+    async getViewOnlyTerms() {
+        const result = await this._fetch('bwckschd.p_disp_dyn_sched');
+
+        const $ = cheerio.load(await result.text());
+
+        return $('select option').map((i, option) => {
+            if ($(option).text().includes('View only'))
+                return $(option).attr('value');
+        }).toArray();
+    }
+
+    /**
+     * Get a list of proessors by term
+     * @param term
+     * @returns {Promise<{ first: string, last: string }>}
+     */
+    async getProfessorsForTerm(term) {
+        const result = await this._fetch('bwckgens.p_proc_term_date', {
+            method: 'POST',
+            body: `p_calling_proc=bwckschd.p_disp_dyn_sched&p_term=${term}`,
+            headers: { 'content-type': 'application/x-www-form-urlencoded' }
+        });
+
+        const $ = cheerio.load(await result.text());
+        return $('#instr_id option').map((i, option) => {
+            if ($(option).attr('value') !== '%') {
+                const [last, first] = $(option).text().split(', ');
+                return { first: first.trim(), last: last.trim() };
+            }
+        }).toArray();
+    }
+
+    /**
+     * Get a list of course sections for a specified term, subject combo
+     * @param term
+     * @param subject
+     * @returns {Promise<{
+     *  sectionName: string,
+     *  linkID: string | undefined,
+     *  requiredSection: string,
+     *  credits: number,
+     *  subject: string,
+     *  courseID: string,
+     *  isHybrid: boolean,
+     *  sectionID: string,
+     *  crn: number,
+     *  scheduledMeetings: {
+     *      endDate: string,
+     *      startDate: string,
+     *      days: ('M' | 'T' | 'W' | 'R' | 'F')[] | null,
+     *      startTime: string | null,
+     *      endTime: string | null,
+     *      location: string,
+     *      instructors: null | { name: string, email: string }[]
+     *  }[]}[]>}
+     */
+    async getSections({ term, subject }) {
+        const params = new URLSearchParams([
+            [ 'term_in', term ],
+            [ 'sel_subj', 'dummy' ],
+            [ 'sel_day', 'dummy' ],
+            [ 'sel_schd', 'dummy' ],
+            [ 'sel_insm', 'dummy' ],
+            [ 'sel_camp', 'dummy' ],
+            [ 'sel_levl', 'dummy' ],
+            [ 'sel_sess', 'dummy' ],
+            [ 'sel_instr', 'dummy' ],
+            [ 'sel_ptrm', 'dummy' ],
+            [ 'sel_attr', 'dummy' ],
+            [ 'sel_subj', subject ],
+            [ 'sel_crse', '' ],
+            [ 'sel_title', '' ],
+            [ 'sel_schd', '%' ],
+            [ 'sel_insm', '%' ],
+            [ 'sel_from_cred', '' ],
+            [ 'sel_to_cred', '' ],
+            [ 'sel_camp', '%' ],
+            [ 'sel_ptrm', '%' ],
+            [ 'sel_instr', '%' ],
+            [ 'sel_sess', '%' ],
+            [ 'sel_attr', '%' ],
+            [ 'begin_hh', '0' ],
+            [ 'begin_mi', '0' ],
+            [ 'begin_ap', 'a' ],
+            [ 'end_hh', '0' ],
+            [ 'end_mi', '0' ],
+            [ 'end_ap', 'a' ]
+        ]);
+
+        const SCHEDULE_TYPES = {
+            Lecture: 'LEC',
+            'Lecture 1': 'LEC',
+            Recitation: 'REC',
+            Presentation: 'PRS',
+            'Presentation 1': 'PRS',
+            Laboratory: 'LAB',
+            'Lab 1': 'LAB',
+            'Laboratory Preparation': 'LBP',
+            Clinic: 'CLN',
+            ...Object.fromEntries([...new Array(9)]
+                .map((_, i) => [`Clinic ${i}`, 'CLN'])), // not sure why there are so many clinic types
+            Studio: 'SD',
+            'Studio 1': 'SD',
+            Experiential: 'EX',
+            'Experiential 1': 'EX',
+            Research: 'RES',
+            'Individual Study': 'IND',
+            'Individual Study 1': 'IND',
+            'Distance Learning': 'DIS',
+            'Practice Study Observation': 'PSO',
+            'Travel Time': 'PS5',
+            'Travel Time 1': 'PS5',
+            'Travel Time 2': 'PS5'
+        };
+
+        const result = await this._fetch('bwckschd.p_get_crse_unsec', {
+            method: 'POST',
+            body: params.toString(),
+            headers: { 'content-type': 'application/x-www-form-urlencoded' }
+        });
+
+        const $ = cheerio.load(await result.text());
+
+        const rows = $('.pagebodydiv > .datadisplaytable[summary*=sections] > tbody > tr');
+
+        // formatted as alternating <tr> elements of section name, then section details
+        if (rows.length % 2 !== 0)
+            throw new Error('unexpected result from server');
+
+        return [...new Array(rows.length / 2)].map((_, i) => {
+            const header = rows[i * 2];
+            const headerText = $(header).text();
+            const content = rows[i * 2 + 1];
+            const contentText = $(content).text();
+            const timeRows = $(content).find('.datadisplaytable tr');
+
+            // expect at least one class time row
+            if (timeRows.length < 2)
+                throw new Error('unexpected result from server');
+
+            const linkID = headerText.match(/Link Id: (\w+)/)?.[1];
+            const requiredSection = headerText.match(/Linked Sections Required\s*\((\w+)\)/)?.[1];
+
+            const isHybrid = contentText.includes('Hybrid Instructional Method');
+            let [, minCredits, maxCredits] = contentText.match(/(?:(\d+\.\d+)\s+TO\s+)?(\d+\.\d+)\s+Credits/);
+            maxCredits = +(maxCredits ?? 0);
+            minCredits = +(minCredits ?? maxCredits);
+
+            const [, sectionName, crn, subject, courseID, sectionID] = $(header)
+                .find('a[href*=p_disp_detail_sched]')
+                .text()
+                .match(/^(.+) - (\d+) - ([A-Z\d]+) ([A-Z\d]+) - (.+)$/);
+
+            let scheduleType = null;
+
+            const scheduledMeetings = timeRows.map((i, row) => {
+                if (i === 0) return; // header, skip
+
+                const cells = $(row).find('td');
+
+                // type (always class), time, days, where, date range, schedule type, instructors
+                if (cells.length !== 7)
+                    throw new Error('unexpected result from server');
+
+                const time = $(cells[1]).text().trim();
+                let startTime = null;
+                let endTime = null;
+
+                if (!time.includes('TBA'))
+                    [startTime, endTime] = time.toUpperCase().split(' - ');
+
+                let days = $(cells[2]).text().trim().split('');
+                if (days.length === 0)
+                    days = null;
+
+                const location = $(cells[3]).text().trim();
+
+                let [startDate, endDate] = $(cells[4]).text().trim().split(' - ');
+                startDate = parseDate(startDate);
+                endDate = parseDate(endDate);
+
+                scheduleType = $(cells[5]).text().trim();
+
+                if (!(scheduleType in SCHEDULE_TYPES))
+                    throw new Error('unexpected result from server: unknown schedule type ' + scheduleType);
+
+                scheduleType = SCHEDULE_TYPES[scheduleType];
+
+                const instructorContent = $(cells[6]).contents();
+
+                let instructors;
+
+                if (instructorContent.length === 1 && $(cells[6]).text().includes('TBA')) {
+                    instructors = null;
+                } else {
+                    instructors = [];
+                    let lastInstructorName = null;
+
+                    instructorContent.map((i, el) => {
+                        if (el.type === 'text') {
+                            const text = el.data.replace(/[,()]/g, '') // remove separators
+                                    .replace(/\s+/g, ' ') // replace extra spaces
+                                    .trim();
+                            if (!text) return;
+
+                            if (lastInstructorName)
+                                instructors.push({
+                                    name: lastInstructorName
+                                });
+
+                            lastInstructorName = text;
+                        } else if (el.name === 'a') {
+                            instructors.push({
+                                name: lastInstructorName,
+                                email: el.attribs.href.replace('mailto:', '')
+                            });
+                            lastInstructorName = null;
+                        }
+                    });
+                }
+
+                return { startTime, endTime, days, location, startDate, endDate, instructors };
+            }).toArray();
+
+            return { crn: +crn, sectionName, linkID, requiredSection,
+                subject, courseID, sectionID, isHybrid, minCredits, maxCredits, scheduledMeetings };
+        });
     }
 }
 

@@ -1,4 +1,7 @@
 const mongoose = require('mongoose');
+const StaticDisjointSet = require('mnemonist/static-disjoint-set');
+
+const Section = require('./sectionModel');
 
 let model;
 
@@ -94,8 +97,79 @@ courseSchema.query.populateRequirements = async function (depth = 1) {
     return result;
 }
 
+courseSchema.methods.getSections = async function (semester) {
+    const sections = await Section.find({
+        course: this._id,
+        semester: '_id' in semester ? semester._id : semester
+    });
+
+    const groups = new StaticDisjointSet(sections.length);
+    const linkIds = {};
+    const nonLinkSections = [];
+    const linkIdIndices = [];
+    const getIndex = linkId => {
+        const i = linkIdIndices.indexOf(linkId);
+
+        if (i === -1) {
+            linkIdIndices.push(linkId);
+            return linkIdIndices.length - 1;
+        }
+
+        return i;
+    };
+
+    sections.forEach(section => {
+        if (!section.linkID || !section.requires)
+            return nonLinkSections.push(section);
+        if (!(section.linkID in linkIds))
+            linkIds[section.linkID] = [];
+        linkIds[section.linkID].push(section);
+        groups.union(getIndex(section.linkID), getIndex(section.requires));
+    });
+
+    return [...groups.compile()
+        .filter(group => !(group.length === 1 && group[0] >= linkIdIndices.length))
+        .map(group => group.map(i => linkIds[linkIdIndices[i]])),
+        ...nonLinkSections.map(section => [section])];
+}
+
+courseSchema.statics.parseCourseString = function (str, allowPartial=false) {
+    str = str.replace(/\p{P}/gu, '');
+    let subject = null;
+    let courseID = null;
+
+    if (allowPartial) {
+        [, subject, courseID] = str.match(/^([A-Z]+)?\s*(\d[A-Z\d]+)$/i) ?? [];
+    } else {
+        [, subject, courseID] = str.match(/^([A-Z]+)\s*(\d[A-Z\d]+)$/i) ?? [];
+    }
+
+    if (courseID) {
+        // k -> 000 (e.g. ECE 2k1 -> ECE 20001
+        courseID = courseID.replace(/k/ig, '000');
+
+        // append trailing zeroes
+        if (courseID.length === 3)
+            courseID += '00';
+
+        if (courseID.length !== 5)
+            courseID = null;
+    }
+
+    if (!courseID)
+        return null;
+
+    if (!subject && !courseID)
+        return null;
+
+    return {
+        subject: subject ?? null,
+        courseID: courseID ?? null
+    };
+};
+
 // unique index on combination of subject and courseID; faster search and prevent duplicates
-courseSchema.index({ subject: 1, courseID: 1 }, { unique: true });
+courseSchema.index({ subject: 1, courseID: 1 }, { unique: true, background: false });
 
 // text index on name, description, and search fields
 

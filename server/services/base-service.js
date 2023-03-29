@@ -22,7 +22,7 @@ module.exports = class BaseService {
      * @protected
      */
     async _fetch(url, opts = {}) {
-        const response = await (await this._fetchFunc).default(`${this._baseUrl}/${url}`,
+        const response = await (await this._fetchFunc).default(this._baseUrl ? `${this._baseUrl}/${url}` : url,
             deepmerge(this._options, opts)); // merge default options with override options
 
         // failed response (4xx, 5xx)
