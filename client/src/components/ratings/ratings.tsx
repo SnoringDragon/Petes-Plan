@@ -79,6 +79,10 @@ const renderProfessor = (instructor: BaseRating['instructor']) => {
     return `${instructor.firstname} ${instructor.lastname}`;
 };
 
+const sources: { [key: string]: string } = {
+    ratemyprofessor: 'Rate My Professor'
+};
+
 export function Ratings(props: RatingSearch & { filter?: string[] }) {
     const { filter: defaultFilter, ...search } = props;
 
@@ -267,7 +271,12 @@ export function Ratings(props: RatingSearch & { filter?: string[] }) {
                         value: rating.isTextbookUsed
                     }] : [])]} />
                     <span>{rating.review}</span>
-                    <TagList tags={rating.tags} className="mt-auto" />
+                    <div className="mt-auto pt-1 flex items-end">
+                        <TagList tags={rating.tags} />
+                        {(rating.type! in sources) && <span className="ml-auto text-sm text-gray-400">
+                            Source: {sources[rating.type!]}
+                        </span>}
+                    </div>
                 </div>
             </div>
         </div>))}
