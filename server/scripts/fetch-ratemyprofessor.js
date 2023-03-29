@@ -9,6 +9,7 @@ const { RateMyProfRating } = require('../models/ratingModel');
 const sleep = require('../utils/sleep');
 const { nicknames, similarNames } = require('../utils/names');
 const { parseFullName } = require('parse-full-name');
+const race = require('race-as-promised');
 
 
 const toTitleCase = src => {
@@ -17,7 +18,7 @@ const toTitleCase = src => {
 
 const queryInstructor = async (firstname, lastname, isNickname=false, abortPromise) => {
     const lastPunctuationRegex = new RegExp('\\b' + lastname.replace(/\W/g, '\\W*') + '\\b', 'i');
-    let result = await Promise.race([Instructor.find({
+    let result = await race([Instructor.find({
         firstname: new RegExp('\\b' + firstname.replace(/\W/g, '\\W*'), 'i'),
         lastname: lastPunctuationRegex
     }), abortPromise]);
@@ -48,7 +49,7 @@ const queryInstructor = async (firstname, lastname, isNickname=false, abortPromi
     if (/^[A-Z]\.?[A-Z]\.?/.test(firstname)) {
         const [, firstInitial, secondInitial] = firstname.match(/^([A-Z])\.?([A-Z])\.?/);
 
-        result = await Promise.race([Instructor.find({
+        result = await race([Instructor.find({
             firstname: new RegExp(`^\\b${firstInitial}\\w*\\s+${secondInitial}`, 'i'),
             lastname: new RegExp('\\b' + lastname.replace(/\W/g, '\\W*') + '\\b', 'i')
         }), abortPromise]);
@@ -113,7 +114,7 @@ const queryInstructor = async (firstname, lastname, isNickname=false, abortPromi
     ];
 
     for (const [first, last] of regexPairs) {
-        result = await Promise.race([Instructor.find({
+        result = await race([Instructor.find({
             firstname: first,
             lastname: last
         }), abortPromise]);
@@ -137,7 +138,7 @@ const queryInstructor = async (firstname, lastname, isNickname=false, abortPromi
     }
 
     // try search by last name only
-    result = await Promise.race([Instructor.find({
+    result = await race([Instructor.find({
         lastname: lastRegex
     }), abortPromise]);
     result = result.filter(instructor => instructor.firstname && firstname &&
@@ -155,7 +156,7 @@ const findInstructor = async ({ firstName, lastName, ratings, legacyId }, earlie
     if (!ratings.edges.length) return false; // dont bother finding instructors with no ratings
     let instructor = null;
 
-    instructor = await Promise.race([Instructor.findOne({
+    instructor = await race([Instructor.findOne({
         rateMyProfIds: legacyId.toString()
     }), abortPromise]);
 
@@ -168,10 +169,10 @@ const findInstructor = async ({ firstName, lastName, ratings, legacyId }, earlie
     const latestReviewYear = Math.max(...ratings.edges
         .map(({ node }) => new Date(node.date).getFullYear()));
 
-    instructor = await Promise.race([queryInstructor(names.first, names.last, false, abortPromise), abortPromise]);
+    instructor = await race([queryInstructor(names.first, names.last, false, abortPromise), abortPromise]);
 
     if (names.nick && !instructor)
-        instructor = await Promise.race([queryInstructor(names.nick, names.last, true, abortPromise), abortPromise]);
+        instructor = await race([queryInstructor(names.nick, names.last, true, abortPromise), abortPromise]);
 
     if (instructor) {
         instructor.rateMyProfIds = [...instructor.rateMyProfIds, legacyId.toString()];
@@ -224,7 +225,7 @@ module.exports = async ({ batchSize = 16, abort = new AbortController(), log = c
     let listener;
     const abortPromise = new Promise((_, reject) => abort.signal.addEventListener('abort', listener = reject));
 
-    const semesters = await Promise.race([Semester.find(), abortPromise]);
+    const semesters = await race([Semester.find(), abortPromise]);
     const earliestYear = Math.min(...semesters.map(s => s.year));
 
     log('querying database for instructors');
@@ -246,14 +247,14 @@ module.exports = async ({ batchSize = 16, abort = new AbortController(), log = c
         let index;
 
         while ((index = searchInstructorIndices.pop()) !== undefined && !abort.signal.aborted) {
-            await Promise.race([sleep(1000), abortPromise]);
+            await race([sleep(1000), abortPromise]);
 
             let directoryEntries;
             const { node } = ratings.search.teachers.edges[index];
             const name = `${node.firstName} ${node.lastName}`.replace(/[^\w. '@-]/g, '');
 
             try {
-                directoryEntries = await Promise.race([purdueDirectory.search({ name }), abortPromise]);
+                directoryEntries = await race([purdueDirectory.search({ name }), abortPromise]);
             } catch (e) {
                 log('failed to fetch data from purdue directory for', name, ':', e.message,
                     '; falling back to old directory')
@@ -261,7 +262,7 @@ module.exports = async ({ batchSize = 16, abort = new AbortController(), log = c
 
             if (!directoryEntries) {
                 try {
-                    directoryEntries = await Promise.race([purdueDirectory.oldSearch({ name }), abortPromise]);
+                    directoryEntries = await race([purdueDirectory.oldSearch({ name }), abortPromise]);
                 } catch (e) {
                     log('failed to fetch data from old directory for', name, ':', e.message);
                     continue;
@@ -299,10 +300,10 @@ module.exports = async ({ batchSize = 16, abort = new AbortController(), log = c
             let instructor;
 
             if (directoryData?.email)
-                instructor = await Promise.race([Instructor.findOne({ email: directoryData.email }), abortPromise]);
+                instructor = await race([Instructor.findOne({ email: directoryData.email }), abortPromise]);
 
             if (directoryData?.alias && !instructor)
-                instructor = await Promise.race([Instructor.findOne({ email: `${directoryData.alias}@purdue.edu` }), abortPromise]);
+                instructor = await race([Instructor.findOne({ email: `${directoryData.alias}@purdue.edu` }), abortPromise]);
 
             // create new entry
             if (!instructor && (directoryData?.email || directoryData?.alias) && directoryData?.name) {
@@ -350,7 +351,7 @@ module.exports = async ({ batchSize = 16, abort = new AbortController(), log = c
 
     const savedIds = new Set();
 
-    await Promise.race([Promise.all(instructorResult.map(([_, instructor], i) => {
+    await race([Promise.all(instructorResult.map(([_, instructor], i) => {
         if (instructor && (instructor.isModified() || instructor.$isNew) && !savedIds.has(instructor._id.toString())) {
             savedIds.add(instructor._id.toString());
             return instructor.save();
@@ -395,7 +396,7 @@ module.exports = async ({ batchSize = 16, abort = new AbortController(), log = c
         });
     });
 
-    const courses = await Promise.race([Course.find({
+    const courses = await race([Course.find({
         $or: Object.values(reviewToCourseIdMap)
             .filter(x => x)
     }), abortPromise]);
@@ -408,7 +409,7 @@ module.exports = async ({ batchSize = 16, abort = new AbortController(), log = c
     log('removing old ratings...');
 
     // remove deleted reviews
-    await Promise.race([RateMyProfRating.deleteMany({
+    await race([RateMyProfRating.deleteMany({
         typeSpecificId: {
             $nin: Object.keys(reviewToCourseIdMap)
         }
@@ -450,12 +451,12 @@ module.exports = async ({ batchSize = 16, abort = new AbortController(), log = c
 
     log('updating new ratings...');
     log('this may take a long time:', updates.length, 'reviews to be processed');
-    const bulkWriteResult = await Promise.race([
+    const bulkWriteResult = await race([
         RateMyProfRating.bulkWrite(updates, { ordered: false }),
         abortPromise
     ]);
 
-    await Promise.race([RateMyProfRating.updateMany({
+    await race([RateMyProfRating.updateMany({
         _id: {
             $in: [...bulkWriteResult.getInsertedIds(), ...bulkWriteResult.getUpsertedIds()]
                 .map(({ _id }) => _id)
