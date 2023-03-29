@@ -2,7 +2,7 @@ import { RateMyProfRating, Rating, RatingSearch, RatingSearchResult } from '../.
 import { useEffect, useState } from 'react';
 import RatingService from '../../services/RatingService';
 import { Box, Chip, IconButton, MenuItem, OutlinedInput, Select, Tooltip } from '@material-ui/core';
-import { FaTimes, FaLaptop } from 'react-icons/fa';
+import { FaTimes, FaLaptop, FaChevronUp, FaChevronDown } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 
 function RatingSquare(props: {
@@ -80,6 +80,7 @@ export function Ratings(props: RatingSearch & { filter?: string[] }) {
     const [filter, setFilter] = useState<string[]>([...(defaultFilter ?? [])]);
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(true);
+    const [collapsed, setCollapsed] = useState(false);
 
     const isCourse = 'course' in props || 'courseID' in props;
 
@@ -206,7 +207,12 @@ export function Ratings(props: RatingSearch & { filter?: string[] }) {
             </Select>
             <FaTimes className="ml-4 text-xl cursor-pointer" onClick={() => setFilter([])} />
         </div>
-        <div>
+        <div className="flex items-center justify-center w-full py-2 mb-2 bg-gray-600 bg-opacity-25 cursor-pointer"
+            onClick={() => setCollapsed(!collapsed)}>
+            {collapsed ? 'Expand' : 'Collapse'} Reviews
+            {collapsed ? <FaChevronDown className="ml-2" /> : <FaChevronUp className="ml-2" />}
+        </div>
+        <div className={collapsed ? 'hidden' : ''}>
         {data.map(rating => (<div key={rating._id} className="bg-gray-500 bg-opacity-25 p-6 mb-4 flex">
             <div className="mr-6">
                 <RatingSquare rating={rating.quality} label="Quality" />
