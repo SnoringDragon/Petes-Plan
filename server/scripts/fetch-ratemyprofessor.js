@@ -140,8 +140,9 @@ const queryInstructor = async (firstname, lastname, isNickname=false) => {
     result = await Instructor.find({
         lastname: lastRegex
     });
-    result = result.filter(instructor => instructor.firstname.toLowerCase().includes(firstname.toLowerCase()) ||
-        firstname.toLowerCase().includes(instructor.firstname.toLowerCase()));
+    result = result.filter(instructor => instructor.firstname && firstname &&
+        (instructor.firstname.toLowerCase().includes(firstname.toLowerCase()) ||
+        firstname.toLowerCase().includes(instructor.firstname.toLowerCase())));
 
     if (result.length === 1)
         return result[0];

@@ -185,3 +185,4 @@ courseSchema.index({
     }
 })
 
+module.exports = model = mongoose.model('Course', courseSchema);
