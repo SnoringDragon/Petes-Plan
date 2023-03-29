@@ -105,12 +105,18 @@ async function fetchIndividualSubject(term, subject, colleges, semesterId) {
         let last;
         let first;
 
-        if (professor) {
+        if (professor && professor.first) {
             ({ last, first } = professor);
         } else {
             const parsed = parseFullName(instructor.name);
             last = parsed.last;
             first = `${parsed.first} ${parsed.middle}`.trim();
+        }
+
+        if (!first || !last) { // dont know why this is happening
+            const parts = instructor.name.split(/\s+/g);
+            last = parts.pop();
+            first = parts.join(' ');
         }
 
         nameToPartsMap[[first, last]] = instructor.name;
