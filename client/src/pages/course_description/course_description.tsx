@@ -7,6 +7,7 @@ import { Prerequisites } from '../../components/prerequisites/prerequisites';
 import CourseService from '../../services/CourseService';
 import { UserCourse } from '../../types/user-course';
 import CourseHistoryService from '../../services/CourseHistoryService';
+import { Ratings } from '../../components/ratings/ratings';
 
 export function Course_Description() {
     const [searchParams] = useSearchParams();
@@ -82,6 +83,8 @@ export function Course_Description() {
             <div className="mt-5 underline">Prerequisities:</div>
             <p></p>
             <Prerequisites prerequisites={course.requirements} userCourses={userCourses} />
+            <div className="mt-5 underline">Reviews:</div>
+            <Ratings courseID={course.courseID} subject={course.subject} />
         </div>
     </div></Layout>)
 }
