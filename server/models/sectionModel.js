@@ -27,7 +27,7 @@ const sectionSchema = new mongoose.Schema({
         startTime: String,
         endTime: String,
         location: String,
-        instructors: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Instructors' }]
+        instructors: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Instructor' }]
     }]
 });
 
