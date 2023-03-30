@@ -3,6 +3,8 @@ const Course = require('../models/courseModel');
 const Section = require('../models/sectionModel');
 const Semester = require('../models/semesterModel');
 
+const mongoose = require('mongoose');
+
 module.exports = app => {
     const router = Router();
 
@@ -25,7 +27,7 @@ module.exports = app => {
                 semesters: { $addToSet: '$semester' }
             }
         }]))[0]?.semesters ?? [];
-        course.semsters = await Semester.find({
+        course.semesters = await Semester.find({
             _id: {$in: semesterIds}
         });
 
@@ -43,6 +45,12 @@ module.exports = app => {
         });
 
         if (!course) return res.json([]);
+
+        try {
+            mongoose.Types.ObjectId(req.query.semester);
+        } catch {
+            return res.status(400).json({ message: 'invalid input' });
+        }
 
         return res.json(await course.getSections(req.query.semester));
     });
