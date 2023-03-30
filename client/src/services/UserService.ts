@@ -9,18 +9,13 @@ class UserService extends Api {
             sessionStorage.setItem('token', result.token);
         else
             localStorage.setItem('token', result.token);
+        window.dispatchEvent(new Event('storage'));
     }
 
     async register(email: string, password: string, name: string) {
         return this.post('/api/user/signup', {
             email, password, name
         });
-    }
-
-    clearTokens() {
-        sessionStorage.removeItem('token');
-        localStorage.removeItem('token');
-        document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/';
     }
 
     async logout() {
@@ -39,7 +34,7 @@ class UserService extends Api {
     }
 
     getUserData() {
-        return this.get<{ name: string, email: string }>('/api/user');
+        return this.get<{ name: string, email: string, isAdmin?: boolean }>('/api/user');
     }
 
     setUserData(data: { name: string }) {
