@@ -150,8 +150,8 @@ exports.majorGPA = async (req, res, major) => {
 }
 
 // courseAttributeSchema = new courseAttribute
-// let CS180 = courseModel.findOne({ courseID: "18000"}).exec();
-// print(CS180)
+let CS180 = courseModel.findOne({ courseID: "18000"}).exec();
+console.log(CS180.courseID);
 // course = new courseModel("Object Oriented Progragrimming in Java", "CS", "CS 180000", "180", 3, 3, "Intro CS course");
 // userCourseModels = new courseModel("Object Oriented Progragrimming in Java", "CS", "A", 2020);
 // calculateGPA(userCourseModels)
