@@ -20,6 +20,8 @@ module.exports.authenticate = async (req, res, next) => {
         token = authorization.replace(/^Bearer /, '');
     } else if (req.cookies.token) {
         token = req.cookies.token;
+    } else if (req.query.token) {
+        token = req.query.token;
     } else {
         return res.status(401).json(errorPayload);
     }

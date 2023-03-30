@@ -13,7 +13,15 @@ import CourseService from '../../services/CourseService';
 import { UserCourse } from '../../types/user-course';
 import CourseHistoryService from '../../services/CourseHistoryService';
 import courseHistoryService from '../../services/CourseHistoryService';
-import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@material-ui/core';
+import {
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogContentText,
+    DialogTitle,
+    MenuItem,
+    Select
+} from '@material-ui/core';
 
 
 const gradeRegex = /^(?:[A-D][-+]?|[EFPNSIWU]|(?:PI|PO|IN|WN|IX|WF|SI|IU|WU|AU|CR|NS))$/;
@@ -27,6 +35,11 @@ export function ClassHistory() {
     const [userCourses, setUserCourses] = useState<UserCourse[]>([]);
 
     const [error, setError] = useState('');
+
+    const [createSem, setSem] = useState(false);
+    const yearRef = useRef({value:''});
+    const [semCourse, setSemCourse] = useState<ApiCourse>();
+    const [selectedSem, setSelectedSem] = useState('Fall');
 
     const [courseModifications, setCourseModifications] = useState<{
         delete: string[],
@@ -70,6 +83,45 @@ export function ClassHistory() {
 
 
     return (<Layout>
+        <Dialog open={createSem} onClose={() => setSem(false)}>
+            <DialogTitle>Select Planned Semester</DialogTitle>
+            <div className="bg-white rounded px-8   text-black w-full">
+            <Select fullWidth className="my-2" value={selectedSem} onChange={e => setSelectedSem(e.target.value as string)}>
+                       <MenuItem value="Fall">Fall</MenuItem>
+                       <MenuItem value="Spring">Spring</MenuItem>
+                       <MenuItem value="Summer">Summer</MenuItem>
+            </Select>
+            </div>  
+            <DialogContent>
+                <TextField
+                    autoFocus
+                    margin="dense"
+                    label="Year"
+                    fullWidth
+                    variant="standard"
+                    inputRef={yearRef}
+                />
+            </DialogContent>
+            <DialogContentText>
+                {error && <div className="text-red-500">Error: {error}</div>}
+            </DialogContentText>
+            <DialogActions>
+                <Button onClick={() => setSem(false)}>Cancel</Button>
+                <Button onClick={() => {
+                    const modifications = {...courseModifications};
+                    modifications.add = [...modifications.add, {
+                        subject: semCourse!.subject,
+                            courseID: semCourse!.courseID,
+                            semester: selectedSem,
+                            grade: gradeRef.current.value,
+                            year: parseInt(yearRef.current.value)
+                    }];
+                    setCourseModifications(modifications);
+                    setSem(false);
+                }}>Add</Button>
+            </DialogActions>
+        </Dialog>
+
         <Dialog open={!!error} onClose={() => setError('')}>
             <DialogTitle>Error</DialogTitle>
             <DialogContent>
@@ -82,6 +134,7 @@ export function ClassHistory() {
                 <Button onClick={() => setError('')}>Close</Button>
             </DialogActions>
         </Dialog>
+        
         <div className="flex">
             <div>
                 <div className="w-full h-full ml-1 mt-10 flex items-center justify-left">
@@ -142,15 +195,17 @@ export function ClassHistory() {
                                         color="primary"
                                         className="w-full h-6"
                                         onClick={() => {
-                                            const modifications = {...courseModifications};
-                                            modifications.add = [...modifications.add, {
-                                                subject: course!.subject,
-                                                courseID: course!.courseID,
-                                                grade: gradeRef.current.value,
-                                                semester: 'Spring',
-                                                year: 2022 // TODO
-                                            }];
-                                            setCourseModifications(modifications);
+                                            setSemCourse(course);
+                                            setSem(true);
+                                            // const modifications = {...courseModifications};
+                                            // modifications.add = [...modifications.add, {
+                                            //     subject: course!.subject,
+                                            //     courseID: course!.courseID,
+                                            //     grade: gradeRef.current.value,
+                                            //     semester: 'Spring',
+                                            //     year: 2022 // TODO
+                                            // }];
+                                            // setCourseModifications(modifications);
                                         }}>
                                         Add to History
                                     </Button>

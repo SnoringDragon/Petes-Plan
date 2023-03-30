@@ -1,11 +1,27 @@
 import { Link, useNavigate } from 'react-router-dom';
 import UserService from '../../services/UserService';
 import { Button } from '@material-ui/core';
+import { useCallback, useEffect, useState } from 'react';
 
 export function HeaderBar() {
-    const isLoggedIn = UserService.isLoggedIn();
+    const [isLoggedIn, setLoggedIn] = useState(UserService.isLoggedIn());
+    const [isAdmin, setAdmin] = useState(UserService.getLocalUserData()?.isAdmin);
+
+    useEffect(() => {
+        const handleEvent = () => {
+            setLoggedIn(UserService.isLoggedIn());
+            setAdmin(UserService.getLocalUserData()?.isAdmin);
+        };
+
+        window.addEventListener('storage', handleEvent);
+
+        return () => {
+            window.removeEventListener('storage', handleEvent)
+        };
+    }, []);
+
+
     const navigate = useNavigate();
-    const isAdmin = UserService.getLocalUserData()?.isAdmin;
 
     return (<div className="h-16 p-4 flex items-center border-b border-slate-600 bg-neutral-700">
         Pete's Plan
