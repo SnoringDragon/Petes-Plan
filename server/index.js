@@ -1,5 +1,6 @@
 const express = require('express');
 const jsonParser = require('body-parser').json();
+const cookieParser = require('cookie-parser');
 const cors = require('cors');
 const fetchCourses = require('./scripts/fetch-courses');
 const fetchRateMyProf = require('./scripts/fetch-ratemyprofessor');
@@ -19,6 +20,7 @@ async function main() {
 
     app.use(cors());
     app.use(jsonParser);
+    app.use(cookieParser());
 
     /* Load files in ./routes */
     require('./routes/index')(app);

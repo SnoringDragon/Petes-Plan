@@ -20,6 +20,7 @@ class UserService extends Api {
     clearTokens() {
         sessionStorage.removeItem('token');
         localStorage.removeItem('token');
+        document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/';
     }
 
     async logout() {
@@ -57,7 +58,7 @@ class UserService extends Api {
         return this.delete('/api/user/delete');
     }
 
-    getLocalUserData() {
+    getLocalUserData(): { _id: string, isAdmin: boolean } | null {
         try {
             // try to decode token payload
             return jwtDecode((sessionStorage.getItem('token')
