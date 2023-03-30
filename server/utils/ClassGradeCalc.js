@@ -8,7 +8,7 @@
 //label examples: homework, exam, essay, quiz, project, extra cred, discussion, activity, mischellaneous
 //see below to testing code for more examples
 
-export function calculateGrade(weights, assignments, capped = False) {
+function calculateGrade(weights, assignments, capped = False) {
     let grade = 0.0;
     //weights is a map of type (str, int) = (label, weight). Ex: ("homework", "20") 
     let extraCred = 0;    
@@ -91,9 +91,11 @@ function getLetterGrade(numberGrade) {
     }   
 }
 
+module.exports = calculateGrade;
+
 // let weights = new Map();
 // let labels = ["homework", "quiz", "exam", "extra credit"];
-//extra cred has default weight of 100
+// //extra cred has default weight of 100
 // let label_weights = [30, 40, 30, 100];
 // let label_caps = [0, 0, 1, 1];
 // capped = 1;
