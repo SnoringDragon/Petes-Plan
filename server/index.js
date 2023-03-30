@@ -1,5 +1,6 @@
 const express = require('express');
 const jsonParser = require('body-parser').json();
+const cookieParser = require('cookie-parser');
 const cors = require('cors');
 const fetchCourses = require('./scripts/fetch-courses');
 const fetchRateMyProf = require('./scripts/fetch-ratemyprofessor');
@@ -13,19 +14,16 @@ async function main() {
     const port = process.env.PORT;
     delete process.env.DB;
 
+    await require('./tasks')();
+
     const app = express();
 
     app.use(cors());
     app.use(jsonParser);
+    app.use(cookieParser());
 
     /* Load files in ./routes */
     require('./routes/index')(app);
-
-    if (process.argv.includes('--update-courses'))
-        fetchCourses().catch(console.error);
-
-    if (process.argv.includes('--update-ratings'))
-        fetchRateMyProf().catch(console.error);
 
     if (process.argv.includes('--update-ap'))
         require('./scripts/fetch-ap')().catch(console.error);
