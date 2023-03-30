@@ -39,6 +39,8 @@ async function main() {
     app.listen(port, () => {
         console.log('listening on port', port);
     });
+
+    return app;
 }
 
-main().catch(console.error);
+module.exports = main().catch(console.error);
