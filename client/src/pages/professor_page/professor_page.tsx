@@ -4,6 +4,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { ApiProfessor } from '../../types/professor';
 import { FaArrowLeft } from 'react-icons/fa';
 import ProfessorService from '../../services/ProfessorService';
+import { Link } from 'react-router-dom';
 
 export function Professor_Page() {
     const [searchParams] = useSearchParams();
@@ -56,7 +57,10 @@ export function Professor_Page() {
         </header>
         <div className="p-4">
             <div><span className="underline">Email:</span> {professor.email}</div>
-            <div className="mt-5 underline">Rate my Professor link:</div>
+            {professor.rateMyProfIds.map(
+                rateMyProfIds => <div><Link to={`https://www.ratemyprofessors.com/professor/${rateMyProfIds}`}>
+                    Rate my Professor link
+                </Link></div>)}
         </div>
     </div></Layout>)
 }

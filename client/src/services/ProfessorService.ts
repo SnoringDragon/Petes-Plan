@@ -2,7 +2,7 @@ import { Api } from './Api';
 
 class ProfessorService extends Api {
     getProfessor(options: { id: string }) {
-        return this.get(`/api/professor/?${new URLSearchParams(options)}`);
+        return this.get(`/api/instructors/?${new URLSearchParams(options)}`);
     }
 }
 

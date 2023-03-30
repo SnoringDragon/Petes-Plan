@@ -18,18 +18,7 @@ export interface ApiProfessor {
     lastname: string,
     email: string,
     //classes: Classes
-    rateMyProfId: string[]
+    rateMyProfIds: string[]
 }
 
-/*
-export interface ProfessorRequirement extends AbstractClasses {
-    type: 'course',
-    subject: string,
-    courseID: string,
-    // full course object may not exist (in the case it was not populated)
-    // full course object may also be null (in the case that the course does not exist in the backend,
-    //     such as for regional-campus-only courses)
-    course?: ApiProfessor | null
-}
-*/
 
