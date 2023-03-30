@@ -8,12 +8,15 @@ import { Prerequisites } from '../../components/prerequisites/prerequisites';
 import CourseService from '../../services/CourseService';
 import { UserCourse } from '../../types/user-course';
 import CourseHistoryService from '../../services/CourseHistoryService';
+import { Link } from 'react-router-dom';
 import {
     Dialog,
     DialogActions,
     DialogContent,
     DialogContentText,
     DialogTitle,
+    FormControl,
+    InputLabel,
     MenuItem,
     Select
 } from '@material-ui/core';
@@ -118,16 +121,26 @@ export function Course_Description() {
             <div className="mt-5 underline">Prerequisities:</div>
             <p></p>
             <Prerequisites prerequisites={course.requirements} userCourses={userCourses} />
-            <Select fullWidth className="my-2" labelId="demo-simple-select-label"
-                id="demo-simple-select"
-                value={selectedSemester}
-                label="Semester"
-                onChange={ev => setSemester(ev.target.value as string)} >
-                {course.semesters.map((semester) => (<MenuItem key={semester._id} value={semester._id}>
-                    {semester.semester} {semester.year}
-                </MenuItem>))}
-            </Select>
-            {section.map(section => <div>{section.map(section => <div>{section.map(section => <div>{section.meetings.map(meetings => <div>{meetings.days} {meetings.startTime}-{meetings.endDate} {meetings.instructors.map(instructors => <div>{instructors.firstname} {instructors.lastname}</div>)}</div>)}</div>)}</div>)}</div>)}
+            <FormControl fullWidth>
+                <InputLabel id="demo-simple-select-label">Semester</InputLabel>
+                <Select fullWidth className="my-2" labelId="demo-simple-select-label"
+                    id="demo-simple-select"
+                    value={selectedSemester}
+                    label="Semester"
+                    onChange={ev => setSemester(ev.target.value as string)} >
+                    {course.semesters.map((semester) => (<MenuItem key={semester._id} value={semester._id}>
+                        {semester.semester} {semester.year}
+                    </MenuItem>))}
+                </Select>
+            </FormControl>
+            <div><span className="underline">Sections:</span></div>
+            {section.map(section => <div>{section.map(
+                section => <div>{section.map(
+                    section => <div>{section.meetings.map(
+                        meetings => <div>{meetings.days} {meetings.startTime}-{meetings.endTime} {meetings.instructors.map(
+                            instructors => <div><Link to={`/professor?id=${instructors._id}`}>
+                                {instructors.firstname} {instructors.lastname}
+                            </Link></div>)}</div>)}</div>)}</div>)}</div>)}
         </div>
     </div></Layout>)
 }
