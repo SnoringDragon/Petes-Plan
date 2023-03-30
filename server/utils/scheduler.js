@@ -47,3 +47,5 @@ const scheduleRepeat = (func, time, ...args) => {
 };
 
 module.exports.scheduleRepeat = scheduleRepeat;
+module.exports.timeUntil = timeUntil;
+
