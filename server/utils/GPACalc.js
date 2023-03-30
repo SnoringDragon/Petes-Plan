@@ -54,7 +54,7 @@ async function calculateGPA(userCourseModels) {
     return [indexPts, creditHourSum];
 }
 
-exports.cumulativeGPA = async (req, res) => {
+async function cumulativeGPA(req, res) {
     //userCourseModels is doc array
     //hopefully this only pulls current user's courses
     let userCourseModels = req.user.completedCourses;
@@ -62,7 +62,7 @@ exports.cumulativeGPA = async (req, res) => {
     return returned[0] / returned[1];
 }
 
-exports.semesterGPA = async (req, res, semesterInput, yearInput) => {
+async function semesterGPA(req, res, semesterInput, yearInput) {
     let userCourseModels = req.user.completedCourses.find({ semester: semesterInput, year: yearInput });
     userCourseModels.exec(function (err) {
         if (err) {
@@ -122,7 +122,7 @@ async function concentrationGPA(req, res, major) {
     return [concentrIndexPtsSum, concentrCreditHourSum];
 }
 
-exports.majorGPA = async (req, res, major) => {
+async function majorGPA(req, res, major) {
     uniqueCourses = new Map();
     //doesn't include concentration GPA
     let majorDoc = await degreeModel.findOne({ name: major, type: 'major' }).exec();
@@ -149,9 +149,13 @@ exports.majorGPA = async (req, res, major) => {
     return majorReturned[0] / majorReturned[1];
 }
 
+module.exports = cumulativeGPA;
+module.exports = semesterGPA;
+module.exports = majorGPA;
+
 // courseAttributeSchema = new courseAttribute
-let CS180 = courseModel.findOne({ courseID: "18000"}).exec();
-console.log(CS180.courseID);
+// let CS180 = courseModel.findOne({ courseID: "18000"}).exec();
+// console.log(CS180.courseID);
 // course = new courseModel("Object Oriented Progragrimming in Java", "CS", "CS 180000", "180", 3, 3, "Intro CS course");
 // userCourseModels = new courseModel("Object Oriented Progragrimming in Java", "CS", "A", 2020);
 // calculateGPA(userCourseModels)

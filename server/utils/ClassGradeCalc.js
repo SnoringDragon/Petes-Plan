@@ -8,7 +8,7 @@
 //label examples: homework, exam, essay, quiz, project, extra cred, discussion, activity, mischellaneous
 //see below to testing code for more examples
 
-function calculateGrade(weights, assignments, capped = False) {
+function calculateGrade(weights, assignments) {
     let grade = 0.0;
     //weights is a map of type (str, int) = (label, weight). Ex: ("homework", "20") 
     let extraCred = 0;    
@@ -58,6 +58,9 @@ function calculateGrade(weights, assignments, capped = False) {
         // }
         
     }
+    if (grade > 100) {
+        grade = 100;
+    } 
     return [grade, getLetterGrade(grade)];
 }
 
