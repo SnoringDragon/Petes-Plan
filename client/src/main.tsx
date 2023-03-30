@@ -104,19 +104,20 @@ const router = createBrowserRouter([
     {
       path: "/grade-calc",
       element: <GradeCalc />
-    }, 
+    },
     {
       path: "/section-info",
       element: <Section_Info />
-    }, 
+    },
     {
       path: "/instructor",
       element: <Instructor />
-    }, 
+    },
     {
       path: "/shared-req",
       element: <SharedReq />
     },
+    {
       path: "/professor",
       element: <Professor_Page />
     }

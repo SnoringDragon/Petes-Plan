@@ -23,9 +23,9 @@ export function Professor_Page() {
     }, [])
     */
     useEffect(() => {
-        const name = searchParams.get('professorName') ?? '';
+        const id = searchParams.get('professorid') ?? '';
 
-        ProfessorService.getProfessor({ name })
+        ProfessorService.getProfessor({ id })
             .then(res => {
                 if (!res) {
                     setProfessor(null);
@@ -52,12 +52,11 @@ export function Professor_Page() {
             <div className="float-left ml-2 text-2xl cursor-pointer" onClick={() => navigate(-1)}>
                 <FaArrowLeft />
             </div>
-            {professor.name}
+            {professor.firstname} {professor.lastname}
         </header>
         <div className="p-4">
             <div><span className="underline">Email:</span> {professor.email}</div>
             <div className="mt-5 underline">Rate my Professor link:</div>
-            <div>{professor.rateMyProfessorLink} </div>
         </div>
     </div></Layout>)
 }

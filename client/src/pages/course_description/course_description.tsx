@@ -2,9 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { Layout } from '../../components/layout/layout';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { ApiCourse } from '../../types/course-requirements';
+import { Section } from '../../types/course-requirements';
 import { FaArrowLeft } from 'react-icons/fa';
 import { Prerequisites } from '../../components/prerequisites/prerequisites';
-import { Professor } from '../../components/professor/professor';
 import CourseService from '../../services/CourseService';
 import { UserCourse } from '../../types/user-course';
 import CourseHistoryService from '../../services/CourseHistoryService';
@@ -17,6 +17,7 @@ import {
     MenuItem,
     Select
 } from '@material-ui/core';
+import { Instructor } from '../instructor/instructor';
 
 export function Course_Description() {
     const [searchParams] = useSearchParams();
@@ -31,7 +32,7 @@ export function Course_Description() {
 
     const [selectedSemester, setSemester] = useState<string | null>(null);
 
-    const [section, setSection] = useState<ApiSection[][][]>([]);
+    const [section, setSection] = useState<Section[][][]>([]);
 
     useEffect(() => {
         CourseHistoryService.getCourses()
@@ -60,18 +61,20 @@ export function Course_Description() {
         const subject = searchParams.get('subject') ?? '';
         const courseID = searchParams.get('courseID') ?? '';
 
-        CourseService.getCourseSection({  subject, courseID, selectedSemester }) 
-            .then(res => {
-                if (!res) {
-                    setCourseSections(null);
-                    setError('Course Secrtions not found');
-                    return;
-                }
-                setCourseSection(res);
-            })
-            .catch(err => {
-                setError(err?.message ?? err);
-            });
+        if (selectedSemester != null) {
+            CourseService.getCourseSections({ subject, courseID, semester: selectedSemester })
+                .then(res => {
+                    if (!res) {
+                        setSection([]);
+                        setError('Course Sections not found');
+                        return;
+                    }
+                    setSection(res);
+                })
+                .catch(err => {
+                    setError(err?.message ?? err);
+                });
+        }
     }, [selectedSemester])
 
     if (!course) return (<Layout><div className="text-2xl flex flex-col h-full justify-center items-center">
@@ -82,6 +85,7 @@ export function Course_Description() {
         </>}
     </div></Layout>)
 
+    console.log(course)
     return (<Layout><div className="w-full h-full flex flex-col items-center">
         <header className="text-center text-white text-3xl mt-4 w-full">
             <div className="float-left ml-2 text-2xl cursor-pointer" onClick={() => navigate(-1)}>
@@ -118,11 +122,12 @@ export function Course_Description() {
                 id="demo-simple-select"
                 value={selectedSemester}
                 label="Semester"
-                onChange={ev => setSemester(ev.target.value)} >
-                        {course.semester.map((semester, i) => (<MenuItem key={semester._id} value={i}>
-                            {semester.semester} {semester.year}
-                        </MenuItem>))}
+                onChange={ev => setSemester(ev.target.value as string)} >
+                {course.semesters.map((semester) => (<MenuItem key={semester._id} value={semester._id}>
+                    {semester.semester} {semester.year}
+                </MenuItem>))}
             </Select>
+            {section.map(section => <div>{section.map(section => <div>{section.map(section => <div>{section.meetings.map(meetings => <div>{meetings.days} {meetings.startTime}-{meetings.endDate} {meetings.instructors.map(instructors => <div>{instructors.firstname} {instructors.lastname}</div>)}</div>)}</div>)}</div>)}</div>)}
         </div>
     </div></Layout>)
 }

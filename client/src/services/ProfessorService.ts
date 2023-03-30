@@ -1,12 +1,8 @@
 import { Api } from './Api';
 
 class ProfessorService extends Api {
-    getProfessor(options: { name: string }) {
+    getProfessor(options: { id: string }) {
         return this.get(`/api/professor/?${new URLSearchParams(options)}`);
-    }
-
-    searchCourse(query: string) {
-        return this.get(`/api/professor/search?q=${encodeURIComponent(query)}`);
     }
 }
 

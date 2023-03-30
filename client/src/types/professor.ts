@@ -13,10 +13,12 @@ export interface AbstractClassesGroup extends AbstractClasses {
 //export type Classes = ProfessorRequirement;
 
 export interface ApiProfessor {
-    name: string,
+    _id: string,
+    firstname: string,
+    lastname: string,
     email: string,
     //classes: Classes
-    rateMyProfessorLink: string
+    rateMyProfId: string[]
 }
 
 /*
