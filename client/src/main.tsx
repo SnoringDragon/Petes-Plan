@@ -28,6 +28,7 @@ import { Section_Info } from './pages/section-info/section-info';
 import { Instructor } from './pages/instructor/instructor';
 import { SharedReq } from './pages/shared_req/shared_req';
 import { AdminDashboard } from './pages/admin-dashboard/admin-dashboard';
+import { TotalDeg } from './pages/total_deg/total_deg';
 
 const router = createBrowserRouter([
   {
@@ -116,6 +117,10 @@ const router = createBrowserRouter([
     {
       path: "/shared-req",
       element: <SharedReq />
+    },
+    {
+      path: "/total-degree",
+      element: <TotalDeg />
     },
     {
       path: '/admin',
