@@ -251,7 +251,7 @@ exports.addCourse = async (req, res) => {
     }
 
     /* Save the user to the database */
-    req.user.populateAll();
+    await req.user.populateAll();
     req.user.save().then(() => {
         return res.status(201).json({
             message: 'Successfully added degree(s)/course(s) to degree plan',
@@ -353,7 +353,7 @@ exports.removeCourse = async (req, res) => {
     }
 
     /* Save the user to the database */
-    req.user.populateAll();
+    await req.user.populateAll();
     req.user.save().then(() => {
         return res.status(200).json({
             message: 'Successfully removed course(s)/degree(s) from degree plan',
