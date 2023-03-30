@@ -1,12 +1,14 @@
-//input: categories and their weights: homework, exam, essay, 
-//quiz, project, extra cred, discussion, activity, mischellaneous
 //input: assignments & weights & grades
                         //str    //str   //double   
-    //assignments format: [['label', 'name', numberGrade], [...], [...], ...]
-    //weights format: Map() with key category "label" and value [label_weight, label_cap]
-//Note: label_cap is a 0 or 1 for any category label except for for extra credit. for extra_cred, it can be an int cap 
-// exports.calculateGrade = (weights, assignments) => {
-function calculateGrade(weights, assignments, capped = False) {
+    //assignments: [['label', 'name', numberGrade], [...], [...], ...]
+    //weights: Map() with key category "label" and value [label_weight, label_cap]
+
+    //Note: label_cap is a 0 or 1 for any category label except for for extra credit. for extra_cred, it can be an int cap 
+
+//label examples: homework, exam, essay, quiz, project, extra cred, discussion, activity, mischellaneous
+//see below to testing code for more examples
+
+export function calculateGrade(weights, assignments, capped = False) {
     let grade = 0.0;
     //weights is a map of type (str, int) = (label, weight). Ex: ("homework", "20") 
     let extraCred = 0;    
