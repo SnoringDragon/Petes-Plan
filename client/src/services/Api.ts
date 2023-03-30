@@ -73,6 +73,7 @@ export abstract class Api {
         if (result.status === 401) {
             localStorage.removeItem('token');
             sessionStorage.removeItem('token');
+            document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/';
         }
 
         const data = await result.json();

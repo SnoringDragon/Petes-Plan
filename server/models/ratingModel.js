@@ -27,6 +27,7 @@ const ratingSchema = new mongoose.Schema({
         index: true
     },
 
+    wouldTakeAgain: Boolean,
     grade: String,
 
     typeSpecificId: String
@@ -63,7 +64,6 @@ const RateMyProfRating = Rating.discriminator('ratemyprofessor', new mongoose.Sc
     isForCredit: Boolean,
     isForOnlineClass: Boolean,
     isTextbookUsed: Boolean,
-    wouldTakeAgain: Boolean,
     isAttendanceMandatory: Boolean
 }));
 

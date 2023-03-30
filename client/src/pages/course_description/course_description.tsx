@@ -8,6 +8,7 @@ import { Prerequisites } from '../../components/prerequisites/prerequisites';
 import CourseService from '../../services/CourseService';
 import { UserCourse } from '../../types/user-course';
 import CourseHistoryService from '../../services/CourseHistoryService';
+import { Ratings } from '../../components/ratings/ratings';
 import { Link } from 'react-router-dom';
 import {
     Dialog,
@@ -121,6 +122,8 @@ export function Course_Description() {
             <div className="mt-5 underline">Prerequisities:</div>
             <p></p>
             <Prerequisites prerequisites={course.requirements} userCourses={userCourses} />
+            <div className="mt-5 underline">Reviews:</div>
+            <Ratings courseID={course.courseID} subject={course.subject} />
             <FormControl fullWidth>
                 <InputLabel id="demo-simple-select-label">Semester</InputLabel>
                 <Select fullWidth className="my-2" labelId="demo-simple-select-label"

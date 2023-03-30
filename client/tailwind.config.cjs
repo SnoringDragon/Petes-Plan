@@ -7,4 +7,5 @@ module.exports = {
   theme: {
   },
   plugins: [],
+  important: "#root"
 }

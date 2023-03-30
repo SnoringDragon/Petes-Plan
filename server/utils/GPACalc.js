@@ -51,27 +51,26 @@ async function calculateGPA(userCourseModels) {
     for (let i = 0; i < creditHours.length; i++) {
         indexPts += creditHours[i] * GPAQualPts[i];
     }
-    return indexPts, creditHourSum;
-
+    return [indexPts, creditHourSum];
 }
 
-exports.cumulativeGPA = async (req, res) => {
+async function cumulativeGPA(req, res) {
     //userCourseModels is doc array
     //hopefully this only pulls current user's courses
     let userCourseModels = req.user.completedCourses;
-    indexPts, creditHoursum = calculateGPA(userCourseModels);
-    return indexPts / creditHoursum;
+    let returned = calculateGPA(userCourseModels);
+    return returned[0] / returned[1];
 }
 
-exports.semesterGPA = async (req, res, semesterInput, yearInput) => {
+async function semesterGPA(req, res, semesterInput, yearInput) {
     let userCourseModels = req.user.completedCourses.find({ semester: semesterInput, year: yearInput });
     userCourseModels.exec(function (err) {
         if (err) {
             return "Error: Invalid semester. Please include a semester with completed courses.";
         }
     });
-    indexPts, creditHourSum = calculateGPA(userCourseModels);
-    return indexPts / creditHourSum;
+    let returned = calculateGPA(userCourseModels);
+    return returned[0] / returned[1];
 }
 
 async function concentrationGPA(req, res, major) {
@@ -120,10 +119,10 @@ async function concentrationGPA(req, res, major) {
             concentrCreditHourSum += concentrCreditHour;
         }
     }
-    return concentrIndexPtsSum, concentrCreditHourSum;
+    return [concentrIndexPtsSum, concentrCreditHourSum];
 }
 
-exports.majorGPA = async (req, res, major) => {
+async function majorGPA(req, res, major) {
     uniqueCourses = new Map();
     //doesn't include concentration GPA
     let majorDoc = await degreeModel.findOne({ name: major, type: 'major' }).exec();
@@ -143,14 +142,20 @@ exports.majorGPA = async (req, res, major) => {
             uniqueCourses.set(userCourseModels[i].courseID, 1); //add class to uniqueClasses to eliminate double-couning
         }
     }
-    let majorIndexPts, majorCreditHourSum = calculateGPA(majorCourses);
-    let concentrIndexPtsSum, concentrCreditHourSum = concentrationGPA(req, res, major);
-    majorIndexPts += concentrIndexPtsSum;
-    majorCreditHourSum += concentrCreditHourSum;
-    return majorIndexPts / majorCreditHourSum;
+    let majorReturned = calculateGPA(majorCourses);
+    let returned = concentrationGPA(req, res, major);
+    majorReturned[0] += returned[0];
+    majorReturned[1] += returned[1];
+    return majorReturned[0] / majorReturned[1];
 }
 
-courseAttributeSchema = new courseAttribute
-course = new courseModel("Object Oriented Progragrimming in Java", "CS", "CS 180000", "180", 3, 3, "Intro CS course");
-userCourseModels = new courseModel("Object Oriented Progragrimming in Java", "CS", "A", 2020);
-calculateGPA(userCourseModels)
+module.exports = cumulativeGPA;
+module.exports = semesterGPA;
+module.exports = majorGPA;
+
+// courseAttributeSchema = new courseAttribute
+// let CS180 = courseModel.findOne({ courseID: "18000"}).exec();
+// console.log(CS180.courseID);
+// course = new courseModel("Object Oriented Progragrimming in Java", "CS", "CS 180000", "180", 3, 3, "Intro CS course");
+// userCourseModels = new courseModel("Object Oriented Progragrimming in Java", "CS", "A", 2020);
+// calculateGPA(userCourseModels)
