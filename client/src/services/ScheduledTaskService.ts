@@ -20,19 +20,22 @@ class ScheduledTaskService extends Api {
 
     getScheduledTasksEvent() {
         // move token to cookies since eventsource does not support adding authorization header
-        document.cookie = `token=${localStorage.getItem('token') ?? sessionStorage.getItem('token')}; path=/`;
-        const source = new EventSource(new URL('/api/admin/scheduled-task/events', import.meta.env.VITE_API_URL), {
+        // document.cookie = `token=${localStorage.getItem('token') ?? sessionStorage.getItem('token')}; path=/`;
+
+        // cookies are unreliable on 127.0.0.1, use token query instead
+        const source = new EventSource(new URL(`/api/admin/scheduled-task/events?token=${encodeURIComponent(localStorage.getItem('token') ??
+            sessionStorage.getItem('token') ?? '')}`, import.meta.env.VITE_API_URL), {
             withCredentials: true
         });
 
         const onOpen = () => {
-            document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/';
+            // document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/';
         };
 
         source.addEventListener('open', onOpen);
 
         source.addEventListener('error', () => {
-            document.cookie = `token=${localStorage.getItem('token') ?? sessionStorage.getItem('token')}; path=/`;
+            // document.cookie = `token=${localStorage.getItem('token') ?? sessionStorage.getItem('token')}; path=/`;
         });
 
         return source;
