@@ -1,5 +1,3 @@
-import { ApiProfessor } from "./professor";
-
 interface AbstractRequirement {
     type: string
 }
@@ -13,8 +11,6 @@ export interface AbstractRequirementGroup extends AbstractRequirement {
 
 export type Requirement = AndRequirement | OrRequirement | PickNRequirement |
     CourseRequirement | CourseGroupRequirement | NonCourseRequirement | StudentLevel;
-
-export type ProfessorReq = ProfessorRequirement;
 
 export interface AndRequirement extends AbstractRequirementGroup {
     type: 'and'
@@ -38,8 +34,7 @@ export interface ApiCourse {
     maxCredits: number,
     attributes: { code: string, name: string }[],
     description: string,
-    professors: string,
-    section: string,
+    section: Section,
     requirements: Requirement
 }
 
@@ -54,16 +49,6 @@ export interface CourseRequirement extends AbstractRequirement {
     isCorequisite: boolean,
     // D-, C, C+, etc. Can also be S for zero-credit course requirements or P for pass-fail
     minGrade: string
-}
-
-export interface ProfessorRequirement extends AbstractRequirement {
-    type: 'professor',
-    name: string,
-    // full course object may not exist (in the case it was not populated)
-    // full course object may also be null (in the case that the course does not exist in the backend,
-    //     such as for regional-campus-only courses)
-    // DONT KNOW ABOUT KEEPING THE ApiCourse
-    professor?: ApiProfessor | null
 }
 
 export interface CourseGroupRequirement extends AbstractRequirement {
