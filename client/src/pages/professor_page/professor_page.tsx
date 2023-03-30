@@ -15,14 +15,6 @@ export function Professor_Page() {
 
     const [professor, setProfessor] = useState<ApiProfessor | null>(null);
 
-    /*
-    const [userCourses, setUserCourses] = useState<UserCourse[]>([])
-    
-    useEffect(() => {
-        CourseHistoryService.getCourses()
-            .then(res => setUserCourses(res.courses));
-    }, [])
-    */
     useEffect(() => {
         const id = searchParams.get('professorid') ?? '';
 
