@@ -4,9 +4,19 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { ApiCourse } from '../../types/course-requirements';
 import { FaArrowLeft } from 'react-icons/fa';
 import { Prerequisites } from '../../components/prerequisites/prerequisites';
+import { Professor } from '../../components/professor/professor';
 import CourseService from '../../services/CourseService';
 import { UserCourse } from '../../types/user-course';
 import CourseHistoryService from '../../services/CourseHistoryService';
+import {
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogContentText,
+    DialogTitle,
+    MenuItem,
+    Select
+} from '@material-ui/core';
 
 export function Course_Description() {
     const [searchParams] = useSearchParams();
@@ -18,6 +28,10 @@ export function Course_Description() {
     const [course, setCourse] = useState<ApiCourse | null>(null);
 
     const [userCourses, setUserCourses] = useState<UserCourse[]>([])
+
+    const [selectedSemester, setSemester] = useState<string | null>(null);
+
+    const [section, setSection] = useState<ApiSection[][][]>([]);
 
     useEffect(() => {
         CourseHistoryService.getCourses()
@@ -41,6 +55,24 @@ export function Course_Description() {
                 setError(err?.message ?? err);
             });
     }, [searchParams])
+
+    useEffect(() => {
+        const subject = searchParams.get('subject') ?? '';
+        const courseID = searchParams.get('courseID') ?? '';
+
+        CourseService.getCourseSection({  subject, courseID, selectedSemester }) 
+            .then(res => {
+                if (!res) {
+                    setCourseSections(null);
+                    setError('Course Secrtions not found');
+                    return;
+                }
+                setCourseSection(res);
+            })
+            .catch(err => {
+                setError(err?.message ?? err);
+            });
+    }, [selectedSemester])
 
     if (!course) return (<Layout><div className="text-2xl flex flex-col h-full justify-center items-center">
         Loading...
@@ -82,6 +114,15 @@ export function Course_Description() {
             <div className="mt-5 underline">Prerequisities:</div>
             <p></p>
             <Prerequisites prerequisites={course.requirements} userCourses={userCourses} />
+            <Select fullWidth className="my-2" labelId="demo-simple-select-label"
+                id="demo-simple-select"
+                value={selectedSemester}
+                label="Semester"
+                onChange={ev => setSemester(ev.target.value)} >
+                        {course.semester.map((semester, i) => (<MenuItem key={semester._id} value={i}>
+                            {semester.semester} {semester.year}
+                        </MenuItem>))}
+            </Select>
         </div>
     </div></Layout>)
 }

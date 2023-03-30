@@ -1,4 +1,4 @@
-export type UserCourse = {
+export type ProfessorCourse = {
     _id: string,
     courseID: string,
     grade: string,
