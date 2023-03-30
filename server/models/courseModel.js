@@ -100,8 +100,8 @@ courseSchema.query.populateRequirements = async function (depth = 1) {
 courseSchema.methods.getSections = async function (semester) {
     const sections = await Section.find({
         course: this._id,
-        semester: '_id' in semester ? semester._id : semester
-    });
+        semester: typeof semester === 'string' ? semester : semester._id
+    }).populate('meetings.instructors');
 
     const groups = new StaticDisjointSet(sections.length);
     const linkIds = {};

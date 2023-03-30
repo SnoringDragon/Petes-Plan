@@ -8,19 +8,18 @@ const { RateMyProfRating } = require('../models/ratingModel');
 
 const sleep = require('../utils/sleep');
 const { nicknames, similarNames } = require('../utils/names');
+const toTitleCase = require('../utils/title-case');
 const { parseFullName } = require('parse-full-name');
+const { decode } = require('html-entities');
+const race = require('race-as-promised');
 
 
-const toTitleCase = src => {
-    return src.replace(/\w\S*/g, t => t[0].toUpperCase() + t.slice(1));
-};
-
-const queryInstructor = async (firstname, lastname, isNickname=false) => {
+const queryInstructor = async (firstname, lastname, isNickname=false, abortPromise) => {
     const lastPunctuationRegex = new RegExp('\\b' + lastname.replace(/\W/g, '\\W*') + '\\b', 'i');
-    let result = await Instructor.find({
+    let result = await race([Instructor.find({
         firstname: new RegExp('\\b' + firstname.replace(/\W/g, '\\W*'), 'i'),
         lastname: lastPunctuationRegex
-    });
+    }), abortPromise]);
 
     if (result.length === 1)
         return result[0];
@@ -48,10 +47,10 @@ const queryInstructor = async (firstname, lastname, isNickname=false) => {
     if (/^[A-Z]\.?[A-Z]\.?/.test(firstname)) {
         const [, firstInitial, secondInitial] = firstname.match(/^([A-Z])\.?([A-Z])\.?/);
 
-        result = await Instructor.find({
+        result = await race([Instructor.find({
             firstname: new RegExp(`^\\b${firstInitial}\\w*\\s+${secondInitial}`, 'i'),
             lastname: new RegExp('\\b' + lastname.replace(/\W/g, '\\W*') + '\\b', 'i')
-        });
+        }), abortPromise]);
 
         if (result.length === 1)
             return result[0];
@@ -65,7 +64,7 @@ const queryInstructor = async (firstname, lastname, isNickname=false) => {
 
     if (firstname.toLowerCase() in nicknames && !isNickname) {
         for (const nick of nicknames[firstname.toLowerCase()]) {
-            const res = await queryInstructor(nick, lastname, true);
+            const res = await queryInstructor(nick, lastname, true, abortPromise);
 
             if (res) {
                 if (!res.nickname) {
@@ -80,7 +79,7 @@ const queryInstructor = async (firstname, lastname, isNickname=false) => {
     // misspelled
     if (firstname.toLowerCase() in similarNames && !isNickname) {
         for (const nick of similarNames[firstname.toLowerCase()]) {
-            const res = await queryInstructor(nick, lastname, true);
+            const res = await queryInstructor(nick, lastname, true, abortPromise);
 
             if (res) {
                 return res;
@@ -91,7 +90,7 @@ const queryInstructor = async (firstname, lastname, isNickname=false) => {
     // double barrelled name, try search by each component
     if (lastname.includes('-')) {
         for (const last of lastname.split(/-/g)) {
-            const res = await queryInstructor(firstname, last);
+            const res = await queryInstructor(firstname, last, isNickname, abortPromise);
 
             if (res) return res;
         }
@@ -113,10 +112,10 @@ const queryInstructor = async (firstname, lastname, isNickname=false) => {
     ];
 
     for (const [first, last] of regexPairs) {
-        result = await Instructor.find({
+        result = await race([Instructor.find({
             firstname: first,
             lastname: last
-        });
+        }), abortPromise]);
 
         if (result.length === 1)
             return result[0];
@@ -137,9 +136,9 @@ const queryInstructor = async (firstname, lastname, isNickname=false) => {
     }
 
     // try search by last name only
-    result = await Instructor.find({
+    result = await race([Instructor.find({
         lastname: lastRegex
-    });
+    }), abortPromise]);
     result = result.filter(instructor => instructor.firstname && firstname &&
         (instructor.firstname.toLowerCase().includes(firstname.toLowerCase()) ||
         firstname.toLowerCase().includes(instructor.firstname.toLowerCase())));
@@ -151,25 +150,27 @@ const queryInstructor = async (firstname, lastname, isNickname=false) => {
 }
 
 
-const findInstructor = async ({ firstName, lastName, ratings, legacyId }, earliestYear) => {
+const findInstructor = async ({ firstName, lastName, ratings, legacyId }, earliestYear, abortPromise) => {
     if (!ratings.edges.length) return false; // dont bother finding instructors with no ratings
     let instructor = null;
 
-    instructor = await Instructor.findOne({
+    instructor = await race([Instructor.findOne({
         rateMyProfIds: legacyId.toString()
-    });
+    }), abortPromise]);
 
-    if (instructor) return instructor;
+    if (instructor) {
+        return instructor;
+    }
 
     const names = parseFullName(`${firstName} ${lastName}`);
 
     const latestReviewYear = Math.max(...ratings.edges
         .map(({ node }) => new Date(node.date).getFullYear()));
 
-    instructor = await queryInstructor(names.first, names.last);
+    instructor = await race([queryInstructor(names.first, names.last, false, abortPromise), abortPromise]);
 
     if (names.nick && !instructor)
-        instructor = await queryInstructor(names.nick, names.last);
+        instructor = await race([queryInstructor(names.nick, names.last, true, abortPromise), abortPromise]);
 
     if (instructor) {
         instructor.rateMyProfIds = [...instructor.rateMyProfIds, legacyId.toString()];
@@ -199,16 +200,16 @@ const parseGrade = str => {
 };
 
 
-module.exports = async ({ batchSize = 16 } = {}) => {
-    console.log('fetching data from ratemyprofessor');
+module.exports = async ({ batchSize = 16, abort = new AbortController(), log = console.log, error = console.error } = {}) => {
+    log('fetching data from ratemyprofessor');
 
     // ratemyprofessor is very inconsistent about how many ratings it returns
     // fetch multiple times and use the highest amount returned
     const result = await Promise.allSettled([...new Array(8)]
-        .map(() => rateMyProfessor.getRatings()));
+        .map(() => rateMyProfessor.getRatings({}, { signal: abort.signal })));
 
     if (result.every(({ status }) => status === 'rejected')) {
-        console.log('failed to fetch ratemyprofessor:', result[0].reason);
+        log('failed to fetch ratemyprofessor:', result[0].reason);
         return;
     }
 
@@ -219,14 +220,17 @@ module.exports = async ({ batchSize = 16 } = {}) => {
         return currentCount > finalCount ? currentResult.value : finalResult;
     }, null);
 
-    const semesters = await Semester.find();
+    let listener;
+    const abortPromise = new Promise((_, reject) => abort.signal.addEventListener('abort', listener = reject));
+
+    const semesters = await race([Semester.find(), abortPromise]);
     const earliestYear = Math.min(...semesters.map(s => s.year));
 
-    console.log('querying database for instructors')
+    log('querying database for instructors');
 
     const searchInstructorIndices = [];
     const instructorResult = await Promise.all(ratings.search.teachers.edges.map(async ({ node }, i) => {
-        const result = await findInstructor(node, earliestYear);
+        const result = await findInstructor(node, earliestYear, abortPromise);
 
         if (result === null)
             searchInstructorIndices.push(i);
@@ -235,30 +239,30 @@ module.exports = async ({ batchSize = 16 } = {}) => {
     }));
 
     if (searchInstructorIndices.length)
-        console.log('unable to find', searchInstructorIndices.length, 'instructors, querying purdue directory');
+        log('unable to find', searchInstructorIndices.length, 'instructors, querying purdue directory');
 
     await Promise.all([...new Array(batchSize)].map(async () => {
         let index;
 
-        while (index = searchInstructorIndices.pop()) {
-            await sleep(1000);
+        while ((index = searchInstructorIndices.pop()) !== undefined && !abort.signal.aborted) {
+            await race([sleep(1000), abortPromise]);
 
             let directoryEntries;
             const { node } = ratings.search.teachers.edges[index];
             const name = `${node.firstName} ${node.lastName}`.replace(/[^\w. '@-]/g, '');
 
             try {
-                directoryEntries = await purdueDirectory.search({ name });
+                directoryEntries = await race([purdueDirectory.search({ name }), abortPromise]);
             } catch (e) {
-                console.log('failed to fetch data from purdue directory for', name, ':', e.message,
+                log('failed to fetch data from purdue directory for', name, ':', e.message,
                     '; falling back to old directory')
             }
 
             if (!directoryEntries) {
                 try {
-                    directoryEntries = await purdueDirectory.oldSearch({ name });
+                    directoryEntries = await race([purdueDirectory.oldSearch({ name }), abortPromise]);
                 } catch (e) {
-                    console.log('failed to fetch data from old directory for', name, ':', e.message);
+                    log('failed to fetch data from old directory for', name, ':', e.message);
                     continue;
                 }
             }
@@ -286,7 +290,7 @@ module.exports = async ({ batchSize = 16 } = {}) => {
                     directoryData = entries[0];
 
                 if (entries.length > 1) {
-                    console.error('failed to find instructor for', name, ': too many entries matched');
+                    error('failed to find instructor for', name, ': too many entries matched');
                     continue;
                 }
             }
@@ -294,10 +298,10 @@ module.exports = async ({ batchSize = 16 } = {}) => {
             let instructor;
 
             if (directoryData?.email)
-                instructor = await Instructor.findOne({ email: directoryData.email });
+                instructor = await race([Instructor.findOne({ email: directoryData.email }), abortPromise]);
 
             if (directoryData?.alias && !instructor)
-                instructor = await Instructor.findOne({ email: `${directoryData.alias}@purdue.edu` });
+                instructor = await race([Instructor.findOne({ email: `${directoryData.alias}@purdue.edu` }), abortPromise]);
 
             // create new entry
             if (!instructor && (directoryData?.email || directoryData?.alias) && directoryData?.name) {
@@ -345,20 +349,20 @@ module.exports = async ({ batchSize = 16 } = {}) => {
 
     const savedIds = new Set();
 
-    await Promise.all(instructorResult.map(([_, instructor], i) => {
+    await race([Promise.all(instructorResult.map(([_, instructor], i) => {
         if (instructor && (instructor.isModified() || instructor.$isNew) && !savedIds.has(instructor._id.toString())) {
             savedIds.add(instructor._id.toString());
             return instructor.save();
         }
-    }))
+    })), abortPromise]);
 
     let failedInstructorCount = 0;
     instructorResult.filter(([_, res]) => res === null).forEach(([node]) => {
         ++failedInstructorCount;
-        console.log('failed to find instructor for', node.firstName, node.lastName);
+        log('failed to find instructor for', node.firstName, node.lastName);
     })
 
-    console.log('queried', ratings.search.teachers.edges.length, 'instructors, of which',
+    log('queried', ratings.search.teachers.edges.length, 'instructors, of which',
         failedInstructorCount, 'failed to map');
 
     // build which courses we need to query
@@ -390,24 +394,24 @@ module.exports = async ({ batchSize = 16 } = {}) => {
         });
     });
 
-    const courses = await Course.find({
+    const courses = await race([Course.find({
         $or: Object.values(reviewToCourseIdMap)
             .filter(x => x)
-    });
+    }), abortPromise]);
 
     const courseIdMap = {};
     courses.forEach(course => {
         courseIdMap[[course.subject, course.courseID]] = course;
     });
 
-    console.log('removing old ratings...');
+    log('removing old ratings...');
 
     // remove deleted reviews
-    await RateMyProfRating.deleteMany({
+    await race([RateMyProfRating.deleteMany({
         typeSpecificId: {
             $nin: Object.keys(reviewToCourseIdMap)
         }
-    });
+    }), abortPromise]);
 
     const updates = instructorResult.filter(([, instructor]) => instructor)
         .flatMap(([teacher, instructor]) => {
@@ -428,7 +432,7 @@ module.exports = async ({ batchSize = 16 } = {}) => {
                         course: course?._id ?? null,
                         quality: rating.helpfulRatingRounded,
                         difficulty: rating.difficultyRatingRounded,
-                        review: rating.comment,
+                        review: decode(rating.comment),
                         tags: rating.ratingTags.toLowerCase().split(/--/g).filter(x => x),
                         isForCredit: rating.isForCredit,
                         isForOnlineClass: rating.isForOnlineClass,
@@ -443,18 +447,22 @@ module.exports = async ({ batchSize = 16 } = {}) => {
         });
     });
 
-    console.log('updating new ratings...');
-    console.log('this may take a long time:', updates.length, 'reviews to be processed');
-    const bulkWriteResult = await RateMyProfRating.bulkWrite(updates, { ordered: false });
+    log('updating new ratings...');
+    log('this may take a long time:', updates.length, 'reviews to be processed');
+    const bulkWriteResult = await race([
+        RateMyProfRating.bulkWrite(updates, { ordered: false }),
+        abortPromise
+    ]);
 
-    await RateMyProfRating.updateMany({
+    await race([RateMyProfRating.updateMany({
         _id: {
             $in: [...bulkWriteResult.getInsertedIds(), ...bulkWriteResult.getUpsertedIds()]
                 .map(({ _id }) => _id)
         }
     }, {
         updatedAt: new Date()
-    }, { timestamps: false });
-    console.log('updated ratemyprofessor ratings');
+    }, { timestamps: false }), abortPromise]);
+    abort.signal.removeEventListener('abort', listener);
+    log('updated ratemyprofessor ratings');
 };
 

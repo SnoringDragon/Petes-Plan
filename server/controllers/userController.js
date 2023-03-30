@@ -52,7 +52,8 @@ exports.signup = async (req, res) => {
             email: email,
             verified: false,
             password: hash,
-            verificationToken: await token
+            verificationToken: await token,
+            isAdmin: email === process.env.ADMIN_EMAIL
         });
 
         /* Save the user to the database */
@@ -148,7 +149,7 @@ exports.login = async (req, res) => {
 
     // return token as signed payload
     return res.status(201).json({
-        token: jwt.sign({ _id: user._id }, user.permuteKey(secret), {
+        token: jwt.sign({ _id: user._id, isAdmin: user.isAdmin }, user.permuteKey(secret), {
             expiresIn: req.body.remember ? '30 days' : '1 day'
         }),
         // whether the token should be stored in localStorage or sessionStorage

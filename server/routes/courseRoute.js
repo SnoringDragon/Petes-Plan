@@ -3,6 +3,8 @@ const Course = require('../models/courseModel');
 const Section = require('../models/sectionModel');
 const Semester = require('../models/semesterModel');
 
+const mongoose = require('mongoose');
+
 module.exports = app => {
     const router = Router();
 
@@ -10,10 +12,47 @@ module.exports = app => {
         if (typeof req.query.subject !== 'string' || typeof req.query.courseID !== 'string')
             return res.status(400).json({ message: 'invalid input' });
 
-        return res.json(await Course.findOne({
+        const course = await Course.findOne({
             subject: req.query.subject,
             courseID: req.query.courseID
-        }));
+        }).lean();
+
+        if (!course) return res.json(course);
+
+        const semesterIds = (await Section.aggregate([{
+            $match: { course: course._id },
+        }, {
+            $group: {
+                _id: null,
+                semesters: { $addToSet: '$semester' }
+            }
+        }]))[0]?.semesters ?? [];
+        course.semesters = await Semester.find({
+            _id: {$in: semesterIds}
+        });
+
+        return res.json(course);
+    });
+
+    router.get('/sections', async (req, res) => {
+        if (typeof req.query.subject !== 'string' || typeof req.query.courseID !== 'string' ||
+            typeof req.query.semester !== 'string')
+            return res.status(400).json({ message: 'invalid input' });
+
+        const course = await Course.findOne({
+            subject: req.query.subject,
+            courseID: req.query.courseID
+        });
+
+        if (!course) return res.json([]);
+
+        try {
+            mongoose.Types.ObjectId(req.query.semester);
+        } catch {
+            return res.status(400).json({ message: 'invalid input' });
+        }
+
+        return res.json(await course.getSections(req.query.semester));
     });
 
     router.get('/search', async (req, res) => {
