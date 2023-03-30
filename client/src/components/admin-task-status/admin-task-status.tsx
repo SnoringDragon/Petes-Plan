@@ -20,6 +20,7 @@ export function AdminTaskStatus() {
     const [log, setLog] = useState<string[]>([]);
     const [disabledButtons, setDisabledButtons] = useState<boolean[]>([]);
     const [errors, setErrors] = useState<string[]>([]);
+    const [showLog, setShowLog] = useState(false);
 
     const timeRefs = useRef<({ value: string } | null)[]>([]);
     const [modifiedTimes, setModifiedTimes] = useState<boolean[]>([]);
@@ -88,7 +89,22 @@ export function AdminTaskStatus() {
         setErrors(errors.map((e, j) => i === j ? state : e));
 
     return (<div className="p-4 bg-opacity-25 bg-gray-500  rounded-md">
-        <span className="font-bold text-xl">Task Status</span>
+        {showLog && <div className="fixed inset-0 bg-zinc-800 bg-opacity-50 w-full h-full z-50 flex items-center justify-center" onClick={() => setShowLog(false)}>
+            <div className="w-3/4 h-5/6 bg-zinc-900 p-4 shadow-2xl rounded-lg relative">
+                <div className="h-full w-full text-sm overflow-auto flex flex-col-reverse relative" onClick={ev => ev.stopPropagation()}>
+                    {[...log].reverse().map((line, i) => <pre key={`${i}--${line}`}>{line}</pre>)}
+                </div>
+                <FaTimes className="absolute top-5 right-12 w-6 h-6 text-red-500 cursor-pointer" onClick={() => setShowLog(false)} />
+            </div>
+        </div>}
+
+        <div className="flex items-center mb-4">
+            <span className="font-bold text-xl mr-auto">Task Status</span>
+            <Button variant="outlined" size="small" color="inherit"
+                    onClick={() => setShowLog(true)}>
+                Show Log
+            </Button>
+        </div>
         <div className="flex flex-col mt-2">
             {tasks.map((task, i) => (<div key={task._id} className="flex items-center py-2 px-4 mb-2 bg-gray-500 bg-opacity-25 rounded">
                 <Tooltip title={<span className="text-sm">Status: {task.status}</span>}>
