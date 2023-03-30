@@ -11,6 +11,8 @@ class ScheduledTask extends EventEmitter {
     #lastSchedule;
     #abort;
 
+    #logLines = [];
+
     constructor({ taskfunc, args, model, dependencies }) {
         super();
 
@@ -50,6 +52,27 @@ class ScheduledTask extends EventEmitter {
         }
     }
 
+    #appendLogLine(...args) {
+        const line = args.map(a => {
+            const type = typeof a;
+
+            if (type === 'undefined')
+                return 'undefined';
+            if (type === 'object') {
+                if (a?.toString !== Object.prototype.toString) // custom toString
+                    return a.toString();
+                return JSON.stringify(a, null, 2);
+            }
+
+            return a.toString();
+        }).join(' ');
+
+        this.#logLines.push(line);
+        if (this.#logLines.length > 100) this.#logLines.shift();
+
+        this.emit('log', line);
+    }
+
     run(args, force=false) {
         if (this.model.status === 'running' && !force)
             throw new Error('task is already running');
@@ -61,6 +84,7 @@ class ScheduledTask extends EventEmitter {
 
         this.#abort = new AbortController();
 
+        this.model.lastRun = new Date();
         this.#setStatus('running');
         this.#taskfunc({
             ...this.#args, ...args, abort: this.#abort,
@@ -68,13 +92,13 @@ class ScheduledTask extends EventEmitter {
                 const now = new Date()
                     .toLocaleString(undefined, { dateStyle: 'short', timeStyle: 'medium' });
                 console.log(...args);
-                this.emit('log', args);
+                this.#appendLogLine(`[${this.model.name}]`, now, ...args);
             },
             error: (...args) => {
                 const now = new Date()
                     .toLocaleString(undefined, { dateStyle: 'short', timeStyle: 'medium' });
                 console.error(...args);
-                this.emit('log:error', args);
+                this.#appendLogLine(`[${this.model.name}]`, now, ...args);
             }
         })
             .then(() => {
@@ -101,6 +125,12 @@ class ScheduledTask extends EventEmitter {
     static async create({ taskfunc, name, args = {}, dependencies = [] }) {
         const model = await ScheduledTaskModel.findOneAndUpdate({ name }, {}, { upsert: true, new: true });
         return new ScheduledTask({ taskfunc, args, model, dependencies });
+    }
+
+    toJSON() {
+        const obj = this.model.toObject();
+
+        return { ...obj, log: this.#logLines };
     }
 }
 
