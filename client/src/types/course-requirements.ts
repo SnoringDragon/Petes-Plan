@@ -34,8 +34,41 @@ export interface ApiCourse {
     maxCredits: number,
     attributes: { code: string, name: string }[],
     description: string,
-    section: Section,
-    requirements: Requirement
+    requirements: Requirement,
+    semesters: {
+        _id: string,
+        semester: string,
+        year: number,
+        term: string
+    }[]
+}
+
+export interface Section {
+    _id: string,
+    semester: string,
+
+    name: string,
+    minCredits: number,
+    maxCredits: number,
+    isHybrid: boolean,
+    sectionID: string,
+    crn: number,
+
+    meetings: {
+        startDate: string,
+        endDate: string,
+        days: string[],
+        startTime: string,
+        endTime: string,
+        location: string,
+        instructors: {
+            _id: string,
+            email: string,
+            firstname: string,
+            lastname: string,
+            nickname?: string
+        }[]
+    }[]
 }
 
 export interface CourseRequirement extends AbstractRequirement {

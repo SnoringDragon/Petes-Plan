@@ -6,11 +6,9 @@ const degreeSchema = new mongoose.Schema({
         type: String,
         enum: ['major', 'minor', 'concentration', 'certificate']
     },
-    requirements: [{
-        courseID: String,
-        subject: String,
-        _id: false
-    }], //array of courseIDs
+    requirements: [{ courseID: String,
+                     subject: String, 
+                     _id: false }], //array of courses
     concentrations: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Degree' }]
 });
 

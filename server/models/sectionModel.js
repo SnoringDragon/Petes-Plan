@@ -27,12 +27,12 @@ const sectionSchema = new mongoose.Schema({
         startTime: String,
         endTime: String,
         location: String,
-        instructors: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Instructors' }]
+        instructors: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Instructor' }]
     }]
 });
 
 // only one section exists for a given semester and crn combo
-sectionSchema.index({ crn: 1, semester: 1 }, { unique: true });
+sectionSchema.index({ crn: 1, semester: 1 }, { unique: true, background: false });
 // speed up course search when given semester
 sectionSchema.index({ course: 1, semester: 1 });
 

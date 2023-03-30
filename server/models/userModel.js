@@ -6,6 +6,7 @@ const bcrypt = require('bcrypt');
 
 const secret = require('../secret');
 const userCourseSchema = require('./userCourseModel').schema;
+const courseSchema = require('./courseModel').schema;
 
 const verify = util.promisify(jwt.verify);
 
@@ -24,7 +25,6 @@ const userSchema = new mongoose.Schema({
         name: String,                   // name of degree plan
         degrees: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Degree' }], // degrees in the degree plan
         courses: [userCourseSchema]     // courses in the degree plan
-        
     }],
     apTests: [{
         test: { type: mongoose.Schema.Types.ObjectId, ref: 'APTest' },
@@ -82,9 +82,12 @@ userSchema.methods.validatePassword = async function (password) {
     return await bcrypt.compare(password, this.password);
 }
 
+// Populate all user data
 userSchema.methods.populateAll = async function () {
     await this.populate('degreePlans.degrees');
     await this.populate('degreePlans.courses.courseData');
+    await this.populate('completedCourses.section');
+    await this.populate('completedCourses.instructor');
     await this.populate('completedCourses.courseData');
     await this.populate('apTests.test');
 }
