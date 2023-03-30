@@ -6,6 +6,7 @@ const bcrypt = require('bcrypt');
 
 const secret = require('../secret');
 const userCourseSchema = require('./userCourseModel').schema;
+const courseSchema = require('./courseModel').schema;
 
 const verify = util.promisify(jwt.verify);
 
@@ -19,12 +20,12 @@ const userSchema = new mongoose.Schema({
     verified: Boolean,                  // whether the user has verified their email address
     verificationToken: String,          // token used to verify the user's email address
     tokenBlacklist: [String],
+    isAdmin: Boolean,
     completedCourses: [userCourseSchema], // courses that the user has completed
     degreePlans: [{
         name: String,                   // name of degree plan
         degrees: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Degree' }], // degrees in the degree plan
         courses: [userCourseSchema]     // courses in the degree plan
-        
     }],
     apTests: [{
         test: { type: mongoose.Schema.Types.ObjectId, ref: 'APTest' },

@@ -1,4 +1,6 @@
 const { parseFullName } = require('parse-full-name');
+const { setMaxListeners } = require('events');
+const race = require('race-as-promised');
 
 const selfService = require('../services/banner-self-service');
 const sleep = require('../utils/sleep');
@@ -28,10 +30,10 @@ const computeCourseSearchString = (subject, courseNumber) => {
     return str.join(' ');
 };
 
-async function fetchIndividualSubject(term, subject, colleges, semesterId) {
-    console.log('fetching term', term.name, 'subject', subject.name);
+async function fetchIndividualSubject({ term, subject, colleges, semesterId, log, error, abortPromise }) {
+    log('fetching term', term.name, 'subject', subject.name);
 
-    const [courseList, requisiteResults, restrictions, professors, sections] = await Promise.all([
+    const [courseList, requisiteResults, restrictions, professors, sections] = await race([Promise.all([
         selfService.getCourseList({
             term: term.value,
             subjects: [subject.value],
@@ -41,7 +43,7 @@ async function fetchIndividualSubject(term, subject, colleges, semesterId) {
         selfService.getRestrictions({term: term.value, subject: subject.value}),
         selfService.getProfessorsForTerm(term.value),
         selfService.getSections({term: term.value, subject: subject.value})
-    ]);
+    ]), abortPromise]);
 
     const requisiteMap = new Map();
 
@@ -51,11 +53,11 @@ async function fetchIndividualSubject(term, subject, colleges, semesterId) {
     });
 
     requisiteResults.failed.forEach(data => {
-        console.error('[ERR] failed to parse requisites for', term.name, data.subject, data.courseNumber, data.name,
+        error('[ERR] failed to parse requisites for', term.name, data.subject, data.courseNumber, data.name,
             ':', data.error.message);
     });
 
-    const courseWriteResult = await Course.bulkWrite(courseList.map(course => ({
+    const courseWriteResult = await race([Course.bulkWrite(courseList.map(course => ({
         updateOne: {
             filter: { subject: subject.value, courseID: course.number },
             update: { $set: {
@@ -71,14 +73,14 @@ async function fetchIndividualSubject(term, subject, colleges, semesterId) {
             }},
             upsert: true
         }
-    })));
+    }))), abortPromise]);
 
-    const courseIDList = await Course.find({
+    const courseIDList = await race([Course.find({
         $or: courseList.map(course => ({
             courseID: course.number,
             subject: subject.value
         }))
-    });
+    }), abortPromise]);
 
     const courseIDs = {};
 
@@ -98,19 +100,25 @@ async function fetchIndividualSubject(term, subject, colleges, semesterId) {
         uniqueInstructors[[instructor.name, instructor.email]] = instructor;
     })
 
-    const instructorWriteResult = await Instructor.bulkWrite(Object.values(uniqueInstructors).map(instructor => {
+    const instructorWriteResult = await race([Instructor.bulkWrite(Object.values(uniqueInstructors).map(instructor => {
         const professor = professors
             .find(prof => instructor.name === `${prof.first} ${prof.last}`);
 
         let last;
         let first;
 
-        if (professor) {
+        if (professor && professor.first) {
             ({ last, first } = professor);
         } else {
             const parsed = parseFullName(instructor.name);
             last = parsed.last;
             first = `${parsed.first} ${parsed.middle}`.trim();
+        }
+
+        if (!first || !last) { // dont know why this is happening
+            const parts = instructor.name.split(/\s+/g);
+            last = parts.pop();
+            first = parts.join(' ');
         }
 
         nameToPartsMap[[first, last]] = instructor.name;
@@ -126,18 +134,18 @@ async function fetchIndividualSubject(term, subject, colleges, semesterId) {
                 upsert: true
             }
         };
-    }));
+    })), abortPromise]);
 
-    const instructorList = await Instructor.find({
+    const instructorList = await race([Instructor.find({
         $or: instructorFilters
-    });
+    }), abortPromise]);
 
     const instructorIDs = {};
     instructorList.forEach(instructor => {
         instructorIDs[nameToPartsMap[[instructor.firstname, instructor.lastname]]] = instructor._id;
     });
 
-    const sectionWriteResult = await Section.bulkWrite(sections.map(section => ({
+    const sectionWriteResult = await race([Section.bulkWrite(sections.map(section => ({
         updateOne: {
             filter: {
                 crn: section.crn,
@@ -164,36 +172,43 @@ async function fetchIndividualSubject(term, subject, colleges, semesterId) {
             }},
             upsert: true
         }
-    })));
+    }))), abortPromise]);
 
-    console.log('successfully parsed course data for semester', term.name, 'subject', subject.value);
+    log('successfully parsed course data for semester', term.name, 'subject', subject.value);
 }
 
-module.exports = async ({ batchSize = 10, sleepTime = 750, numYears = 6 } = {}) => {
-    let terms = await selfService.getCatalogTerms();
-    const viewOnlyTerms = await selfService.getViewOnlyTerms();
+module.exports = async ({ abort = new AbortController(), batchSize = 10,
+                            sleepTime = 750, numYears = 6,
+                            log = console.log, error = console.error } = {}) => {
+    let listener;
+    const abortPromise = new Promise((_, reject) => abort.signal.addEventListener('abort', listener = reject));
+
+    let terms = await race([selfService.getCatalogTerms(), abortPromise]);
+    const viewOnlyTerms = await race([selfService.getViewOnlyTerms(), abortPromise]);
 
     terms = terms.filter(term => term.value.slice(0, 4) > new Date().getFullYear() - numYears);
 
-    const alreadyProcessed = await ProcessedCourse.find().lean();
+    const alreadyProcessed = await race([ProcessedCourse.find().lean(), abortPromise]);
 
     for (const term of terms.reverse()) {
+        if (abort.signal.aborted) break;
+
         const [semesterType, semesterYear] = term.name.split(/\s+/);
 
         if (isNaN(semesterYear) || !['Spring', 'Fall', 'Winter', 'Summer'].includes(semesterType)) {
-            console.log('unknown semester type', semesterType);
+            log('unknown semester type', semesterType);
             continue;
         }
 
-        const semesterModel = await Semester.findOneAndUpdate({
+        const semesterModel = await race([Semester.findOneAndUpdate({
             semester: semesterType,
             year: +semesterYear,
         }, { term: term.value }, {
             new: true,
             upsert: true
-        });
+        }), abortPromise]);
 
-        const options = await selfService.getOptionsForTerm(term.value);
+        const options = await race([selfService.getOptionsForTerm(term.value), abortPromise]);
 
         const isViewOnly = viewOnlyTerms.includes(term.value);
 
@@ -205,33 +220,34 @@ module.exports = async ({ batchSize = 10, sleepTime = 750, numYears = 6 } = {}) 
         }
 
         await Promise.all([...new Array(batchSize)].map(async () => {
-            while (options.subjects.length) {
+            while (options.subjects.length && !abort.signal.aborted) {
                 const subject = options.subjects.shift(); // get next subject to process
 
                 try {
-                    await fetchIndividualSubject(term, subject, options.colleges, semesterModel._id);
+                    await fetchIndividualSubject({ term, subject, colleges: options.colleges,
+                        semesterId: semesterModel._id, log, error, abortPromise });
 
-                    const processedCourse = await ProcessedCourse.findOne({
+                    const processedCourse = await race([ProcessedCourse.findOne({
                         subject: subject.value, semester: term.value
-                    });
+                    }), abortPromise]);
 
                     if (!processedCourse) {
-                        await ProcessedCourse.create({
+                        await race([ProcessedCourse.create({
                             subject: subject.value, semester: term.value
-                        });
+                        }), abortPromise]);
                     } else {
                         processedCourse.markModified('subject');
-                        await processedCourse.save();
+                        await race([processedCourse.save(), abortPromise]);
                     }
                 } catch (e) {
-                    console.error('[ERR] failed to write course data for', term.name, subject.value, ':', e);
+                    error('[ERR] failed to write course data for', term.name, subject.value, ':', e);
                 }
-                await sleep(sleepTime);
+                await race([sleep(sleepTime), abortPromise]);
             }
         }));
 
-        await sleep(sleepTime);
+        await race([sleep(sleepTime), abortPromise]);
     }
 
-    console.log('finished course sync');
+    log('finished course sync');
 };

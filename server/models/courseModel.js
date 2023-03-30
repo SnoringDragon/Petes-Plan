@@ -100,8 +100,8 @@ courseSchema.query.populateRequirements = async function (depth = 1) {
 courseSchema.methods.getSections = async function (semester) {
     const sections = await Section.find({
         course: this._id,
-        semester: '_id' in semester ? semester._id : semester
-    });
+        semester: typeof semester === 'string' ? semester : semester._id
+    }).populate('meetings.instructors');
 
     const groups = new StaticDisjointSet(sections.length);
     const linkIds = {};
@@ -172,14 +172,7 @@ courseSchema.statics.parseCourseString = function (str, allowPartial=false) {
 courseSchema.index({ subject: 1, courseID: 1 }, { unique: true, background: false });
 
 // text index on name, description, and search fields
-//TODO: if they enter a course name, then implement smth where a course's designated URL, gives them all of the course data they asked
-/* example search:
-await courseModel.find({
-    $text: { $search: 'cryptography' }
-}).sort({
-    score: { $meta: 'textScore' }
-})
- */
+
 courseSchema.index({
     name: 'text',
     searchCourseID: 'text',

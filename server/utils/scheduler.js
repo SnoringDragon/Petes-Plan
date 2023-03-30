@@ -31,16 +31,21 @@ const timeUntil = time => {
 };
 
 const scheduleRepeat = (func, time, ...args) => {
-    const wait = timeUntil(time);
-
-    setTimeout(() => {
-        try {
-            func(...args);
-        } catch (e) {
-            console.error(e);
-        }
-        setTimeout(() => scheduleRepeat(func, time, ...args), 1000);
-    }, wait);
+    let lastTimeout;
+    const repeat = () => {
+        const wait = timeUntil(time);
+        lastTimeout = setTimeout(() => {
+            try {
+                func(...args);
+            } catch (e) {
+                console.error(e);
+            }
+            setTimeout(repeat, 1000);
+        }, wait);
+    };
+    return { cancel: () => clearTimeout(lastTimeout) };
 };
 
 module.exports.scheduleRepeat = scheduleRepeat;
+module.exports.timeUntil = timeUntil;
+

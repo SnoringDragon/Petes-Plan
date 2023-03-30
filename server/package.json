@@ -13,12 +13,16 @@
     "antlr4": "^4.12.0",
     "bcrypt": "^5.1.0",
     "cheerio": "^1.0.0-rc.12",
+    "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "deepmerge": "^4.3.0",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "fast-xml-parser": "^4.0.11",
+    "graphql": "^16.6.0",
     "graphql-request": "^5.2.0",
+    "html-entities": "^2.3.3",
+    "is-plain-object": "^5.0.0",
     "jsonwebtoken": "^9.0.0",
     "mnemonist": "^0.39.5",
     "mongoose": "^6.9.2",
@@ -27,6 +31,7 @@
     "nodemailer-express-handlebars": "^6.0.0",
     "nodemon": "^2.0.20",
     "parse-full-name": "^1.2.6",
+    "race-as-promised": "^0.0.1",
     "validator": "^13.9.0"
   }
 }
