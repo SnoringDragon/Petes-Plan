@@ -30,15 +30,20 @@ export function FuturePlan() {
     const navigate = useNavigate()
 
     const [courses, setCourses] = useState<ApiCourse[]>([]);
+    const [semCourse, setSemCourse] = useState<ApiCourse>();
     const [degrees, setDegrees] = useState<Degree[]>([]);
     const [degreePlans, setDegreePlans] = useState<DegreePlan[]>([]);
     const [degreePlan, setDegreePlan] = useState<DegreePlan | null>(null);
     const [error, setError] = useState('');
+    const [selectedSem, setSelectedSem] = useState('Fall');
 
     const [createNewPlan, setCreateNewPlan] = useState(false);
+    const [createSem, setSem] = useState(false);
 
     const searchRef = useRef({ value: '' });
     const nameRef = useRef({value:''});
+    //const semRef = useRef({value:''});
+    const yearRef = useRef({value:''});
 
     const [degreeSearch, setDegreeSearch] = useState('');
 
@@ -98,9 +103,6 @@ export function FuturePlan() {
                     inputRef={nameRef}
                 />
             </DialogContent>
-            <DialogContentText>
-                {error && <div className="text-red-500">Error: {error}</div>}
-            </DialogContentText>
             <DialogActions>
                 <Button onClick={() => setCreateNewPlan(false)}>Cancel</Button>
                 <Button onClick={() => {
@@ -116,6 +118,46 @@ export function FuturePlan() {
                         .catch(err => setError(err?.message ?? err))
 
                 }}>Create</Button>
+            </DialogActions>
+        </Dialog>
+
+        <Dialog open={createSem} onClose={() => setSem(false)}>
+            <DialogTitle>Select Planned Semester</DialogTitle>
+            <div className="bg-white rounded px-8   text-black w-full">
+            <Select fullWidth className="my-2" value={selectedSem} onChange={e => setSelectedSem(e.target.value as string)}>
+                       <MenuItem value="Fall">Fall</MenuItem>
+                       <MenuItem value="Spring">Spring</MenuItem>
+                       <MenuItem value="Summer">Summer</MenuItem>
+            </Select>
+            </div>  
+            <DialogContent>
+                <TextField
+                    autoFocus
+                    margin="dense"
+                    label="Year"
+                    fullWidth
+                    variant="standard"
+                    inputRef={yearRef}
+                />
+            </DialogContent>
+            <DialogContentText>
+                {error && <div className="text-red-500">Error: {error}</div>}
+            </DialogContentText>
+            <DialogActions>
+                <Button onClick={() => setSem(false)}>Cancel</Button>
+                <Button onClick={() => {
+                    setCourseModifications({
+                        ...courseModifications,
+                        add: [...courseModifications.add, {
+                            subject: semCourse!.subject,
+                            courseID: semCourse!.courseID,
+                            semester: selectedSem,
+                            grade: 'A',
+                            year: parseInt(yearRef.current.value)
+                        }]
+                    });
+                    setSem(false);
+                }}>Add</Button>
             </DialogActions>
         </Dialog>
 
@@ -140,16 +182,18 @@ export function FuturePlan() {
                                                        className="w-full py-3 px-4 bg-gray-600 border-y border-gray-500 flex items-center" key={i}>
                         <Link to={`/course_description?subject=${course.subject}&courseID=${course.courseID}`} className="mr-auto">{course.subject} {course.courseID}: {course.name}</Link>
                         <Button color="inherit" onClick={() => {
-                            setCourseModifications({
-                                ...courseModifications,
-                                add: [...courseModifications.add, {
-                                    subject: course.subject,
-                                    courseID: course.courseID,
-                                    semester: 'Spring',
-                                    grade: 'A',
-                                    year: 2022
-                                }]
-                            });
+                            setSemCourse(course);
+                            setSem(true);
+                            // setCourseModifications({
+                            //     ...courseModifications,
+                            //     add: [...courseModifications.add, {
+                            //         subject: course.subject,
+                            //         courseID: course.courseID,
+                            //         semester: 'Spring',
+                            //         grade: 'A',
+                            //         year: 2022
+                            //     }]
+                            // });
                         }}>Add</Button>
                     </div>))}
                 </div>
