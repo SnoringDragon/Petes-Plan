@@ -26,19 +26,20 @@ export function Prerequisites(props: { prerequisites: Requirement, userCourses: 
     const [degreePlan, setDegreePlan] = useState<DegreePlan | null>(null);
 
 
+    useEffect(() => {
+        DegreePlanService.getPlans().then(res => {
+            setDegreePlans(res.degreePlans);
+            if (res.degreePlans.length)
+                setDegreePlan(res.degreePlans[0]);
+        });
+    }, [])
+
     if (data === null) return (<span>None</span>);
 
     if (data.type === 'course_group') { } // TODO FIXME!!!
 
     if (data.type === 'course') {
 
-        useEffect(() => {
-            DegreePlanService.getPlans().then(res => {
-                setDegreePlans(res.degreePlans);
-                if (res.degreePlans.length)
-                    setDegreePlan(res.degreePlans[0]);
-            });
-        }, [])
 
         const userCourse = props.userCourses.find(course => course.courseID === data.courseID &&
             course.subject === data.subject);

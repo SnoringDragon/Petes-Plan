@@ -29,7 +29,7 @@ module.exports = app => {
     };
 
     router.get('/', getCourse, async (req, res) => {
-        const course = req.course.toObject();
+        const course = req.course?.toObject();
 
         if (!course) return res.json(course);
 
