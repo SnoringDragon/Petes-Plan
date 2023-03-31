@@ -544,7 +544,7 @@ class BannerSelfService extends BaseService {
                 return { startTime, endTime, days, location, startDate, endDate, instructors };
             }).toArray();
 
-            return { crn: +crn, sectionName, linkID, requiredSection,
+            return { crn: +crn, sectionName, linkID, requiredSection, scheduleType,
                 subject, courseID, sectionID, isHybrid, minCredits, maxCredits, scheduledMeetings };
         });
     }

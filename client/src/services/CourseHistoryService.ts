@@ -6,7 +6,7 @@ class CourseHistoryService extends Api {
         return this.get<{ courses: UserCourse[] }>('/api/courseHistory')
     }
 
-    addCourses(courses: Omit<UserCourse, '_id'>[]) {
+    addCourses(courses: Omit<UserCourse, '_id' | 'courseData'>[]) {
         return this.post('/api/courseHistory/add', { courses });
     }
 

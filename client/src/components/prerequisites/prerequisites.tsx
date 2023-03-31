@@ -26,19 +26,20 @@ export function Prerequisites(props: { prerequisites: Requirement, userCourses: 
     const [degreePlan, setDegreePlan] = useState<DegreePlan | null>(null);
 
 
+    useEffect(() => {
+        DegreePlanService.getPlans().then(res => {
+            setDegreePlans(res.degreePlans);
+            if (res.degreePlans.length)
+                setDegreePlan(res.degreePlans[0]);
+        });
+    }, [])
+
     if (data === null) return (<span>None</span>);
 
     if (data.type === 'course_group') { } // TODO FIXME!!!
 
     if (data.type === 'course') {
 
-        useEffect(() => {
-            DegreePlanService.getPlans().then(res => {
-                setDegreePlans(res.degreePlans);
-                if (res.degreePlans.length)
-                    setDegreePlan(res.degreePlans[0]);
-            });
-        });
 
         const userCourse = props.userCourses.find(course => course.courseID === data.courseID &&
             course.subject === data.subject);
@@ -48,40 +49,33 @@ export function Prerequisites(props: { prerequisites: Requirement, userCourses: 
         
         let current = false;
         let planned = false;
-        if (userCourse) {
-        
-            if (satisfied) {
-                let yr = new Date().getFullYear();
-                let mon = new Date().getMonth();
-                let month;
 
-                if (mon > 7 && mon < 13) {
-                    month = "Fall";
-                } else if (mon < 5 && mon > 0) {
-                    month = "Spring";
-                } else if (mon > 4 && mon < 8) {
-                    month = "Summer";
-                } else {
-                    month = "N/A";
-                }
+        if (!satisfied) {
+            let yr = new Date().getFullYear();
+            let mon = new Date().getMonth();
+            let month;
 
-                if (!(userCourse!.semester.localeCompare(month)) && yr == userCourse!.year)  {
-                    current = true;
-                }
+            if (mon > 7 && mon < 13) {
+                month = "Fall";
+            } else if (mon < 5 && mon > 0) {
+                month = "Spring";
+            } else if (mon > 4 && mon < 8) {
+                month = "Summer";
+            } else {
+                month = "N/A";
             }
-            
-            //TODO fix currently doesnt work
-            for (let j = 0; j < degreePlans!.length; j++) {
-                let deg = degreePlans[j].courses;
-                for (let i = 0; i < deg.length; i++) {
-                    if (userCourse!.courseID === deg[i].courseID
-                        && userCourse!.subject === deg[i].subject) {
-                            planned = true;
+
+            for (const plan of degreePlans) {
+                for (const course of plan.courses) {
+                    if (data.courseID === course.courseID
+                        && data!.subject === course.subject) {
+                        planned = true;
+
+                        if (course.semester.localeCompare(month) && yr === course.year) {
+                            current = true;
                             break;
+                        }
                     }
-                }
-                if (planned) {
-                    break;
                 }
             }
         }

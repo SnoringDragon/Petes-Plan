@@ -32,7 +32,13 @@ module.exports = app => {
             _id: { $in: degreeIds }
         });
 
-        const major = degrees.find(({ type }) => type === 'major');
+        let major;
+
+        if (!req.query.major)
+            major = degrees.find(({ type }) => type === 'major');
+        else
+            major = degrees.find(({ _id }) => _id.toString() === req.query.major);
+
         const concentrations = degrees.filter(({ type }) => type === 'concentration');
 
         if (!major) return res.json(null);

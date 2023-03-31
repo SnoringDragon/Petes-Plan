@@ -30,6 +30,7 @@ import { SharedReq } from './pages/shared_req/shared_req';
 import { AdminDashboard } from './pages/admin-dashboard/admin-dashboard';
 import { TotalDeg } from './pages/total_deg/total_deg';
 import { Professor_Page } from './pages/professor_page/professor_page';
+import { GraduationRequirements } from './pages/graduation-reqs/graduation-reqs';
 
 const router = createBrowserRouter([
   {
@@ -127,6 +128,10 @@ const router = createBrowserRouter([
       path: "/professor",
       element: <Professor_Page />
     },
+      {
+        path:'/graduation-requirements',
+        element: <GraduationRequirements />
+      },
     {
       path: '/admin',
       children: [{

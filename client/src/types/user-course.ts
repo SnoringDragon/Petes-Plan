@@ -1,3 +1,5 @@
+import { ApiCourse, Section } from './course-requirements';
+
 export type UserCourse = {
     _id: string,
     courseID: string,
@@ -5,5 +7,6 @@ export type UserCourse = {
     semester: string,
     year: number,
     subject: string,
-    section?: string
+    section?: Section,
+    courseData: ApiCourse & { sections: Section[][][] }
 }

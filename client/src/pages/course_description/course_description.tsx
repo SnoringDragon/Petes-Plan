@@ -11,6 +11,7 @@ import CourseHistoryService from '../../services/CourseHistoryService';
 import { Ratings } from '../../components/ratings/ratings';
 import { Link } from 'react-router-dom';
 import {
+    Button,
     Dialog,
     DialogActions,
     DialogContent,
@@ -22,6 +23,11 @@ import {
     Select
 } from '@material-ui/core';
 import { Instructor } from '../instructor/instructor';
+import { Semester } from '../../types/semester';
+import SemesterService from '../../services/SemesterService';
+import { Boilergrade, BOILERGRADES_GRADES } from '../../types/boilergrades';
+import BoilerGradesService from '../../services/BoilerGradesService';
+import { Boilergrades } from '../../components/boilergrades/boilergrades';
 
 export function Course_Description() {
     const [searchParams] = useSearchParams();
@@ -29,23 +35,26 @@ export function Course_Description() {
     const navigate = useNavigate();
 
     const [error, setError] = useState('');
-
     const [course, setCourse] = useState<ApiCourse | null>(null);
-
     const [userCourses, setUserCourses] = useState<UserCourse[]>([])
-
     const [selectedSemester, setSemester] = useState<string | null>(null);
-
-    const [section, setSection] = useState<Section[][][]>([]);
+    const [section, setSection] = useState<Section[][][] | null>(null);
+    const [showSections, setShowSections] = useState(true);
+    const [semesters, setSemesters] = useState<Semester[]>([]);
+    const [boilergrades, setBoilergrades] = useState<Boilergrade[]>([]);
 
     useEffect(() => {
         CourseHistoryService.getCourses()
             .then(res => setUserCourses(res.courses));
+
+        SemesterService.getSemesters().then(res => setSemesters(res));
+
     }, [])
 
     useEffect(() => {
         const subject = searchParams.get('subject') ?? '';
         const courseID = searchParams.get('courseID') ?? '';
+        setBoilergrades([]);
 
         CourseService.getCourse({ subject, courseID })
             .then(res => {
@@ -59,6 +68,9 @@ export function Course_Description() {
             .catch(err => {
                 setError(err?.message ?? err);
             });
+
+        BoilerGradesService.getCourse({ subject, courseID })
+            .then(res => setBoilergrades(res));
     }, [searchParams])
 
     useEffect(() => {
@@ -87,7 +99,9 @@ export function Course_Description() {
             <div className="text-xl text-red-500 mt-4">Error: {error}</div>
             <a className="text-sm mt-2 cursor-pointer" onClick={() => navigate(-1)}>Go back</a>
         </>}
-    </div></Layout>)
+    </div></Layout>);
+
+    const bgdata = BoilerGradesService.reduceBoilergrades(boilergrades, 'instructor');
 
     console.log(course)
     return (<Layout><div className="w-full h-full flex flex-col items-center">
@@ -122,28 +136,69 @@ export function Course_Description() {
             <div className="mt-5 underline">Prerequisities:</div>
             <p></p>
             <Prerequisites prerequisites={course.requirements} userCourses={userCourses} />
-            <div className="mt-5 underline">Reviews:</div>
-            <Ratings courseID={course.courseID} subject={course.subject} filter={searchParams.get('filter')?.split(',') ?? []} />
-            <FormControl fullWidth>
-                <InputLabel id="demo-simple-select-label">Semester</InputLabel>
-                <Select fullWidth className="my-2" labelId="demo-simple-select-label"
-                    id="demo-simple-select"
-                    value={selectedSemester}
-                    label="Semester"
-                    onChange={ev => setSemester(ev.target.value as string)} >
-                    {course.semesters.map((semester) => (<MenuItem key={semester._id} value={semester._id}>
+
+            <div className="mt-4 mb-2 flex items-center">
+                <span className="underline mr-4">Sections:</span>
+
+                <Select className="my-2 mx-4 text-white" labelId="demo-simple-select-label"
+                        value={selectedSemester}
+                        label="Semester"
+                        onChange={ev => {
+                            setSemester(ev.target.value as string);
+                            setShowSections(true);
+                        }} >
+                    {semesters.map((semester) => (<MenuItem key={semester._id} value={semester._id}>
                         {semester.semester} {semester.year}
                     </MenuItem>))}
                 </Select>
-            </FormControl>
-            <div><span className="underline">Sections:</span></div>
-            {section.map(section => <div>{section.map(
-                section => <div>{section.map(
-                    section => <div>{section.meetings.map(
-                        meetings => <div>{meetings.days} {meetings.startTime}-{meetings.endTime} {meetings.instructors.map(
-                            instructors => <div><Link to={`/professor?id=${instructors._id}`}>
-                                {instructors.firstname} {instructors.lastname}
-                            </Link></div>)}</div>)}</div>)}</div>)}</div>)}
+
+                {section?.length ? <Button color="inherit" variant="outlined" onClick={() => setShowSections(!showSections)}>
+                    {showSections ? 'Hide' : 'Show'} Sections
+                </Button> : null}
+
+                {section?.length === 0 && <span>No sections scheduled for this semester.</span>}
+            </div>
+
+            <div className={`flex w-full justify-center ${showSections ? '' : 'hidden'}`}>
+            <div className="flex w-full flex-row flex-wrap gap-4 items-start justify-center">
+            {section?.map((section, i) =>
+                <div key={i} className="bg-opacity-25 bg-gray-500 p-2 mb-2 rounded-md">{section.map(
+                    (section, i) => <div className="bg-gray-500 bg-opacity-25 py-2 px-3 mb-2 rounded-md" key={i}>
+                    <div className="text-xl">{section[0].scheduleType} Schedule Type</div>
+                    {section.map((section, i) => <div key={i} className="my-2 text-sm">
+                        <div className="mb-1">{section.name} ({section.sectionID}) CRN: {section.crn}</div>
+                        <table>
+                            <thead>
+                                <tr className="border border-gray-500">
+                                    <th className="border border-gray-500 px-2 py-1">Days</th>
+                                    <th className="border border-gray-500 px-2 py-1">Time</th>
+                                    <th className="border border-gray-500 px-2 py-1">Location</th>
+                                    <th className="border border-gray-500 px-2 py-1">Instructor</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            {section.meetings.map((meeting, i) => <tr key={i}>
+                                <td className="border border-gray-500 px-2 py-1 w-16">{meeting.days?.length ? meeting.days.join(', ') : 'TBD'}</td>
+                                <td className="border border-gray-500 px-2 py-1 w-36">
+                                    {meeting.startTime ? `${meeting.startTime}-${meeting.endTime}` : 'TBD'}
+                                </td>
+                                <td className="border border-gray-500 px-2 py-1 w-64">
+                                    {meeting.location || 'TBD'}
+                                </td>
+                                <td className="border border-gray-500 px-2 py-1 w-96">
+                                    {meeting.instructors?.length ? meeting.instructors.map((instructor, i) =>
+                                        <Link to={`/professor?id=${instructor._id}&filter=${course?._id}`}>{instructor.firstname}{instructor.nickname ? ` (${instructor.nickname}) ` : ' '}{instructor.lastname}</Link>) : 'TBA (To Be Assigned)'}
+                                </td>
+                            </tr>)}
+                            </tbody>
+                    </table></div>)}</div>)}</div>)}
+            </div>
+            </div>
+
+            <Boilergrades data={bgdata} />
+
+            <div className="mt-5 underline">Reviews:</div>
+            <Ratings courseID={course.courseID} subject={course.subject} filter={searchParams.get('filter')?.split(',') ?? []} />
         </div>
     </div></Layout>)
 }

@@ -11,7 +11,13 @@ class DegreePlanService extends Api {
         return this.post<{ degreePlan: DegreePlan }>('/api/degreePlan/create', { name });
     }
 
-    addToDegreePlan(plan: string, degrees: { _id: string }[], courses: Omit<UserCourse, '_id'>[]) {
+    addToDegreePlan(plan: string, degrees: { _id: string }[], courses: {
+        courseID: string,
+        semester: string,
+        year: number,
+        subject: string,
+        section: string,
+    }[]) {
         return this.post<{ degreePlan: DegreePlan }>(`/api/degreePlan/${plan}/add`, { degrees, courses });
     }
 

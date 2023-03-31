@@ -6,6 +6,9 @@ import { FaArrowLeft } from 'react-icons/fa';
 import ProfessorService from '../../services/ProfessorService';
 import { Link } from 'react-router-dom';
 import { Ratings } from '../../components/ratings/ratings';
+import { Boilergrades } from '../../components/boilergrades/boilergrades';
+import { Boilergrade } from '../../types/boilergrades';
+import BoilerGradesService from '../../services/BoilerGradesService';
 
 export function Professor_Page() {
     const [searchParams] = useSearchParams();
@@ -15,22 +18,31 @@ export function Professor_Page() {
     const [error, setError] = useState('');
 
     const [professor, setProfessor] = useState<ApiProfessor | null>(null);
+    const [boilergrades, setBoilergrades] = useState<Boilergrade[]>([]);
 
     useEffect(() => {
         const id = searchParams.get('id') ?? '';
 
         ProfessorService.getProfessor({ id })
-            .then(res => {
+            .then((res: ApiProfessor | null) => {
                 if (!res) {
                     setProfessor(null);
                     setError('Professor not found');
                     return;
                 }
                 setProfessor(res);
+
+                const first = res.firstname.replace(/([A-Z])$/g, '$1.');
+                const last = res.lastname;
+
+                BoilerGradesService.getInstructor({ first, last })
+                    .then(res => setBoilergrades(res));
             })
             .catch(err => {
                 setError(err?.message ?? err);
             });
+
+
     }, [searchParams])
 
     if (!professor) return (<Layout><div className="text-2xl flex flex-col h-full justify-center items-center">
@@ -40,6 +52,8 @@ export function Professor_Page() {
             <a className="text-sm mt-2 cursor-pointer" onClick={() => navigate(-1)}>Go back</a>
         </>}
     </div></Layout>)
+
+    const bgdata = BoilerGradesService.reduceBoilergrades(boilergrades, 'course');
 
     return (<Layout><div className="w-full h-full flex flex-col items-center">
         <header className="text-center text-white text-3xl mt-4 w-full">
@@ -66,6 +80,8 @@ export function Professor_Page() {
                     </a></div>)}
             </div> : null}
         </div>
+
+        <Boilergrades isCourseLinks={true} data={bgdata} className="w-full mb-4"  />
 
         <Ratings instructor={professor._id} filter={searchParams.get('filter')?.split(',') ?? []} />
     </div></Layout>)

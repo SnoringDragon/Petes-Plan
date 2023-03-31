@@ -1,3 +1,5 @@
+import { ApiProfessor } from './professor';
+
 interface AbstractRequirement {
     type: string
 }
@@ -27,6 +29,7 @@ export interface PickNRequirement extends AbstractRequirementGroup {
 }
 
 export interface ApiCourse {
+    _id: string,
     name: string,
     subject: string,
     courseID: string,
@@ -53,6 +56,7 @@ export interface Section {
     isHybrid: boolean,
     sectionID: string,
     crn: number,
+    scheduleType: string,
 
     meetings: {
         startDate: string,
@@ -61,13 +65,7 @@ export interface Section {
         startTime: string,
         endTime: string,
         location: string,
-        instructors: {
-            _id: string,
-            email: string,
-            firstname: string,
-            lastname: string,
-            nickname?: string
-        }[]
+        instructors: ApiProfessor[]
     }[]
 }
 
