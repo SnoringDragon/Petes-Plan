@@ -130,7 +130,7 @@ courseSchema.methods.getSections = async function (semester) {
     return [...groups.compile()
         .filter(group => !(group.length === 1 && group[0] >= linkIdIndices.length))
         .map(group => group.map(i => linkIds[linkIdIndices[i]])),
-        ...nonLinkSections.map(section => [section])];
+        ...nonLinkSections.map(section => [[section]])];
 }
 
 courseSchema.statics.parseCourseString = function (str, allowPartial=false) {
