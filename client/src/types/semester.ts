@@ -1,0 +1,1 @@
+export type Semester = { _id: string, semester: string, year: number, term: string };

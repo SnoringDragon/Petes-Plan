@@ -23,6 +23,8 @@ import {
     Select
 } from '@material-ui/core';
 import { Instructor } from '../instructor/instructor';
+import { Semester } from '../../types/semester';
+import SemesterService from '../../services/SemesterService';
 
 export function Course_Description() {
     const [searchParams] = useSearchParams();
@@ -30,20 +32,19 @@ export function Course_Description() {
     const navigate = useNavigate();
 
     const [error, setError] = useState('');
-
     const [course, setCourse] = useState<ApiCourse | null>(null);
-
     const [userCourses, setUserCourses] = useState<UserCourse[]>([])
-
     const [selectedSemester, setSemester] = useState<string | null>(null);
-
-    const [section, setSection] = useState<Section[][][]>([]);
-
+    const [section, setSection] = useState<Section[][][] | null>(null);
     const [showSections, setShowSections] = useState(true);
+    const [semesters, setSemesters] = useState<Semester[]>([]);
 
     useEffect(() => {
         CourseHistoryService.getCourses()
             .then(res => setUserCourses(res.courses));
+
+        SemesterService.getSemesters().then(res => setSemesters(res));
+
     }, [])
 
     useEffect(() => {
@@ -132,21 +133,25 @@ export function Course_Description() {
                 <Select className="my-2 mx-4 text-white" labelId="demo-simple-select-label"
                         value={selectedSemester}
                         label="Semester"
-                        onChange={ev => setSemester(ev.target.value as string)} >
-                    {course.semesters.map((semester) => (<MenuItem key={semester._id} value={semester._id}>
+                        onChange={ev => {
+                            setSemester(ev.target.value as string);
+                            setShowSections(true);
+                        }} >
+                    {semesters.map((semester) => (<MenuItem key={semester._id} value={semester._id}>
                         {semester.semester} {semester.year}
                     </MenuItem>))}
                 </Select>
 
-                {section.length ? <Button color="inherit" variant="outlined" onClick={() => setShowSections(!showSections)}>
+                {section?.length ? <Button color="inherit" variant="outlined" onClick={() => setShowSections(!showSections)}>
                     {showSections ? 'Hide' : 'Show'} Sections
                 </Button> : null}
-            </div>
 
+                {section?.length === 0 && <span>No sections scheduled for this semester.</span>}
+            </div>
 
             <div className={`flex w-full justify-center ${showSections ? '' : 'hidden'}`}>
             <div className="flex w-full flex-row flex-wrap gap-4 items-start justify-center">
-            {section.map((section, i) =>
+            {section?.map((section, i) =>
                 <div key={i} className="bg-opacity-25 bg-gray-500 p-2 mb-2 rounded-md">{section.map(
                     (section, i) => <div className="bg-gray-500 bg-opacity-25 py-2 px-3 mb-2 rounded-md" key={i}>
                     <div className="text-xl">{section[0].scheduleType} Schedule Type</div>
