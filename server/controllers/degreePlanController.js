@@ -1,11 +1,34 @@
 const User = require('../models/userModel.js');
 const Degree = require('../models/degreeModel.js');
 const Course = require('../models/courseModel.js');
+const Semester = require('../models/semesterModel');
 const mongoose = require('mongoose');
 
 /* Returns all degree plans for the user */
 exports.getDegreePlans = async (req, res) => {
-    const user = await req.user.populate('degreePlans.degrees');
+    let user = await req.user.populate('degreePlans.degrees');
+    user = await user.populate('degreePlans.courses.section');
+    user = await user.populate('degreePlans.courses.section.meetings.instructors');
+
+    user = user.toObject();
+
+    await Promise.all(user.degreePlans.map(async (plan, i) => {
+        await Promise.all(plan.courses.map(async (course, j) => {
+            const [courseModel, semester] = await Promise.all([
+                Course.findOne({ courseID: course.courseID, subject: course.subject }),
+                Semester.findOne({ semester: course.semester, year: course.year })
+            ]);
+
+            if (courseModel)
+                user.degreePlans[i].courses[j].courseData = courseModel.toObject();
+
+            if (courseModel && semester) {
+                const sections = await courseModel.getSections(semester);
+                user.degreePlans[i].courses[j].courseData.sections = sections;
+            }
+        }));
+    }))
+
     return res.status(200).json({
         message: 'Successfully retrieved degree plans',
         degreePlans: user.degreePlans

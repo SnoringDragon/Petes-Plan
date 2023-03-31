@@ -27,6 +27,16 @@ import DegreePlanService from '../../services/DegreePlanService';
 import { UserCourse } from '../../types/user-course';
 import { Section } from '../../types/course-requirements';
 
+const renderSectionMenuItem = (section: Section) => {
+    return <MenuItem value={section._id} key={section._id}>
+        {section.meetings.map(meeting => <span>
+                            {meeting.days} {meeting.startTime}-{meeting.endTime} {meeting.instructors.length ? meeting.instructors.map(instructor => <span>
+                            {instructor.firstname} {instructor.lastname}
+                        </span>) : 'To Be Assigned'}
+                        </span>)}
+    </MenuItem>;
+}
+
 export function FuturePlan() {
     const navigate = useNavigate()
 
@@ -47,13 +57,13 @@ export function FuturePlan() {
     const yearRef = useRef({ value: '' });
     const [semCourse, setSemCourse] = useState<ApiCourse>();
     const [selectedSem, setSelectedSem] = useState<string | null>(null);
-    const [selectedSection, setSelectedSection] = useState<string | null>(null);
-    const [modifyS] = useState(false);
+    const [selectedSection, setSelectedSection] = useState<Section | null>(null);
+    const [modifyCourse, setModifyCourse] = useState<UserCourse | null>(null);
 
     const [degreeSearch, setDegreeSearch] = useState('');
 
     const [courseModifications, setCourseModifications] = useState<{
-        add: Omit<UserCourse, '_id'>[],
+        add: UserCourse[],
         delete: string[]
     }>({ delete: [], add: [] });
 
@@ -71,7 +81,11 @@ export function FuturePlan() {
     const save = async () => {
         try {
             await DegreePlanService.removeFromDegreePlan(degreePlan!._id, degreeModifications.delete, courseModifications.delete)
-            await DegreePlanService.addToDegreePlan(degreePlan!._id, degreeModifications.add, courseModifications.add);
+            await DegreePlanService.addToDegreePlan(degreePlan!._id, degreeModifications.add,
+                courseModifications.add.map(a => {
+                    const { _id, courseData, section, ...rest } = a;
+                    return { ...rest, section: section?._id! };
+                }));
 
             setCourseModifications({ add: [], delete: [] });
             setDegreeModifications({ add: [], delete: [] });
@@ -153,7 +167,8 @@ export function FuturePlan() {
                 value={selectedSem}
                 label="Semester"
                 onChange={ev => setSelectedSem(ev.target.value as string)} >
-                {semCourse?.semesters?.map((semester) => (<MenuItem key={semester._id} value={semester._id}>
+                {semCourse?.semesters?.filter(semester => semester.year >= new Date().getFullYear())
+                    .map((semester) => (<MenuItem key={semester._id} value={semester._id}>
                     {semester.semester} {semester.year}
                 </MenuItem>))}
             </Select>
@@ -162,18 +177,6 @@ export function FuturePlan() {
                 <Button onClick={() => {
                     setSection(section);
                     setWantedSection(true);
-                    const semesters = semCourse?.semesters.find(other => other._id === selectedSem)
-                    setCourseModifications({
-                        ...courseModifications,
-                        add: [...courseModifications.add, {
-                            subject: semCourse!.subject,
-                            courseID: semCourse!.courseID,
-                            semester: semesters?.semester,
-                            grade: 'A',
-                            year: semesters?.year,
-                            section: selectedSection
-                        }]
-                    });
                     setSem(false);
                 }}>Add</Button>
             </DialogActions>
@@ -182,32 +185,30 @@ export function FuturePlan() {
         <Dialog open={createSection} onClose={() => setWantedSection(false)}>
             <DialogTitle>Select Planned Section</DialogTitle>
             <div className="bg-white rounded px-8   text-black w-full">
-                <Select fullWidth className="my-2" value={selectedSection} onChange={ev => setSelectedSection(ev.target.value as string)}>
-                    {section.flatMap(section => section.flatMap(
-                        section => section.flatMap(
-                            section => section.meetings.flatMap(
-                                meetings => (
-                                    <MenuItem value={meetings.days}>{meetings.days} {meetings.startTime}-{meetings.endTime}: {meetings.instructors.length ? meetings.instructors.map(
-                                        instructors => <div><Link to={`/professor?id=${instructors._id}`}>
-                                            {instructors.firstname} {instructors.lastname}
-                                        </Link></div>) : "Information Unavailable"}</MenuItem>)))))}
+                <Select fullWidth className="my-2" value={selectedSection?._id} onChange={ev =>
+                    setSelectedSection(section.flat(2).find(({ _id }) => _id === ev.target.value)!)}>
+                    {section.flat(2).map(section => renderSectionMenuItem(section))}
                 </Select>
             </div>
             <DialogActions>
                 <Button onClick={() => setWantedSection(false)}>Cancel</Button>
                 <Button onClick={() => {
                     setWantedSection(false);
+                    const semesters = semCourse?.semesters.find(other => other._id === selectedSem)!;
+                    setCourseModifications({
+                        ...courseModifications,
+                        add: [...courseModifications.add, {
+                            _id: '' + Date.now(),
+                            subject: semCourse!.subject,
+                            courseID: semCourse!.courseID,
+                            semester: semesters?.semester,
+                            grade: 'A',
+                            year: semesters?.year,
+                            section: selectedSection!,
+                            courseData: { ...semCourse!, sections: section }
+                        }]
+                    });
                 }}>Add</Button>
-            </DialogActions>
-        </Dialog>
-
-        <Dialog open={modifyS}>
-            <DialogTitle>Modify</DialogTitle>
-            <DialogActions>
-                <Button onClick={() => setWantedSection(true)}>Modify Section</Button>
-                <Button onClick={() => {
-                    setSem(true);
-                }}>Modify Semester</Button>
             </DialogActions>
         </Dialog>
 
@@ -284,41 +285,97 @@ export function FuturePlan() {
                 {degreePlan && <>
                     <div className="bg-white rounded px-4 pb-3 pt-4 text-black w-full mt-3">
                         <div className="text-2xl">Planned Courses</div>
-                        {degreePlan.courses.map((course, i) => (<div key={i} className="flex items-center py-2 border-b border-gray-300">
-                            <Link className="mr-auto" to={`/course_description?subject=${course.subject}&courseID=${course.courseID}`}>{course.subject} {course.courseID}</Link>
-                            <div><br />{course.section} hello &emsp;</div>
-                            <Button variant="contained" color="secondary" onClick={() => {
-                                <Dialog open>
-                                    <DialogTitle>Modify</DialogTitle>
-                                    <DialogActions>
-                                        <Button onClick={() => setWantedSection(true)}>Modify Section</Button>
-                                        <Button onClick={() => {
-                                            setSem(true);
-                                        }}>Modify Semester</Button>
-                                    </DialogActions>
-                                </Dialog>
+                        {[degreePlan.courses, courseModifications.add]
+                            .flatMap((courses, j) => courses
+                                .map((course, i) => (<div key={`${i} ${j}`} className="flex items-center py-2 border-b border-gray-300">
+                            <div className="flex flex-col">
+                                <Link to={`/course_description?subject=${course.subject}&courseID=${course.courseID}`}>
+                                    {course.subject} {course.courseID}
+                                </Link>
+
+                                <div>{course.section?.name} ({course.section?.sectionID})</div>
+                                <div>Instructors: {(() => {
+                                    const instructors = course.section?.meetings.flat().flatMap(m => m.instructors) ?? [];
+
+                                    if (!instructors.length) return 'To Be Assigned';
+
+                                    return instructors.map(instructor => <span key={instructor._id}>
+                                        {instructor.firstname + ' ' + instructor.lastname}
+                                    </span>);
+                                })()}</div>
+                            </div>
+
+                            <Dialog open={modifyCourse?._id === course._id}>
+                                <DialogTitle>Modify</DialogTitle>
+                                <DialogContent>
+                                    <div>Section:</div>
+                                    <Select defaultValue={course.section?._id} onChange={ev => {
+                                        const section = course.courseData.sections
+                                            .flat(2).find(s => s._id === ev.target.value)!
+
+                                        if (courses === degreePlan.courses) {
+                                            setDegreePlan({
+                                                ...degreePlan,
+                                                courses: degreePlan.courses.filter(x => x !== course)
+                                            });
+
+                                            setCourseModifications({
+                                                delete: [...courseModifications.delete, course._id],
+                                                add: [...courseModifications.add, {
+                                                    ...course,
+                                                    section
+                                                }]
+                                            });
+                                        } else {
+                                            setCourseModifications({
+                                                ...courseModifications,
+                                                add: courseModifications.add.map(c => {
+                                                    if (c._id !== course._id) return c;
+                                                    return { ...c, section };
+                                                })
+                                            });
+                                        }
+                                    }}>
+                                        {course.courseData.sections.flat(2).map(section => renderSectionMenuItem(section))}
+                                    </Select>
+                                </DialogContent>
+                                <DialogActions>
+                                    <Button onClick={() => setModifyCourse(null)}>Close</Button>
+                                </DialogActions>
+                            </Dialog>
+
+                            <Button className="ml-auto mr-2" variant="contained" color="secondary" onClick={() => {
+                                setModifyCourse(course);
                             }}>Modify</Button>
                             <Button variant="contained" color="secondary" onClick={() => {
-                                setDegreePlan({
-                                    ...degreePlan,
-                                    courses: degreePlan.courses.filter(x => x !== course)
-                                });
-                                setCourseModifications({
-                                    ...courseModifications,
-                                    delete: [...courseModifications.delete, course._id]
-                                });
+                                if (courses === degreePlan.courses) {
+                                    setDegreePlan({
+                                        ...degreePlan,
+                                        courses: degreePlan.courses.filter(x => x !== course)
+                                    });
+
+                                    setCourseModifications({
+                                        ...courseModifications,
+                                        delete: [...courseModifications.delete, course._id]
+                                    });
+                                } else {
+                                    setCourseModifications({
+                                        ...courseModifications,
+                                        add: courseModifications.add.filter(({ _id }) => _id !== course._id)
+                                    })
+                                }
                             }}>Delete</Button>
-                        </div>))}
-                        {courseModifications.add.map((course, i) => (<div key={i} className="flex items-center py-2 border-b border-gray-300">
-                            <Link className="mr-auto" to={`/course_description?subject=${course.subject}&courseID=${course.courseID}`}>{course.subject} {course.courseID}</Link>
-                            <div><br />Section Name &emsp;</div>
-                            <Button variant="contained" color="secondary" onClick={() => {
-                                setCourseModifications({
-                                    ...courseModifications,
-                                    add: courseModifications.add.filter(c => c !== course)
-                                });
-                            }}>Delete</Button>
-                        </div>))}
+                        </div>)))}
+                        {/*{courseModifications.add.map((course, i) => (<div key={i} className="flex items-center py-2 border-b border-gray-300">*/}
+                        {/*    <Link className="mr-auto" to={`/course_description?subject=${course.subject}&courseID=${course.courseID}`}>{course.subject} {course.courseID}</Link>*/}
+                        {/*    <div><br />Section Name &emsp;</div>*/}
+                        {/*    <Button variant="contained" color="secondary" onClick={() => {*/}
+                        {/*        setCourseModifications({*/}
+                        {/*            ...courseModifications,*/}
+                        {/*            add: courseModifications.add.filter(c => c !== course)*/}
+                        {/*        });*/}
+                        {/*    }}>Delete</Button>*/}
+                        {/*</div>))}*/}
                         {(courseModifications.add.length || courseModifications.delete.length) ? <Button
                             variant="contained"
                             size="large"
