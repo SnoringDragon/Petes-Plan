@@ -1,4 +1,4 @@
-//input: assignments & weights & grades
+//input: weights (Map) & assigments (2D Arr)
                         //str    //str   //double   
     //assignments: [['label', 'name', numberGrade], [...], [...], ...]
     //weights: Map() with key category "label" and value [label_weight, label_cap]
@@ -99,11 +99,9 @@ module.exports = calculateGrade;
 // let weights = new Map();
 // let labels = ["homework", "quiz", "exam", "extra credit"];
 // //extra cred has default weight of 100
-// let label_weights = [30, 40, 30, 100];
-// let label_caps = [0, 0, 1, 1];
-// capped = 1;
+// let label_weights = [[30, 0], [40, 0], [30, 1], [100, 1]];
 // for (let i = 0; i < (label_weights.length); i++) {
-//     weights.set(labels[i], [label_weights[i], label_caps[i]]);
+//     weights.set(labels[i], label_weights[i]);
 // }
 // assignments = [["homework", "Assignment 1", 90], ["homework", "Assignment 2", 80], ["homework", "Assignment 2", 70], ["quiz", "Quiz 1", 90], ["quiz", "Quiz 2", 100], ["exam", "Exam 1", 105], ["exam", "Exam 1", 100], ["extra credit", "ec 1", 6],];
-// console.log(calculateGrade(weights, assignments, capped));
+// console.log(calculateGrade(weights, assignments));
