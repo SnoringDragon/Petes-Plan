@@ -54,6 +54,7 @@ export interface Section {
     isHybrid: boolean,
     sectionID: string,
     crn: number,
+    scheduleType: string,
 
     meetings: {
         startDate: string,
