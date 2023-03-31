@@ -4,5 +4,6 @@ export type UserCourse = {
     grade: string,
     semester: string,
     year: number,
-    subject: string
+    subject: string,
+    section?: string
 }
