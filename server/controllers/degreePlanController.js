@@ -449,7 +449,7 @@ exports.getGradReqs = async (req, res) => {
 exports.getReqIntersection = async (req, res) => {
     /* Check if path is valid */
     const subdir = req.path.split('/');
-    if (subdir.length !== 3) {
+    if (subdir.length !== 4) {
         return res.status(404).json({
             message: 'Invalid Path'
         });
@@ -466,14 +466,14 @@ exports.getReqIntersection = async (req, res) => {
     }
 
     /* Check if degree _id is present */
-    if (!req.body._id) {
+    if (!subdir[3]) {
         return res.status(400).json({
             message: 'Missing degree _id'
         });
     }
 
     /* Check if degree _id is valid */
-    const compDegree = await Degree.findById(req.body._id);
+    const compDegree = await Degree.findById(subdir[3]);
     if (!compDegree) {
         return res.status(400).json({
             message: 'Invalid degree _id',
