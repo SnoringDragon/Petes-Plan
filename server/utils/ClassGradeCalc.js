@@ -144,4 +144,4 @@ const jsonExample = {
 //     weights.set(labels[i], label_weights[i]);
 // }
 // assignments = [["homework", "Assignment 1", 90], ["homework", "Assignment 2", 80], ["homework", "Assignment 2", 70], ["quiz", "Quiz 1", 90], ["quiz", "Quiz 2", 100], ["exam", "Exam 1", 105], ["exam", "Exam 1", 100], ["extra credit", "ec 1", 6],];
-console.log(calculateGrade(jsonExample));
+// console.log(calculateGrade(jsonExample));
