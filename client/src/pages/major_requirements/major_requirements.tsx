@@ -26,6 +26,7 @@ import {
     Select
 } from '@material-ui/core';
 import { ApiCourse } from '../../types/course-requirements';
+import GPAService from '../../services/GPAService';
 
 export function Major_Requirements() {
     const [degree, setDegree] = useState<Degree | null>(null);
@@ -35,6 +36,9 @@ export function Major_Requirements() {
     
     const [degreePlans, setDegreePlans] = useState<DegreePlan[]>([]);
     const [degreePlan, setDegreePlan] = useState<DegreePlan | null>(null);
+
+    const [gpa, setGpa] = useState<number | null>(null);
+    const [majorGpa, setMajorGpa] = useState<number | null>(null);
 
     const share = () => {
         DegreePlanService.getOverlap(degreePlan!._id, degree!._id).then(res => {console.log(res); setShared(res.reqs)});
@@ -51,6 +55,8 @@ export function Major_Requirements() {
             if (res.degreePlans.length)
                 setDegreePlan(res.degreePlans[0]);
         });
+        GPAService.getCumulativeGPA().then(res => setGpa(res));
+        GPAService.getMajorGPA({ major: searchParams.get('id') ?? '' }).then(res => setMajorGpa(res))
     }, [searchParams]);
 
 
@@ -119,6 +125,11 @@ export function Major_Requirements() {
         <Card className="-mt-4">
             <CardHeader title={`${degree.type[0].toUpperCase()}${degree.type.slice(1)} in ${degree.name}`} className="text-center bg-zinc-800 text-white" />
             <CardContent className="flex flex-col items-center">
+                <div>
+                    {majorGpa !== null && degree.type === 'major' && <span className="mr-8">Major GPA: {majorGpa.toFixed(2)}</span>}
+
+                    {gpa !== null && <span>Cumulative GPA: {gpa.toFixed(2)}</span>}
+                </div>
                 <div className="p-4">
                     <u>Requirements:</u> {degree.requirements.map(mapCourse)}
                     <p></p>
