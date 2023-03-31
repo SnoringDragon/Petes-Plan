@@ -14,6 +14,7 @@ const sectionSchema = new mongoose.Schema({
     isHybrid: Boolean,
     sectionID: String,
     crn: Number,
+    scheduleType: String,
 
     // requires other section (linkID)
     requires: String,
