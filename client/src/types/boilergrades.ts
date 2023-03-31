@@ -1,3 +1,21 @@
+export const BOILERGRADE_QUALITY_POINTS = {
+    "a": 4,
+    "a_minus": 3.7,
+    "a_plus": 4,
+    "b": 3,
+    "b_minus": 2.7,
+    "b_plus": 3.3,
+    "c": 2,
+    "c_minus": 1.7,
+    "c_plus": 2.3,
+    "d": 1,
+    "d_minus": 0.7,
+    "d_plus": 1.3,
+    "e": 0,
+    "f": 0,
+    "i_f": 0,
+} as const;
+
 export const BOILERGRADES_GRADES = {
     "a": "A",
     "a_minus": "A-",
