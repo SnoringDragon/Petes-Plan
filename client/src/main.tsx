@@ -29,6 +29,7 @@ import { Instructor } from './pages/instructor/instructor';
 import { SharedReq } from './pages/shared_req/shared_req';
 import { AdminDashboard } from './pages/admin-dashboard/admin-dashboard';
 import { TotalDeg } from './pages/total_deg/total_deg';
+import { Professor_Page } from './pages/professor_page/professor_page';
 
 const router = createBrowserRouter([
   {
@@ -105,15 +106,15 @@ const router = createBrowserRouter([
     {
       path: "/grade-calc",
       element: <GradeCalc />
-    }, 
+    },
     {
       path: "/section-info",
       element: <Section_Info />
-    }, 
+    },
     {
       path: "/instructor",
       element: <Instructor />
-    }, 
+    },
     {
       path: "/shared-req",
       element: <SharedReq />
@@ -121,6 +122,10 @@ const router = createBrowserRouter([
     {
       path: "/total-degree",
       element: <TotalDeg />
+    },
+    {
+      path: "/professor",
+      element: <Professor_Page />
     },
     {
       path: '/admin',

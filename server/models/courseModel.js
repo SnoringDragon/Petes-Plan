@@ -8,7 +8,7 @@ let model;
 //Includes schemas for: course, userCourse, semester, instructor, section
 
 /* Resources: https://mongoosejs.com/docs/guide.html#definition */
-/* https://stackoverflow.com/questions/43534461/array-of-subdocuments-in-mongoose */ 
+/* https://stackoverflow.com/questions/43534461/array-of-subdocuments-in-mongoose */
 
 const courseAttributeSchema = new mongoose.Schema({
     code: String,
@@ -130,10 +130,10 @@ courseSchema.methods.getSections = async function (semester) {
     return [...groups.compile()
         .filter(group => !(group.length === 1 && group[0] >= linkIdIndices.length))
         .map(group => group.map(i => linkIds[linkIdIndices[i]])),
-        ...nonLinkSections.map(section => [[section]])];
+    ...nonLinkSections.map(section => [[section]])];
 }
 
-courseSchema.statics.parseCourseString = function (str, allowPartial=false) {
+courseSchema.statics.parseCourseString = function (str, allowPartial = false) {
     str = str.replace(/\p{P}/gu, '');
     let subject = null;
     let courseID = null;

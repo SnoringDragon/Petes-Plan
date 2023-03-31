@@ -25,6 +25,7 @@ import {
 import { DegreePlan } from '../../types/degree-plan';
 import DegreePlanService from '../../services/DegreePlanService';
 import { UserCourse } from '../../types/user-course';
+import { Section } from '../../types/course-requirements';
 
 export function FuturePlan() {
     const navigate = useNavigate()
@@ -34,16 +35,20 @@ export function FuturePlan() {
     const [degreePlans, setDegreePlans] = useState<DegreePlan[]>([]);
     const [degreePlan, setDegreePlan] = useState<DegreePlan | null>(null);
     const [error, setError] = useState('');
+    const [section, setSection] = useState<Section[][][]>([]);
 
     const [createNewPlan, setCreateNewPlan] = useState(false);
-    
-    
-    const nameRef = useRef({value:''});
+
+
+    const nameRef = useRef({ value: '' });
     const searchRef = useRef({ value: '' });
     const [createSem, setSem] = useState(false);
-    const yearRef = useRef({value:''});
+    const [createSection, setWantedSection] = useState(false);
+    const yearRef = useRef({ value: '' });
     const [semCourse, setSemCourse] = useState<ApiCourse>();
-    const [selectedSem, setSelectedSem] = useState('Fall');
+    const [selectedSem, setSelectedSem] = useState<string | null>(null);
+    const [selectedSection, setSelectedSection] = useState<string | null>(null);
+    const [modifyS] = useState(false);
 
     const [degreeSearch, setDegreeSearch] = useState('');
 
@@ -90,6 +95,26 @@ export function FuturePlan() {
         });
     }, []);
 
+    useEffect(() => {
+        const subject = semCourse?.subject ?? '';
+        const courseID = semCourse?.courseID ?? '';
+
+        if (selectedSem != null) {
+            CourseService.getCourseSections({ subject, courseID, semester: selectedSem })
+                .then(res => {
+                    if (!res) {
+                        setSection([]);
+                        setError('Course Sections not found');
+                        return;
+                    }
+                    setSection(res);
+                })
+                .catch(err => {
+                    setError(err?.message ?? err);
+                });
+        }
+    }, [selectedSem, semCourse])
+
     return (<Layout>
         <Dialog open={createNewPlan} onClose={() => setCreateNewPlan(false)}>
             <DialogTitle>Enter Plan Name</DialogTitle>
@@ -123,39 +148,66 @@ export function FuturePlan() {
 
         <Dialog open={createSem} onClose={() => setSem(false)}>
             <DialogTitle>Select Planned Semester</DialogTitle>
-            <DialogContent>
-                <Select fullWidth className="my-2 px-8" value={selectedSem} onChange={e => setSelectedSem(e.target.value as string)}>
-                       <MenuItem value="Fall">Fall</MenuItem>
-                       <MenuItem value="Spring">Spring</MenuItem>
-                       <MenuItem value="Summer">Summer</MenuItem>
-                </Select>
-                <TextField
-                    autoFocus
-                    margin="dense"
-                    label="Year"
-                    fullWidth
-                    variant="standard"
-                    inputRef={yearRef}
-                />
-            </DialogContent>
-            <DialogContentText>
-                {error && <div className="text-red-500">Error: {error}</div>}
-            </DialogContentText>
+            <Select fullWidth className="text-red-500" labelId="demo-simple-select-label"
+                id="demo-simple-select"
+                value={selectedSem}
+                label="Semester"
+                onChange={ev => setSelectedSem(ev.target.value as string)} >
+                {semCourse?.semesters?.map((semester) => (<MenuItem key={semester._id} value={semester._id}>
+                    {semester.semester} {semester.year}
+                </MenuItem>))}
+            </Select>
             <DialogActions>
                 <Button onClick={() => setSem(false)}>Cancel</Button>
                 <Button onClick={() => {
+                    setSection(section);
+                    setWantedSection(true);
+                    const semesters = semCourse?.semesters.find(other => other._id === selectedSem)
                     setCourseModifications({
                         ...courseModifications,
                         add: [...courseModifications.add, {
                             subject: semCourse!.subject,
                             courseID: semCourse!.courseID,
-                            semester: selectedSem,
+                            semester: semesters?.semester,
                             grade: 'A',
-                            year: parseInt(yearRef.current.value)
+                            year: semesters?.year,
+                            section: selectedSection
                         }]
                     });
                     setSem(false);
                 }}>Add</Button>
+            </DialogActions>
+        </Dialog>
+
+        <Dialog open={createSection} onClose={() => setWantedSection(false)}>
+            <DialogTitle>Select Planned Section</DialogTitle>
+            <div className="bg-white rounded px-8   text-black w-full">
+                <Select fullWidth className="my-2" value={selectedSection} onChange={ev => setSelectedSection(ev.target.value as string)}>
+                    {section.flatMap(section => section.flatMap(
+                        section => section.flatMap(
+                            section => section.meetings.flatMap(
+                                meetings => (
+                                    <MenuItem value={meetings.days}>{meetings.days} {meetings.startTime}-{meetings.endTime}: {meetings.instructors.length ? meetings.instructors.map(
+                                        instructors => <div><Link to={`/professor?id=${instructors._id}`}>
+                                            {instructors.firstname} {instructors.lastname}
+                                        </Link></div>) : "Information Unavailable"}</MenuItem>)))))}
+                </Select>
+            </div>
+            <DialogActions>
+                <Button onClick={() => setWantedSection(false)}>Cancel</Button>
+                <Button onClick={() => {
+                    setWantedSection(false);
+                }}>Add</Button>
+            </DialogActions>
+        </Dialog>
+
+        <Dialog open={modifyS}>
+            <DialogTitle>Modify</DialogTitle>
+            <DialogActions>
+                <Button onClick={() => setWantedSection(true)}>Modify Section</Button>
+                <Button onClick={() => {
+                    setSem(true);
+                }}>Modify Semester</Button>
             </DialogActions>
         </Dialog>
 
@@ -177,7 +229,7 @@ export function FuturePlan() {
                 </div>
                 <div className="border-x border-gray-500 bg-slate-500 rounded mt-4 w-full flex flex-col">
                     {courses.map((course, i) => (<div
-                                                       className="w-full py-3 px-4 bg-gray-600 border-y border-gray-500 flex items-center" key={i}>
+                        className="w-full py-3 px-4 bg-gray-600 border-y border-gray-500 flex items-center" key={i}>
                         <Link to={`/course_description?subject=${course.subject}&courseID=${course.courseID}`} className="mr-auto">{course.subject} {course.courseID}: {course.name}</Link>
                         <Button color="inherit" onClick={() => {
                             setSemCourse(course);
@@ -215,7 +267,7 @@ export function FuturePlan() {
                                 add: [...degreeModifications.add, degree]
                             });
                         }}>Add</Button>
-                </div>))}
+                    </div>))}
             </div>
             <div className="col-start-3 flex flex-col justify-right">
                 <div className="bg-white rounded px-4 pb-3 pt-4 text-black w-full">
@@ -234,6 +286,18 @@ export function FuturePlan() {
                         <div className="text-2xl">Planned Courses</div>
                         {degreePlan.courses.map((course, i) => (<div key={i} className="flex items-center py-2 border-b border-gray-300">
                             <Link className="mr-auto" to={`/course_description?subject=${course.subject}&courseID=${course.courseID}`}>{course.subject} {course.courseID}</Link>
+                            <div><br />{course.section} hello &emsp;</div>
+                            <Button variant="contained" color="secondary" onClick={() => {
+                                <Dialog open>
+                                    <DialogTitle>Modify</DialogTitle>
+                                    <DialogActions>
+                                        <Button onClick={() => setWantedSection(true)}>Modify Section</Button>
+                                        <Button onClick={() => {
+                                            setSem(true);
+                                        }}>Modify Semester</Button>
+                                    </DialogActions>
+                                </Dialog>
+                            }}>Modify</Button>
                             <Button variant="contained" color="secondary" onClick={() => {
                                 setDegreePlan({
                                     ...degreePlan,
@@ -247,6 +311,7 @@ export function FuturePlan() {
                         </div>))}
                         {courseModifications.add.map((course, i) => (<div key={i} className="flex items-center py-2 border-b border-gray-300">
                             <Link className="mr-auto" to={`/course_description?subject=${course.subject}&courseID=${course.courseID}`}>{course.subject} {course.courseID}</Link>
+                            <div><br />Section Name &emsp;</div>
                             <Button variant="contained" color="secondary" onClick={() => {
                                 setCourseModifications({
                                     ...courseModifications,
@@ -298,6 +363,6 @@ export function FuturePlan() {
                 </>}
             </div>
         </div>
-        
+
     </Layout>);
 }
