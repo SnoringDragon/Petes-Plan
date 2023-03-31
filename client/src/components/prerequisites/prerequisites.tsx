@@ -43,7 +43,6 @@ export function Prerequisites(props: { prerequisites: Requirement, userCourses: 
 
         const userCourse = props.userCourses.find(course => course.courseID === data.courseID &&
             course.subject === data.subject);
-        console.log(data);
 
         const satisfied = (userCourse?.grade === data.minGrade) || (gradeValues[userCourse?.grade ?? ''] >= gradeValues[data.minGrade]);
 
