@@ -236,6 +236,14 @@ export function FuturePlan() {
 
         <div className="grid grid-cols-3 gap-y-2 gap-x-3">
             <div className="w-full h-full flex flex-col items-center justify-left">
+                <div className="bg-white rounded px-4 pb-3 mb-4 pt-4 text-black w-full">
+                    <div className="text-2xl mb-3">Graduation Requirements</div>
+                    {(degreePlans?.flatMap(plan => plan.degrees)?.length ?? 0) === 0 ? <div className="pb-2">
+                        You don't have any degrees in your degree plans.
+                    </div> : <Button variant="contained" color="secondary" onClick={() => {
+                        navigate('/graduation-requirements')
+                    }}>View Graduation Requirements</Button>}
+                </div>
                 <div className="bg-white rounded px-4 pb-3 pt-4 text-black w-full">
                     <div className="text-2xl">Search Courses</div>
                     <div className="flex items-center">
@@ -372,8 +380,7 @@ export function FuturePlan() {
                                 <DialogContent>
                                     <div>Section:</div>
                                     <Select defaultValue={course.section?._id} onChange={ev => {
-                                        const section = course.courseData.sections
-                                            .flat(2).find(s => s._id === ev.target.value)!
+                                        const section = course.courseData.sections?.flat(2).find(s => s._id === ev.target.value)
 
                                         if (!isNew) {
                                             setDegreePlan({
@@ -398,7 +405,7 @@ export function FuturePlan() {
                                             });
                                         }
                                     }}>
-                                        {course.courseData.sections.flat(2).map(section => renderSectionMenuItem(section))}
+                                        {course.courseData.sections?.flat(2).map(section => renderSectionMenuItem(section))}
                                     </Select>
                                 </DialogContent>
                                 <DialogActions>
