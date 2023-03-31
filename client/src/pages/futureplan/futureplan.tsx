@@ -258,7 +258,7 @@ export function FuturePlan() {
                     <div className="text-2xl mb-3">Graduation Requirements</div>
 
                     {(degreePlans?.flatMap(plan => plan.degrees)?.length ?? 0) === 0 ? <div className="pb-2">
-                        You don't have any degrees in your degree plans.
+                        You don't have any degrees in your degree plans. Please add degrees.
                     </div> : <Button variant="contained" color="secondary" onClick={() => {
                         navigate('/graduation-requirements')
                     }}>View Graduation Requirements</Button>}
