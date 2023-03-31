@@ -48,6 +48,7 @@ export function FuturePlan() {
     const [semCourse, setSemCourse] = useState<ApiCourse>();
     const [selectedSem, setSelectedSem] = useState<string | null>(null);
     const [selectedSection, setSelectedSection] = useState<string | null>(null);
+    const [modifyS] = useState(false);
 
     const [degreeSearch, setDegreeSearch] = useState('');
 
@@ -159,19 +160,21 @@ export function FuturePlan() {
             <DialogActions>
                 <Button onClick={() => setSem(false)}>Cancel</Button>
                 <Button onClick={() => {
-                    //</DialogActions>setCourseModifications({
-                    //...courseModifications,
-                    //add: [...courseModifications.add, {
-                    //subject: semCourse!.subject,
-                    //courseID: semCourse!.courseID,
-                    //semester: selectedSem,
-                    //grade: 'A',
-                    //year: parseInt(yearRef.current.value)
-                    //}]
-                    //});
-                    setSem(false);
                     setSection(section);
                     setWantedSection(true);
+                    const semesters = semCourse?.semesters.find(other => other._id === selectedSem)
+                    setCourseModifications({
+                        ...courseModifications,
+                        add: [...courseModifications.add, {
+                            subject: semCourse!.subject,
+                            courseID: semCourse!.courseID,
+                            semester: semesters?.semester,
+                            grade: 'A',
+                            year: semesters?.year,
+                            section: selectedSection
+                        }]
+                    });
+                    setSem(false);
                 }}>Add</Button>
             </DialogActions>
         </Dialog>
@@ -184,28 +187,27 @@ export function FuturePlan() {
                         section => section.flatMap(
                             section => section.meetings.flatMap(
                                 meetings => (
-                                    <MenuItem value={meetings.days}>{meetings.days} {meetings.startTime}-{meetings.endTime}: {meetings.instructors.map(
+                                    <MenuItem value={meetings.days}>{meetings.days} {meetings.startTime}-{meetings.endTime}: {meetings.instructors.length ? meetings.instructors.map(
                                         instructors => <div><Link to={`/professor?id=${instructors._id}`}>
                                             {instructors.firstname} {instructors.lastname}
-                                        </Link></div>)}</MenuItem>)))))}
+                                        </Link></div>) : "Information Unavailable"}</MenuItem>)))))}
                 </Select>
             </div>
             <DialogActions>
                 <Button onClick={() => setWantedSection(false)}>Cancel</Button>
                 <Button onClick={() => {
-                    setCourseModifications({
-                        ...courseModifications,
-                        add: [...courseModifications.add, {
-                            subject: semCourse!.subject,
-                            courseID: semCourse!.courseID,
-                            semester: selectedSem,
-                            grade: 'A',
-                            year: parseInt(yearRef.current.value),
-                            // section: selectedSection
-                        }]
-                    });
                     setWantedSection(false);
                 }}>Add</Button>
+            </DialogActions>
+        </Dialog>
+
+        <Dialog open={modifyS}>
+            <DialogTitle>Modify</DialogTitle>
+            <DialogActions>
+                <Button onClick={() => setWantedSection(true)}>Modify Section</Button>
+                <Button onClick={() => {
+                    setSem(true);
+                }}>Modify Semester</Button>
             </DialogActions>
         </Dialog>
 
@@ -284,7 +286,18 @@ export function FuturePlan() {
                         <div className="text-2xl">Planned Courses</div>
                         {degreePlan.courses.map((course, i) => (<div key={i} className="flex items-center py-2 border-b border-gray-300">
                             <Link className="mr-auto" to={`/course_description?subject=${course.subject}&courseID=${course.courseID}`}>{course.subject} {course.courseID}</Link>
-                            <div><br />Section Name &emsp;</div>
+                            <div><br />{course.section} hello &emsp;</div>
+                            <Button variant="contained" color="secondary" onClick={() => {
+                                <Dialog open>
+                                    <DialogTitle>Modify</DialogTitle>
+                                    <DialogActions>
+                                        <Button onClick={() => setWantedSection(true)}>Modify Section</Button>
+                                        <Button onClick={() => {
+                                            setSem(true);
+                                        }}>Modify Semester</Button>
+                                    </DialogActions>
+                                </Dialog>
+                            }}>Modify</Button>
                             <Button variant="contained" color="secondary" onClick={() => {
                                 setDegreePlan({
                                     ...degreePlan,
