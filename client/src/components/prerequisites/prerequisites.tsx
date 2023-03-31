@@ -38,11 +38,10 @@ export function Prerequisites(props: { prerequisites: Requirement, userCourses: 
                 if (res.degreePlans.length)
                     setDegreePlan(res.degreePlans[0]);
             });
-        })
+        });
 
         const userCourse = props.userCourses.find(course => course.courseID === data.courseID &&
             course.subject === data.subject);
-        console.log(data);
 
         const satisfied = (userCourse?.grade === data.minGrade) || (gradeValues[userCourse?.grade ?? ''] >= gradeValues[data.minGrade]);
 
@@ -51,31 +50,32 @@ export function Prerequisites(props: { prerequisites: Requirement, userCourses: 
         let planned = false;
         if (userCourse) {
         
-        if (satisfied) {
-            let yr = new Date().getFullYear();
-            let mon = new Date().getMonth();
-            let month;
+            if (satisfied) {
+                let yr = new Date().getFullYear();
+                let mon = new Date().getMonth();
+                let month;
 
-            if (mon > 7 && mon < 13) {
-                month = "Fall";
-            } else if (mon < 5 && mon > 0) {
-                month = "Spring";
-            } else if (mon > 4 && mon < 8) {
-                month = "Summer";
-            } else {
-                month = "N/A";
+                if (mon > 7 && mon < 13) {
+                    month = "Fall";
+                } else if (mon < 5 && mon > 0) {
+                    month = "Spring";
+                } else if (mon > 4 && mon < 8) {
+                    month = "Summer";
+                } else {
+                    month = "N/A";
+                }
+
+                if (!(userCourse!.semester.localeCompare(month)) && yr == userCourse!.year)  {
+                    current = true;
+                }
             }
-
-            if (!(userCourse!.semester.localeCompare(month)) && yr == userCourse!.year)  {
-                current = true;
-            }
-        }
-
-        if (!satisfied) {
+            
+            //TODO fix currently doesnt work
             for (let j = 0; j < degreePlans!.length; j++) {
-                for (let i = 0; i < degreePlan!.courses.length; i++) {
-                    if (userCourse!.courseID === degreePlan!.courses[i].courseID
-                        && userCourse!.subject === degreePlan!.courses[i].subject) {
+                let deg = degreePlans[j].courses;
+                for (let i = 0; i < deg.length; i++) {
+                    if (userCourse!.courseID === deg[i].courseID
+                        && userCourse!.subject === deg[i].subject) {
                             planned = true;
                             break;
                     }
@@ -85,7 +85,6 @@ export function Prerequisites(props: { prerequisites: Requirement, userCourses: 
                 }
             }
         }
-    }
 
         let color = '';
         if (current) {
