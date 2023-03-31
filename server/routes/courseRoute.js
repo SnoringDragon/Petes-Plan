@@ -111,7 +111,7 @@ module.exports = app => {
         }
 
         /* Begin building section search query */
-        var sectionQuery = Section.find({ course: course._id });
+        var sectionQuery = Section.find({ course: req.course._id });
 
         /* Check if semester is valid (if provided) */
         if ((req.query.semester !== undefined) ^ (req.query.year !== undefined)) {
