@@ -180,10 +180,10 @@ export function FuturePlan() {
 
                 <div className="mt-4 mb-2">Select Section</div>
 
-                <Select fullWidth className="my-2" value={selectedSection?._id} onChange={ev =>
+                {section.flat().length ? <Select fullWidth className="my-2" value={selectedSection?._id} onChange={ev =>
                     setSelectedSection(section.flat(2).find(({ _id }) => _id === ev.target.value)!)}>
                     {section.flat(2).map(section => renderSectionMenuItem(section))}
-                </Select>
+                </Select> : 'No sections available'}
             </DialogContent>
 
             <DialogActions>
