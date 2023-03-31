@@ -123,14 +123,12 @@ export function FuturePlan() {
 
         <Dialog open={createSem} onClose={() => setSem(false)}>
             <DialogTitle>Select Planned Semester</DialogTitle>
-            <div className="bg-white rounded px-8   text-black w-full">
-            <Select fullWidth className="my-2" value={selectedSem} onChange={e => setSelectedSem(e.target.value as string)}>
+            <DialogContent>
+                <Select fullWidth className="my-2 px-8" value={selectedSem} onChange={e => setSelectedSem(e.target.value as string)}>
                        <MenuItem value="Fall">Fall</MenuItem>
                        <MenuItem value="Spring">Spring</MenuItem>
                        <MenuItem value="Summer">Summer</MenuItem>
-            </Select>
-            </div>  
-            <DialogContent>
+                </Select>
                 <TextField
                     autoFocus
                     margin="dense"
