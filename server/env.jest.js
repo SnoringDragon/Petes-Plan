@@ -1,17 +1,19 @@
 const mongoose = require('mongoose');
 
 const request = require('supertest');
-const getApp = require('./app');
-
-const models = require('./models');
 
 globalThis.request = request;
-globalThis.getApp = getApp;
+globalThis.getApp = () => {
+    return require('./app')();
+};
 
 beforeAll(async () => {
+    await require('./models')('mongodb://127.0.0.1:11223/');
+});
+
+beforeEach(async () => {
     process.env.JWT_SECRET_KEY = 'testkey';
     process.env.ADMIN_EMAIL = 'admin@purdue.edu';
-    await models('mongodb://127.0.0.1:11223/');
 });
 
 afterAll(async () => {
