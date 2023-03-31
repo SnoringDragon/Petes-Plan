@@ -84,15 +84,13 @@ export function ClassHistory() {
 
     return (<Layout>
         <Dialog open={createSem} onClose={() => setSem(false)}>
-            <DialogTitle>Select Planned Semester</DialogTitle>
-            <div className="bg-white rounded px-8   text-black w-full">
-            <Select fullWidth className="my-2" value={selectedSem} onChange={e => setSelectedSem(e.target.value as string)}>
+            <DialogTitle>Select Planned Semester</DialogTitle>    
+            <DialogContent>
+                <Select fullWidth value={selectedSem} onChange={e => setSelectedSem(e.target.value as string)}>
                        <MenuItem value="Fall">Fall</MenuItem>
                        <MenuItem value="Spring">Spring</MenuItem>
                        <MenuItem value="Summer">Summer</MenuItem>
-            </Select>
-            </div>  
-            <DialogContent>
+                </Select>
                 <TextField
                     autoFocus
                     margin="dense"
@@ -102,9 +100,6 @@ export function ClassHistory() {
                     inputRef={yearRef}
                 />
             </DialogContent>
-            <DialogContentText>
-                {error && <div className="text-red-500">Error: {error}</div>}
-            </DialogContentText>
             <DialogActions>
                 <Button onClick={() => setSem(false)}>Cancel</Button>
                 <Button onClick={() => {
@@ -136,12 +131,12 @@ export function ClassHistory() {
         </Dialog>
         
         <div className="flex">
-            <div>
-                <div className="w-full h-full ml-1 mt-10 flex items-center justify-left">
+            <div className="overfill-auto flex flex-grow ml-8 h-full">
+                <div className="w-full h-full ml-1 mt-20  items-center justify-right">
                     <Card className="-mt-16 ">
                         <CardHeader title="Search Courses" className="text-center h-10 bg-zinc-800 text-white" />
                         <CardContent>
-                            <div className="p-1 h-16 px-20">
+                            <div className="p-1 h-16 px-4">
                                 <TextField
                                     fullWidth
                                     id="coursename"
@@ -164,21 +159,20 @@ export function ClassHistory() {
                             </Button>
                         </CardActions>
                     </Card>
-                </div>
 
                 {course &&
-                    <div className={`overfill-auto `}>
-                        <div className="w-full h-full ml-1 mt-16 flex items-center justify-left">
-                            <Card className={'-mt-16 w-100'}>
+                        <div className="w-full h-full ml-1 mt-8 items-center justify-right">
+                            <Card>
                                 <CardHeader title={`${course.subject} ${course.courseID}`}
                                             className="text-center h-10 bg-zinc-500 text-white"/>
                                 <CardContent>
-                                    <div className="p-1 h-10 px-10">
+                                    <div className="p-1 h-8 px-4 ml-4">
                                         <Link to={`/course_description?subject=${course.subject}&courseID=${course.courseID}`}>{course.name}</Link>
                                         <br></br>
                                         <p></p>
                                         Credit Hours: {course.minCredits} to {course.maxCredits}
                                     </div>
+                                    <div className="p-1 mt-8 h-16 px-10">
                                     <TextField
                                         id="grade"
                                         type="grade"
@@ -187,6 +181,7 @@ export function ClassHistory() {
                                         margin="normal"
                                         inputRef={gradeRef}
                                     />
+                                    </div>
                                 </CardContent>
                                 <CardActions>
                                     <Button
@@ -197,23 +192,14 @@ export function ClassHistory() {
                                         onClick={() => {
                                             setSemCourse(course);
                                             setSem(true);
-                                            // const modifications = {...courseModifications};
-                                            // modifications.add = [...modifications.add, {
-                                            //     subject: course!.subject,
-                                            //     courseID: course!.courseID,
-                                            //     grade: gradeRef.current.value,
-                                            //     semester: 'Spring',
-                                            //     year: 2022 // TODO
-                                            // }];
-                                            // setCourseModifications(modifications);
                                         }}>
                                         Add to History
                                     </Button>
                                 </CardActions>
                             </Card>
                         </div>
-                    </div>
                 }
+                </div>
             </div>
             {/*<div className="overfill-auto">*/}
             {/*    <div className="w-full h-full ml-1 mt-10 flex items-center justify-left">*/}
@@ -245,8 +231,8 @@ export function ClassHistory() {
             {/*</div>*/}
 
             {/*TODO*/}
-            <div className="overfill-auto flex flex-grow ml-8 h-full">
-                <div className="w-full h-full ml-1 mt-24  items-center justify-right">
+            <div className="overfill-auto flex flex-grow ml-8  h-full">
+                <div className="w-full h-full w-80 mt-20 items-center justify-right">
                     <Card className="-mt-16 w-10/12">
                         <CardHeader title="GPA" className="text-center h-10 bg-zinc-800 text-white" />
                         <CardContent>
@@ -258,14 +244,14 @@ export function ClassHistory() {
                 </div>
             </div>
 
-            <div className="overfill-auto flex flex-grow ml-8 h-full">
-                <div className="w-full h-full ml-1 mt-24  items-center justify-right">
-                    <Card className="-mt-16 w-10/12">
+            <div className="overfill-auto flex flex-grow  h-full">
+                <div className="w-full h-full ml-1 mt-20  items-center justify-right">
+                    <Card className="-mt-16 w-10/12 w-90">
                         <CardHeader title="Completed Courses" className="text-center h-10 bg-zinc-800 text-white" />
                         <CardContent>
                             {userCourses.map((course, i) => (<div className="flex items-center mb-2" key={i}>
-                                <div className="mr-4">{course.subject} {course.courseID}:</div>
-                                <TextField value={course.grade} onChange={ev => {
+                                <div className="mr-2 w-40">{course.subject} {course.courseID}:</div>
+                                <div className="ml-2  mr-8"><TextField value={course.grade} onChange={ev => {
                                     const newCourses = [...userCourses];
                                     newCourses[i].grade = ev.target.value;
                                     setUserCourses(newCourses);
@@ -274,7 +260,7 @@ export function ClassHistory() {
                                             _id: course._id,
                                             grade: ev.target.value
                                         }] });
-                                }} />
+                                }} /></div>
                                 <div className="mx-2" />
                                 <Button variant="contained" color="secondary" onClick={() => {
                                     setUserCourses(userCourses.filter(x => x !== course));
