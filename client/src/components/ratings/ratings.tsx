@@ -154,7 +154,7 @@ export function Ratings(props: RatingSearch & { filter?: string[] }) {
         return include;
     });
 
-    return (<div className="flex flex-col">
+    return (<div className="flex flex-col w-full">
         <div className="flex mb-2">
             <div className="flex flex-col mr-2">
                 <div className="flex items-start mb-1">
