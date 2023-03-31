@@ -25,6 +25,7 @@ import {
 import { DegreePlan } from '../../types/degree-plan';
 import DegreePlanService from '../../services/DegreePlanService';
 import { UserCourse } from '../../types/user-course';
+import { Section } from '../../types/course-requirements';
 
 export function FuturePlan() {
     const navigate = useNavigate()
@@ -34,16 +35,19 @@ export function FuturePlan() {
     const [degreePlans, setDegreePlans] = useState<DegreePlan[]>([]);
     const [degreePlan, setDegreePlan] = useState<DegreePlan | null>(null);
     const [error, setError] = useState('');
+    const [section, setSection] = useState<Section[][][]>([]);
 
     const [createNewPlan, setCreateNewPlan] = useState(false);
-    
-    
-    const nameRef = useRef({value:''});
+
+
+    const nameRef = useRef({ value: '' });
     const searchRef = useRef({ value: '' });
     const [createSem, setSem] = useState(false);
-    const yearRef = useRef({value:''});
+    const [createSection, setWantedSection] = useState(false);
+    const yearRef = useRef({ value: '' });
     const [semCourse, setSemCourse] = useState<ApiCourse>();
     const [selectedSem, setSelectedSem] = useState('Fall');
+    const [selectedSection, setSelectedSection] = useState('None');
 
     const [degreeSearch, setDegreeSearch] = useState('');
 
@@ -90,6 +94,26 @@ export function FuturePlan() {
         });
     }, []);
 
+    useEffect(() => {
+        const subject = semCourse?.subject ?? '';
+        const courseID = semCourse?.courseID ?? '';
+
+        if (selectedSem != null) {
+            CourseService.getCourseSections({ subject, courseID, semester: selectedSem })
+                .then(res => {
+                    if (!res) {
+                        setSection([]);
+                        setError('Course Sections not found');
+                        return;
+                    }
+                    setSection(res);
+                })
+                .catch(err => {
+                    setError(err?.message ?? err);
+                });
+        }
+    }, [selectedSem, semCourse])
+
     return (<Layout>
         <Dialog open={createNewPlan} onClose={() => setCreateNewPlan(false)}>
             <DialogTitle>Enter Plan Name</DialogTitle>
@@ -124,12 +148,16 @@ export function FuturePlan() {
         <Dialog open={createSem} onClose={() => setSem(false)}>
             <DialogTitle>Select Planned Semester</DialogTitle>
             <div className="bg-white rounded px-8   text-black w-full">
-            <Select fullWidth className="my-2" value={selectedSem} onChange={e => setSelectedSem(e.target.value as string)}>
-                       <MenuItem value="Fall">Fall</MenuItem>
-                       <MenuItem value="Spring">Spring</MenuItem>
-                       <MenuItem value="Summer">Summer</MenuItem>
-            </Select>
-            </div>  
+                <Select fullWidth className="my-2" labelId="demo-simple-select-label"
+                    id="demo-simple-select"
+                    value={selectedSem}
+                    label="Semester"
+                    onChange={ev => setSelectedSem(ev.target.value as string)} >
+                    {semCourse?.semesters?.map((semester) => (<MenuItem key={semester._id} value={semester._id}>
+                        {semester.semester} {semester.year}
+                    </MenuItem>))}
+                </Select>
+            </div>
             <DialogContent>
                 <TextField
                     autoFocus
@@ -157,6 +185,38 @@ export function FuturePlan() {
                         }]
                     });
                     setSem(false);
+                    setSection(section);
+                    setWantedSection(true);
+                }}>Add</Button>
+            </DialogActions>
+        </Dialog>
+
+        <Dialog open={createSection} onClose={() => setWantedSection(false)}>
+            <DialogTitle>Select Planned Section</DialogTitle>
+            <div className="bg-white rounded px-8   text-black w-full">
+                <Select fullWidth className="my-2" value={selectedSection} onChange={ev => setSelectedSection(ev.target.value as string)}>
+                    {section.flatMap(section => section.flatMap(
+                        section => section.flatMap(
+                            section => section.meetings.flatMap(
+                                meetings => (
+                                    <MenuItem value={meetings.days}>{meetings.days} {meetings.startTime}-{meetings.endTime}</MenuItem>)))))}
+                </Select>
+            </div>
+            <DialogActions>
+                <Button onClick={() => setWantedSection(false)}>Cancel</Button>
+                <Button onClick={() => {
+                    setCourseModifications({
+                        ...courseModifications,
+                        add: [...courseModifications.add, {
+                            subject: semCourse!.subject,
+                            courseID: semCourse!.courseID,
+                            semester: selectedSem,
+                            grade: 'A',
+                            year: parseInt(yearRef.current.value),
+                            // section: selectedSection
+                        }]
+                    });
+                    setWantedSection(false);
                 }}>Add</Button>
             </DialogActions>
         </Dialog>
@@ -179,7 +239,7 @@ export function FuturePlan() {
                 </div>
                 <div className="border-x border-gray-500 bg-slate-500 rounded mt-4 w-full flex flex-col">
                     {courses.map((course, i) => (<div
-                                                       className="w-full py-3 px-4 bg-gray-600 border-y border-gray-500 flex items-center" key={i}>
+                        className="w-full py-3 px-4 bg-gray-600 border-y border-gray-500 flex items-center" key={i}>
                         <Link to={`/course_description?subject=${course.subject}&courseID=${course.courseID}`} className="mr-auto">{course.subject} {course.courseID}: {course.name}</Link>
                         <Button color="inherit" onClick={() => {
                             setSemCourse(course);
@@ -217,7 +277,7 @@ export function FuturePlan() {
                                 add: [...degreeModifications.add, degree]
                             });
                         }}>Add</Button>
-                </div>))}
+                    </div>))}
             </div>
             <div className="col-start-3 flex flex-col justify-right">
                 <div className="bg-white rounded px-4 pb-3 pt-4 text-black w-full">
@@ -300,6 +360,6 @@ export function FuturePlan() {
                 </>}
             </div>
         </div>
-        
+
     </Layout>);
 }

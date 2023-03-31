@@ -16,7 +16,7 @@ export function Professor_Page() {
     const [professor, setProfessor] = useState<ApiProfessor | null>(null);
 
     useEffect(() => {
-        const id = searchParams.get('professorid') ?? '';
+        const id = searchParams.get('id') ?? '';
 
         ProfessorService.getProfessor({ id })
             .then(res => {
