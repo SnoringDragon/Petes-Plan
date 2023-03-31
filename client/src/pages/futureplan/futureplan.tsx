@@ -46,7 +46,7 @@ export function FuturePlan() {
     const [createSection, setWantedSection] = useState(false);
     const yearRef = useRef({ value: '' });
     const [semCourse, setSemCourse] = useState<ApiCourse>();
-    const [selectedSem, setSelectedSem] = useState('Fall');
+    const [selectedSem, setSelectedSem] = useState<string | null>(null);;
     const [selectedSection, setSelectedSection] = useState('None');
 
     const [degreeSearch, setDegreeSearch] = useState('');
@@ -147,17 +147,15 @@ export function FuturePlan() {
 
         <Dialog open={createSem} onClose={() => setSem(false)}>
             <DialogTitle>Select Planned Semester</DialogTitle>
-            <div className="bg-white rounded px-8   text-black w-full">
-                <Select fullWidth className="my-2" labelId="demo-simple-select-label"
-                    id="demo-simple-select"
-                    value={selectedSem}
-                    label="Semester"
-                    onChange={ev => setSelectedSem(ev.target.value as string)} >
-                    {semCourse?.semesters?.map((semester) => (<MenuItem key={semester._id} value={semester._id}>
-                        {semester.semester} {semester.year}
-                    </MenuItem>))}
-                </Select>
-            </div>
+            <Select fullWidth className="text-red-500" labelId="demo-simple-select-label"
+                id="demo-simple-select"
+                value={selectedSem}
+                label="Semester"
+                onChange={ev => setSelectedSem(ev.target.value as string)} >
+                {semCourse?.semesters?.map((semester) => (<MenuItem key={semester._id} value={semester._id}>
+                    {semester.semester} {semester.year}
+                </MenuItem>))}
+            </Select>
             <DialogContent>
                 <TextField
                     autoFocus
