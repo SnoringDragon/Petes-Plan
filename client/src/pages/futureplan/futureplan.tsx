@@ -46,8 +46,8 @@ export function FuturePlan() {
     const [createSection, setWantedSection] = useState(false);
     const yearRef = useRef({ value: '' });
     const [semCourse, setSemCourse] = useState<ApiCourse>();
-    const [selectedSem, setSelectedSem] = useState<string | null>(null);;
-    const [selectedSection, setSelectedSection] = useState('None');
+    const [selectedSem, setSelectedSem] = useState<string | null>(null);
+    const [selectedSection, setSelectedSection] = useState<string | null>(null);
 
     const [degreeSearch, setDegreeSearch] = useState('');
 
@@ -156,32 +156,19 @@ export function FuturePlan() {
                     {semester.semester} {semester.year}
                 </MenuItem>))}
             </Select>
-            <DialogContent>
-                <TextField
-                    autoFocus
-                    margin="dense"
-                    label="Year"
-                    fullWidth
-                    variant="standard"
-                    inputRef={yearRef}
-                />
-            </DialogContent>
-            <DialogContentText>
-                {error && <div className="text-red-500">Error: {error}</div>}
-            </DialogContentText>
             <DialogActions>
                 <Button onClick={() => setSem(false)}>Cancel</Button>
                 <Button onClick={() => {
-                    setCourseModifications({
-                        ...courseModifications,
-                        add: [...courseModifications.add, {
-                            subject: semCourse!.subject,
-                            courseID: semCourse!.courseID,
-                            semester: selectedSem,
-                            grade: 'A',
-                            year: parseInt(yearRef.current.value)
-                        }]
-                    });
+                    //</DialogActions>setCourseModifications({
+                    //...courseModifications,
+                    //add: [...courseModifications.add, {
+                    //subject: semCourse!.subject,
+                    //courseID: semCourse!.courseID,
+                    //semester: selectedSem,
+                    //grade: 'A',
+                    //year: parseInt(yearRef.current.value)
+                    //}]
+                    //});
                     setSem(false);
                     setSection(section);
                     setWantedSection(true);
@@ -197,7 +184,10 @@ export function FuturePlan() {
                         section => section.flatMap(
                             section => section.meetings.flatMap(
                                 meetings => (
-                                    <MenuItem value={meetings.days}>{meetings.days} {meetings.startTime}-{meetings.endTime}</MenuItem>)))))}
+                                    <MenuItem value={meetings.days}>{meetings.days} {meetings.startTime}-{meetings.endTime}: {meetings.instructors.map(
+                                        instructors => <div><Link to={`/professor?id=${instructors._id}`}>
+                                            {instructors.firstname} {instructors.lastname}
+                                        </Link></div>)}</MenuItem>)))))}
                 </Select>
             </div>
             <DialogActions>
@@ -294,6 +284,7 @@ export function FuturePlan() {
                         <div className="text-2xl">Planned Courses</div>
                         {degreePlan.courses.map((course, i) => (<div key={i} className="flex items-center py-2 border-b border-gray-300">
                             <Link className="mr-auto" to={`/course_description?subject=${course.subject}&courseID=${course.courseID}`}>{course.subject} {course.courseID}</Link>
+                            <div><br />Section Name &emsp;</div>
                             <Button variant="contained" color="secondary" onClick={() => {
                                 setDegreePlan({
                                     ...degreePlan,
