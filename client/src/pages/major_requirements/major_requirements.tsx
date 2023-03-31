@@ -67,7 +67,9 @@ export function Major_Requirements() {
             other.subject === course.subject);
 
         let current = false;
-        if (isSatisfied) {
+        let planned = false;
+
+        if (!isSatisfied) {
             let yr = new Date().getFullYear();
             let mon = new Date().getMonth();
             let month;
@@ -82,23 +84,22 @@ export function Major_Requirements() {
                 month = "N/A";
             }
 
-            if (!(isSatisfied.semester.localeCompare(month)) && yr == isSatisfied.year) {
-                current = true;
+            for (const plan of degreePlans) {
+                for (const c of plan.courses) {
+                    if (c.courseID === course.courseID
+                        && c.subject === course.subject) {
+                        planned = true;
+
+                        if (c.semester === month && yr === c.year) {
+                            current = true;
+                            break;
+                        }
+                    }
+                }
             }
         }
 
         if (!degreePlan) return;
-
-        let planned = false;
-        if (!isSatisfied) {
-            for (let i = 0; i < degreePlan.courses.length; i++) {
-                if (course.courseID === degreePlan.courses[i].courseID
-                    && course.subject === degreePlan.courses[i].subject) {
-                    planned = true;
-                    break;
-                }
-            }
-        }
 
         let color = '';
         if (current) {
