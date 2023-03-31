@@ -297,7 +297,7 @@ export function ClassHistory() {
                         <CardHeader title="Completed Courses" className="text-center h-10 bg-zinc-800 text-white" />
                         <CardContent>
                             {userCourses.map((course, i) => (<div className="flex items-center mb-2" key={i}>
-                                <div className="mr-2 w-40">{course.subject} {course.courseID}:</div>
+                                <Link to={`/course_description?subject=${course.subject}&courseID=${course.courseID}`} className="mr-2 w-40">{course.subject} {course.courseID}:</Link>
                                 <div className="ml-2  mr-8"><TextField value={course.grade} onChange={ev => {
                                     const newCourses = [...userCourses];
                                     newCourses[i].grade = ev.target.value;
