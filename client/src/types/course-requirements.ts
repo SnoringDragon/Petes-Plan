@@ -27,6 +27,7 @@ export interface PickNRequirement extends AbstractRequirementGroup {
 }
 
 export interface ApiCourse {
+    _id: string,
     name: string,
     subject: string,
     courseID: string,

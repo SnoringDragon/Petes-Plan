@@ -316,9 +316,9 @@ export function FuturePlan() {
 
                                     if (!instructors.length) return 'To Be Assigned';
 
-                                    return instructors.map(instructor => <span key={instructor._id}>
+                                    return instructors.map(instructor => <Link to={`/professor?id=${instructor._id}&filter=${course.courseData._id}`} key={instructor._id}>
                                         {instructor.firstname + ' ' + instructor.lastname}
-                                    </span>);
+                                    </Link>);
                                 })()}</div>
                             </div>
 
