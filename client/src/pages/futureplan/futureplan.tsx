@@ -14,6 +14,7 @@ import CourseService from '../../services/CourseService';
 import { Degree } from '../../types/degree';
 import DegreeService from '../../services/DegreeService';
 import {
+    Accordion, AccordionDetails, AccordionSummary,
     Dialog,
     DialogActions,
     DialogContent,
@@ -63,6 +64,8 @@ export function FuturePlan() {
     const [selectedSection, setSelectedSection] = useState<Section | null>(null);
     const [modifyCourse, setModifyCourse] = useState<UserCourse | null>(null);
     const [instructorFilter, setInstructorFilter] = useState<string>('');
+
+    const [semesterFilter, setSemesterFilter] = useState<string>('');
 
     const [degreeSearch, setDegreeSearch] = useState('');
 
@@ -305,7 +308,18 @@ export function FuturePlan() {
                 </div>
                 {degreePlan && <>
                     <div className="bg-white rounded px-4 pb-3 pt-4 text-black w-full mt-3">
-                        <div className="text-2xl">Planned Courses</div>
+                        <div className="flex">
+                            <div className="text-2xl mr-auto">Planned Courses</div>
+                            <div><span>Semester filter:&nbsp;</span>
+                                <Select value={semesterFilter} onChange={ev => setSemesterFilter(ev.target.value as string)}>
+                                    <MenuItem value={""}>None</MenuItem>
+                                    {[...new Set([degreePlan.courses, courseModifications.add]
+                                        .flat().map(c => `${c.semester} ${c.year}`))].map((sem, i) => <MenuItem key={sem} value={sem}>
+                                        {sem}
+                                    </MenuItem>)}
+                                </Select>
+                            </div>
+                        </div>
                         {Object.entries([degreePlan.courses, courseModifications.add]
                             .flatMap(courses => {
                                 return courses.map(course => ({ course, isNew: courses !== degreePlan.courses }))
@@ -325,8 +339,16 @@ export function FuturePlan() {
                                 const termOrder = ['Spring', 'Summer', 'Fall', 'Winter'];
                                 return termOrder.indexOf(semATerm) - termOrder.indexOf(semBTerm);
                             })
+                            .filter(([sem]) => {
+                                if (!semesterFilter) return true;
+                                return sem === semesterFilter;
+                            })
                             .map(([semester, courses], i) =>
-                                (<div className="mt-2"><span className="text-lg">{semester}</span>
+                                (<Accordion className="mt-2" defaultExpanded={true}>
+                                    <AccordionSummary className="text-lg py-1 h-8"><div >
+                                        {semester}
+                                    </div ></AccordionSummary>
+                                    <AccordionDetails className="flex flex-col">
                                     {courses.map(({ course, isNew }, j) => (<div key={j} className="flex items-center py-2 border-b border-gray-300">
                             <div className="flex flex-col">
                                 <Link to={`/course_description?subject=${course.subject}&courseID=${course.courseID}`}>
@@ -405,7 +427,7 @@ export function FuturePlan() {
                                     })
                                 }
                             }}>Delete</Button>
-                                </div>))}</div>))}
+                                </div>))}</AccordionDetails></Accordion>))}
                         {/*{courseModifications.add.map((course, i) => (<div key={i} className="flex items-center py-2 border-b border-gray-300">*/}
                         {/*    <Link className="mr-auto" to={`/course_description?subject=${course.subject}&courseID=${course.courseID}`}>{course.subject} {course.courseID}</Link>*/}
                         {/*    <div><br />Section Name &emsp;</div>*/}
