@@ -415,7 +415,10 @@ exports.getGradReqs = async (req, res) => {
 
     /* Check if degree plan _id is valid */
     const user = await req.user.populate('degreePlans.degrees');
-    const degreePlan = req.user.degreePlans.id(subdir[1]);
+    var degreePlan;
+    try {
+        degreePlan = req.user.degreePlans.id(subdir[1]);
+    } catch (err) { degreePlan = null; }
     if (!degreePlan) {
         return res.status(400).json({
             message: 'Invalid degree plan _id',
@@ -457,7 +460,10 @@ exports.getReqIntersection = async (req, res) => {
 
     /* Check if degree plan _id is valid */
     const user = await req.user.populate('degreePlans.degrees');
-    const degreePlan = req.user.degreePlans.id(subdir[1]);
+    var degreePlan;
+    try {
+        degreePlan = req.user.degreePlans.id(subdir[1]);
+    } catch (err) { degreePlan = null; }
     if (!degreePlan) {
         return res.status(400).json({
             message: 'Invalid degree plan _id',
@@ -473,7 +479,10 @@ exports.getReqIntersection = async (req, res) => {
     }
 
     /* Check if degree _id is valid */
-    const compDegree = await Degree.findById(subdir[3]);
+    var compDegree;
+    try {
+        compDegree = await Degree.findById(subdir[3]);
+    } catch (err) { compDegree = null; }
     if (!compDegree) {
         return res.status(400).json({
             message: 'Invalid degree _id',
