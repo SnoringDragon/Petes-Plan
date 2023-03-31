@@ -1,4 +1,9 @@
+jest.mock('./secret', () => {
+    return Buffer.from('testkey');
+});
+
 const mongoose = require('mongoose');
+const models = require('./models');
 
 const request = require('supertest');
 
@@ -8,11 +13,11 @@ globalThis.getApp = () => {
 };
 
 beforeAll(async () => {
-    await require('./models')('mongodb://127.0.0.1:11223/');
+    process.env.ADMIN_EMAIL = 'admin@purdue.edu';
+    await models('mongodb://127.0.0.1:11223/');
 });
 
 beforeEach(async () => {
-    process.env.JWT_SECRET_KEY = 'testkey';
     process.env.ADMIN_EMAIL = 'admin@purdue.edu';
 });
 

@@ -22,7 +22,11 @@ module.exports = app => {
     };
 
     router.post('/abort', findTask, (req, res) => {
-        req.task.cancel();
+        try {
+            req.task.cancel();
+        } catch (e) {
+            return res.status(400).json({ message: e.message })
+        }
         res.json({});
     });
 
