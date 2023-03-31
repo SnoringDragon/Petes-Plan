@@ -53,7 +53,6 @@ export function FuturePlan() {
     const nameRef = useRef({ value: '' });
     const searchRef = useRef({ value: '' });
     const [createSem, setSem] = useState(false);
-    const [createSection, setWantedSection] = useState(false);
     const yearRef = useRef({ value: '' });
     const [semCourse, setSemCourse] = useState<ApiCourse>();
     const [selectedSem, setSelectedSem] = useState<string | null>(null);
@@ -162,38 +161,36 @@ export function FuturePlan() {
 
         <Dialog open={createSem} onClose={() => setSem(false)}>
             <DialogTitle>Select Planned Semester</DialogTitle>
-            <Select fullWidth className="text-red-500" labelId="demo-simple-select-label"
-                id="demo-simple-select"
-                value={selectedSem}
-                label="Semester"
-                onChange={ev => setSelectedSem(ev.target.value as string)} >
-                {semCourse?.semesters?.filter(semester => semester.year >= new Date().getFullYear())
-                    .map((semester) => (<MenuItem key={semester._id} value={semester._id}>
-                    {semester.semester} {semester.year}
-                </MenuItem>))}
-            </Select>
-            <DialogActions>
-                <Button onClick={() => setSem(false)}>Cancel</Button>
-                <Button onClick={() => {
-                    setSection(section);
-                    setWantedSection(true);
-                    setSem(false);
-                }}>Add</Button>
-            </DialogActions>
-        </Dialog>
+            <DialogContent>
+                <div className="mb-2">Select Semester</div>
 
-        <Dialog open={createSection} onClose={() => setWantedSection(false)}>
-            <DialogTitle>Select Planned Section</DialogTitle>
-            <div className="bg-white rounded px-8   text-black w-full">
+                <Select fullWidth className="text-red-500" labelId="demo-simple-select-label"
+                    value={selectedSem}
+                    label="Semester"
+                    onChange={ev => {
+                        setSection([])
+                        setSelectedSem(ev.target.value as string)
+                        setSelectedSection(null);
+                    }} >
+                    {semCourse?.semesters?.filter(semester => semester.year >= new Date().getFullYear())
+                        .map((semester) => (<MenuItem key={semester._id} value={semester._id}>
+                        {semester.semester} {semester.year}
+                    </MenuItem>))}
+                </Select>
+
+                <div className="mt-4 mb-2">Select Section</div>
+
                 <Select fullWidth className="my-2" value={selectedSection?._id} onChange={ev =>
                     setSelectedSection(section.flat(2).find(({ _id }) => _id === ev.target.value)!)}>
                     {section.flat(2).map(section => renderSectionMenuItem(section))}
                 </Select>
-            </div>
+            </DialogContent>
+
             <DialogActions>
-                <Button onClick={() => setWantedSection(false)}>Cancel</Button>
-                <Button onClick={() => {
-                    setWantedSection(false);
+                <Button onClick={() => setSem(false)}>Cancel</Button>
+                <Button disabled={!selectedSection} onClick={() => {
+                    setSem(false);
+
                     const semesters = semCourse?.semesters.find(other => other._id === selectedSem)!;
                     setCourseModifications({
                         ...courseModifications,
@@ -235,6 +232,7 @@ export function FuturePlan() {
                         <Button color="inherit" onClick={() => {
                             setSemCourse(course);
                             setSem(true);
+                            setSection([]);
                             // setCourseModifications({
                             //     ...courseModifications,
                             //     add: [...courseModifications.add, {
