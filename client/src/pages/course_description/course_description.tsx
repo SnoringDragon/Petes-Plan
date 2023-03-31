@@ -177,7 +177,7 @@ export function Course_Description() {
                                 </td>
                                 <td className="border border-gray-500 px-2 py-1 w-96">
                                     {meeting.instructors?.length ? meeting.instructors.map((instructor, i) =>
-                                        <Link to={`/professor?id=${instructor._id}&filter=${course?._id}`}>{instructor.firstname}{instructor.nickname ? ` (${instructor.nickname}) ` : ' '}{instructor.lastname}</Link>) : 'TBD'}
+                                        <Link to={`/professor?id=${instructor._id}&filter=${course?._id}`}>{instructor.firstname}{instructor.nickname ? ` (${instructor.nickname}) ` : ' '}{instructor.lastname}</Link>) : 'TBA (To Be Assigned)'}
                                 </td>
                             </tr>)}
                             </tbody>
