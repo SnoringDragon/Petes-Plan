@@ -59,11 +59,30 @@ module.exports = app => {
         if (typeof req.query.q !== 'string')
             return res.status(400).json({ message: 'invalid input' });
 
-        return res.json(await Course.find({
-            $text: { $search: req.query.q }
-        }).sort({
-            score: { $meta: 'textScore' }
-        }));
+        return res.json(await Course.aggregate([{
+            $match: { $text: { $search: req.query.q } }
+        }, {
+            $sort: { score: { $meta: 'textScore' } }
+        }, {
+            $limit: 25
+        }, {
+            $lookup: {
+                from: 'sections',
+                localField: 'id',
+                foreignField: 'course',
+                as: 'sections'
+            }
+        }, {
+            $set: {
+                semesters: { $setIntersection: [{ $map: {
+                            input: '$sections',
+                            as: 'section',
+                            in: '$$section.semester'
+                        }}] }
+            }
+        }, {
+            $project: { sections: 0 }
+        }]));
     });
 
     /* Return scheduling information for a course */
