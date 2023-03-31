@@ -28,6 +28,9 @@ import DegreePlanService from '../../services/DegreePlanService';
 import { UserCourse } from '../../types/user-course';
 import { Section } from '../../types/course-requirements';
 import { ApiProfessor } from '../../types/professor';
+import { Semester } from '../../types/semester';
+import SemesterService from '../../services/SemesterService';
+import GPAService from '../../services/GPAService';
 
 const renderSectionMenuItem = (section: Section, instructorFilter: string = '') => {
     if (instructorFilter && !section.meetings.some(m => m.instructors.some(i => i._id === instructorFilter)))
@@ -66,6 +69,11 @@ export function FuturePlan() {
     const [instructorFilter, setInstructorFilter] = useState<string>('');
 
     const [semesterFilter, setSemesterFilter] = useState<string>('');
+    const [semesters, setSemesters] = useState<Semester[]>([]);
+
+    const [cumulativeGpa, setCumulativeGpa] = useState<number | null>(null)
+    const [semesterGpa, setSemesterGpa] = useState<number | null>(null)
+    const [selectedGpaSemester, setSelectedGpaSemester] = useState('');
 
     const [degreeSearch, setDegreeSearch] = useState('');
 
@@ -114,7 +122,17 @@ export function FuturePlan() {
             if (res.degreePlans.length)
                 setDegreePlan(res.degreePlans[0]);
         });
+        SemesterService.getSemesters().then(res => setSemesters(res));
+        GPAService.getCumulativeGPA().then(res => setCumulativeGpa(res));
     }, []);
+
+    useEffect(() => {
+        const sem = semesters.find(({ _id }) => _id === selectedGpaSemester);
+        if (sem)
+        GPAService.getSemesterGPA({ semesterInput: sem?.semester , yearInput: sem?.year })
+            .then(res => setSemesterGpa(res))
+        else setSemesterGpa(null);
+    }, [selectedGpaSemester]);
 
     useEffect(() => {
         const subject = semCourse?.subject ?? '';
@@ -238,11 +256,32 @@ export function FuturePlan() {
             <div className="w-full h-full flex flex-col items-center justify-left">
                 <div className="bg-white rounded px-4 pb-3 mb-4 pt-4 text-black w-full">
                     <div className="text-2xl mb-3">Graduation Requirements</div>
+
                     {(degreePlans?.flatMap(plan => plan.degrees)?.length ?? 0) === 0 ? <div className="pb-2">
                         You don't have any degrees in your degree plans.
                     </div> : <Button variant="contained" color="secondary" onClick={() => {
                         navigate('/graduation-requirements')
                     }}>View Graduation Requirements</Button>}
+
+                    <div className="text-2xl my-2">GPA</div>
+
+
+                    <span className="mr-2">Semester:</span>
+                    <Select value={selectedGpaSemester} onChange={ev => setSelectedGpaSemester(ev.target.value as string)}>
+                        {semesters.map(sem => <MenuItem key={sem._id} value={sem._id}>
+                            {sem.semester} {sem.year}
+                        </MenuItem>)}
+                    </Select>
+
+                    <div className="flex">
+                        <span className="mr-4">
+                            Cumulative GPA: {cumulativeGpa === null ? 'N/A' : cumulativeGpa.toFixed(2)}
+                        </span>
+                        <span>
+                            Semester GPA: {semesterGpa === null ? 'N/A' : semesterGpa.toFixed(2)}
+                        </span>
+                    </div>
+
                 </div>
                 <div className="bg-white rounded px-4 pb-3 pt-4 text-black w-full">
                     <div className="text-2xl">Search Courses</div>
@@ -343,9 +382,9 @@ export function FuturePlan() {
                                 const [semATerm, semAYear] = semA.split(' ');
                                 const [semBTerm, semBYear] = semB.split(' ');
                                 const yearCompare = semAYear.localeCompare(semBYear);
-                                if (yearCompare) return yearCompare;
+                                if (yearCompare) return -yearCompare;
                                 const termOrder = ['Spring', 'Summer', 'Fall', 'Winter'];
-                                return termOrder.indexOf(semATerm) - termOrder.indexOf(semBTerm);
+                                return termOrder.indexOf(semBTerm) - termOrder.indexOf(semATerm);
                             })
                             .filter(([sem]) => {
                                 if (!semesterFilter) return true;
