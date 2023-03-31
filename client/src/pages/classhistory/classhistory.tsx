@@ -22,6 +22,9 @@ import {
     MenuItem,
     Select
 } from '@material-ui/core';
+import { Semester } from '../../types/semester';
+import SemesterService from '../../services/SemesterService';
+import GPAService from '../../services/GPAService';
 
 
 const gradeRegex = /^(?:[A-D][-+]?|[EFPNSIWU]|(?:PI|PO|IN|WN|IX|WF|SI|IU|WU|AU|CR|NS))$/;
@@ -41,17 +44,50 @@ export function ClassHistory() {
     const [semCourse, setSemCourse] = useState<ApiCourse>();
     const [selectedSem, setSelectedSem] = useState('Fall');
 
+    const [semesters, setSemesters] = useState<Semester[]>([]);
+    const [selectedGpaSemester, setSelectedGpaSemester] = useState<string>(''
+    );
+
     const [courseModifications, setCourseModifications] = useState<{
         delete: string[],
         modify: Pick<UserCourse, '_id' | 'grade'>[],
-        add: Omit<UserCourse, '_id'>[]
+        add: Omit<UserCourse, '_id' | 'courseData'>[]
     }>({ delete: [], modify: [], add: [] });
-    
+
+    const [gpas, setGpas] = useState<{
+        cumulative: number | null,
+        major: number | null,
+        semester: number | null }>({ cumulative: null, major: null, semester: null });
 
     useEffect(() => {
         CourseHistoryService.getCourses()
             .then(res => setUserCourses(res.courses));
+
+        SemesterService.getSemesters().then(res => setSemesters(res));
     }, []);
+
+    useEffect(() => {
+        GPAService.getCumulativeGPA().then(res => setGpas(gpas => ({
+            ...gpas,
+            cumulative: res
+        })))
+
+        GPAService.getMajorGPA().then(res => setGpas(gpas => ({
+            ...gpas,
+            major: res
+        })))
+    }, [courseModifications]);
+
+    useEffect(() => {
+        const sem = semesters.find(({ _id }) => _id === selectedGpaSemester);
+        if (sem)
+            GPAService.getSemesterGPA({ semesterInput: sem.semester, yearInput: sem.year })
+                .then(res => setGpas(gpas => ({
+                    ...gpas,
+                    semester: res
+                })))
+    }, [courseModifications, selectedGpaSemester]);
+
 
     const search = () => {
         CourseService.searchCourse(searchRef.current.value)
@@ -236,9 +272,20 @@ export function ClassHistory() {
                     <Card className="-mt-16 w-10/12">
                         <CardHeader title="GPA" className="text-center h-10 bg-zinc-800 text-white" />
                         <CardContent>
-                           <text>Cumulative GPA: </text> 
+                            <span>Semester:</span>
+                            <Select value={selectedGpaSemester} onChange={ev => setSelectedGpaSemester(ev.target.value as string)}>
+                                {semesters.map(sem => <MenuItem key={sem._id} value={sem._id}>
+                                    {sem.semester} {sem.year}
+                                </MenuItem>)}
+                            </Select>
+                            <br />
+
+                           <span>Cumulative GPA: {gpas.cumulative === null ? 'N/A' : gpas.cumulative.toFixed(2)}</span>
                            <br></br>
-                           <text>Semester GPA: </text>
+                           <span>Semester GPA: {gpas.semester === null ? 'N/A' : gpas.semester.toFixed(2)}</span>
+                            <br/>
+                            <span>Major GPA: {gpas.major === null ? 'N/A' : gpas.major.toFixed(2)}</span>
+
                         </CardContent>
                     </Card>
                 </div>
