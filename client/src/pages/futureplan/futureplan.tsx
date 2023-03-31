@@ -285,9 +285,20 @@ export function FuturePlan() {
                 {degreePlan && <>
                     <div className="bg-white rounded px-4 pb-3 pt-4 text-black w-full mt-3">
                         <div className="text-2xl">Planned Courses</div>
-                        {[degreePlan.courses, courseModifications.add]
-                            .flatMap((courses, j) => courses
-                                .map((course, i) => (<div key={`${i} ${j}`} className="flex items-center py-2 border-b border-gray-300">
+                        {Object.entries([degreePlan.courses, courseModifications.add]
+                            .flatMap(courses => {
+                                return courses.map(course => ({ course, isNew: courses !== degreePlan.courses }))
+                            })
+                            .reduce((semesterDict, course) => {
+                                const sem = `${course.course.semester} ${course.course.year}`;
+                                if (!(sem in semesterDict))
+                                    semesterDict[sem] = [];
+                                semesterDict[sem].push(course);
+                                return semesterDict;
+                            }, {} as { [key: string]: {isNew: boolean, course: UserCourse}[] }))
+                            .map(([semester, courses], i) =>
+                                (<div className="mt-2"><span className="text-lg">{semester}</span>
+                                    {courses.map(({ course, isNew }, j) => (<div key={j} className="flex items-center py-2 border-b border-gray-300">
                             <div className="flex flex-col">
                                 <Link to={`/course_description?subject=${course.subject}&courseID=${course.courseID}`}>
                                     {course.subject} {course.courseID}
@@ -313,7 +324,7 @@ export function FuturePlan() {
                                         const section = course.courseData.sections
                                             .flat(2).find(s => s._id === ev.target.value)!
 
-                                        if (courses === degreePlan.courses) {
+                                        if (!isNew) {
                                             setDegreePlan({
                                                 ...degreePlan,
                                                 courses: degreePlan.courses.filter(x => x !== course)
@@ -348,7 +359,7 @@ export function FuturePlan() {
                                 setModifyCourse(course);
                             }}>Modify</Button>
                             <Button variant="contained" color="secondary" onClick={() => {
-                                if (courses === degreePlan.courses) {
+                                if (!isNew) {
                                     setDegreePlan({
                                         ...degreePlan,
                                         courses: degreePlan.courses.filter(x => x !== course)
@@ -365,7 +376,7 @@ export function FuturePlan() {
                                     })
                                 }
                             }}>Delete</Button>
-                        </div>)))}
+                                </div>))}</div>))}
                         {/*{courseModifications.add.map((course, i) => (<div key={i} className="flex items-center py-2 border-b border-gray-300">*/}
                         {/*    <Link className="mr-auto" to={`/course_description?subject=${course.subject}&courseID=${course.courseID}`}>{course.subject} {course.courseID}</Link>*/}
                         {/*    <div><br />Section Name &emsp;</div>*/}
