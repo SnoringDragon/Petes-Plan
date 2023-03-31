@@ -57,14 +57,14 @@ export function Professor_Page() {
                 <span className="underline font-bold">Email: </span> &nbsp;
                 <a href={`mailto:` + professor.email}>{professor.email}</a>
             </div>
-            <div className="flex ml-8">
+            {professor.rateMyProfIds.length ? <div className="flex ml-8">
                 <span className="mr-2">Rate My Professor Links:</span>
                 {professor.rateMyProfIds.map(
                     (rateMyProfIds, i) => <div key={rateMyProfIds} className="ml-2">
                         <a href={`https://www.ratemyprofessors.com/professor/${rateMyProfIds}`} target="_blank">
                         Link {i + 1}
                     </a></div>)}
-            </div>
+            </div> : null}
         </div>
 
         <Ratings instructor={professor._id} filter={searchParams.get('filter')?.split(',') ?? []} />
