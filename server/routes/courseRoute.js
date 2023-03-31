@@ -81,6 +81,13 @@ module.exports = app => {
                         }}] }
             }
         }, {
+            $lookup: {
+                from: 'semesters',
+                localField: 'semesters',
+                foreignField: '_id',
+                as: 'semesters'
+            }
+        }, {
             $project: { sections: 0 }
         }]));
     });

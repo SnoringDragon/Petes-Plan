@@ -1,7 +1,7 @@
 const courseModel = require('../models/courseModel');
 const usercourseModel = require('../models/userCourseModel');
 const degreeModel = require('../models/degreeModel');
-const courseAttribute = require 
+
 let uniqueCourses;
 
 async function calculateGPA(userCourseModels) {

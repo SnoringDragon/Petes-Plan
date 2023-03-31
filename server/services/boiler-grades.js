@@ -72,6 +72,7 @@ function getBGCourse(courseID) {
 }
 
 // Instruc Ex: console.log("inside, ", getBGInstructor(fName = "Sula", mName = null, lName = "Lee"));
-// Course Ex: console.log(getBGCourse("BIOL 11000"))
+// Course Ex: 
+console.log(getBGCourse("BIOL 11000"))
 module.exports = getBGInstructor;
 module.exports = getBGCourse;
