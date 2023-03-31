@@ -25,6 +25,9 @@ import {
 import { Instructor } from '../instructor/instructor';
 import { Semester } from '../../types/semester';
 import SemesterService from '../../services/SemesterService';
+import { Boilergrade, BOILERGRADES_GRADES } from '../../types/boilergrades';
+import BoilerGradesService from '../../services/BoilerGradesService';
+import { Boilergrades } from '../../components/boilergrades/boilergrades';
 
 export function Course_Description() {
     const [searchParams] = useSearchParams();
@@ -38,6 +41,7 @@ export function Course_Description() {
     const [section, setSection] = useState<Section[][][] | null>(null);
     const [showSections, setShowSections] = useState(true);
     const [semesters, setSemesters] = useState<Semester[]>([]);
+    const [boilergrades, setBoilergrades] = useState<Boilergrade[]>([]);
 
     useEffect(() => {
         CourseHistoryService.getCourses()
@@ -50,6 +54,7 @@ export function Course_Description() {
     useEffect(() => {
         const subject = searchParams.get('subject') ?? '';
         const courseID = searchParams.get('courseID') ?? '';
+        setBoilergrades([]);
 
         CourseService.getCourse({ subject, courseID })
             .then(res => {
@@ -63,6 +68,9 @@ export function Course_Description() {
             .catch(err => {
                 setError(err?.message ?? err);
             });
+
+        BoilerGradesService.getCourse({ subject, courseID })
+            .then(res => setBoilergrades(res));
     }, [searchParams])
 
     useEffect(() => {
@@ -91,7 +99,9 @@ export function Course_Description() {
             <div className="text-xl text-red-500 mt-4">Error: {error}</div>
             <a className="text-sm mt-2 cursor-pointer" onClick={() => navigate(-1)}>Go back</a>
         </>}
-    </div></Layout>)
+    </div></Layout>);
+
+    const bgdata = BoilerGradesService.reduceBoilergrades(boilergrades, 'instructor');
 
     console.log(course)
     return (<Layout><div className="w-full h-full flex flex-col items-center">
@@ -185,6 +195,7 @@ export function Course_Description() {
             </div>
             </div>
 
+            <Boilergrades data={bgdata} />
 
             <div className="mt-5 underline">Reviews:</div>
             <Ratings courseID={course.courseID} subject={course.subject} filter={searchParams.get('filter')?.split(',') ?? []} />

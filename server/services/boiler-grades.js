@@ -1,6 +1,6 @@
 let apiResponse;
-var XMLHttpRequest = require('xhr2');
-var xhr = new XMLHttpRequest();
+
+const fetch = import('node-fetch');
 
 // ------------ INSTRUCTOR REQUESTS FROM BG -------------------
 //Main function is getBGInstructor(fName, mName, lName) //all fields are required but if no middle name then input null
@@ -13,21 +13,8 @@ function getInstructorURL(fName, mInit = null, lName) {
     return instructorURL;
 }
 
-function fetchInstructorData(fName, mInit = null, lName, callback) {
-    let url = getInstructorURL(fName, mInit, lName);
-    var xhr = new XMLHttpRequest();
-    xhr.onreadystatechange = function() {
-      if (xhr.readyState === XMLHttpRequest.DONE) {
-        if (xhr.status === 200) {
-          var response = JSON.parse(xhr.responseText);
-          callback(response);
-        } else {
-          console.error('Error fetching data. Status:', xhr.status);
-        }
-      }
-    };
-    xhr.open('GET', url, true);
-    xhr.send();
+async function fetchInstructorData(fName, mInit = null, lName) {
+    return (await (await fetch).default(getInstructorURL(fName, mInit, lName))).json();
 }
   
 function returnData(data) {
@@ -36,43 +23,31 @@ function returnData(data) {
     return(data)
 }
 
-function getBGInstructor(fName = "Sula", mName = null, lName = "Lee") {
-    fetchInstructorData(fName = "Sula", mName = null, lName = "Lee", callback = returnData);
+function getBGInstructor(fName, lName) {
+    return fetchInstructorData(fName, mName = null, lName);
 }
 
 // ------------ COURSE REQUESTS FROM BG -------------------
 //Main function is getBGCourse(courseID)
 
-function getCourseURL(courseID) {
-    let courseIDComponents = courseID.match(/[a-zA-Z]+|[0-9]+/g)
-    let courseURL = "https://www.boilergrades.com/api/grades?course="+courseIDComponents[0]+"%20"+courseIDComponents[1];
+function getCourseURL({ courseID, subject }) {
+    let courseURL = "https://www.boilergrades.com/api/grades?course="+subject+"%20"+courseID;
     return courseURL;
 }
 
-function getCourseData(courseID, callback) {
-    let url = getCourseURL(courseID);
-    console.log(url)
-    var xhr = new XMLHttpRequest();
-    xhr.onreadystatechange = function() {
-      if (xhr.readyState === XMLHttpRequest.DONE) {
-        if (xhr.status === 200) {
-          var response = JSON.parse(xhr.responseText);
-          callback(response);
-        } else {
-          console.error('Error fetching data. Status:', xhr.status);
-        }
-      }
-    };
-    xhr.open('GET', url, true);
-    xhr.send();
+async function getCourseData({courseID, subject}) {
+    return (await (await fetch).default(getCourseURL({ courseID, subject }))).json();
 }
 
-function getBGCourse(courseID) {
-    getCourseData(courseID, callback = returnData);
+function getBGCourse({ courseID, subject }) {
+    return getCourseData({ courseID, subject });
+}
+
+const getBGSubject = async (subject) => {
+    return (await (await fetch).default('https://boilergrades.com/api/grades?subject=' + subject)).json
 }
 
 // Instruc Ex: console.log("inside, ", getBGInstructor(fName = "Sula", mName = null, lName = "Lee"));
 // Course Ex: 
-console.log(getBGCourse("BIOL 11000"))
-module.exports = getBGInstructor;
-module.exports = getBGCourse;
+// console.log(getBGCourse("BIOL 11000"))
+module.exports = { getBGInstructor, getBGCourse, getBGSubject };
