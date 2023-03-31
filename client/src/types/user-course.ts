@@ -5,6 +5,5 @@ export type UserCourse = {
     semester: string,
     year: number,
     subject: string,
-    professors: string,
-    time: string
+    section?: string
 }

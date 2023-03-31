@@ -1,6 +1,7 @@
 const User = require('../models/userModel.js');
 const Degree = require('../models/degreeModel.js');
 const Course = require('../models/courseModel.js');
+const mongoose = require('mongoose');
 
 /* Returns all degree plans for the user */
 exports.getDegreePlans = async (req, res) => {
@@ -129,6 +130,14 @@ exports.addCourse = async (req, res) => {
                 });
             }
 
+            if (course.section) {
+                try {
+                    mongoose.Types.ObjectId(course.section)
+                } catch {
+                    return res.status(400).json({ message: 'invalid section id' });
+                }
+            }
+
             /* Check if semester is valid */
             if (course.semester !== 'Spring' && course.semester !== 'Summer' && course.semester !== 'Fall') {
                 return res.status(400).json({
@@ -179,7 +188,8 @@ exports.addCourse = async (req, res) => {
                 courseID: course.courseID,
                 semester: course.semester,
                 year: course.year,
-                subject: course.subject
+                subject: course.subject,
+                section: course.section
             });
         }
     }
