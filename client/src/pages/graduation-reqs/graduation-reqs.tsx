@@ -5,12 +5,14 @@ import { UserCourse } from '../../types/user-course';
 import DegreePlanService from '../../services/DegreePlanService';
 import { DegreePlan } from '../../types/degree-plan';
 import { Link } from 'react-router-dom';
-import Confetti from 'react-confetti'
+import Confetti from 'react-confetti';
+import Button from '@material-ui/core/Button';
 
 export function GraduationRequirements() {
     const [userCourses, setUserCourses] = useState<UserCourse[] | null>(null);
     const [degreePlans, setDegreePlans] = useState<DegreePlan[] | null>(null);
     const [run, setRun] = useState(true);
+    const [show, setShow] = useState(true);
 
     useEffect(() => {
         setTimeout(() => setRun(false), 5000);
@@ -45,8 +47,11 @@ export function GraduationRequirements() {
                     <Link to={`/course_description?subject=${course.subject}&courseID=${course.courseID}`}>
                         {course.subject} {course.courseID}</Link>
                 </div>)}
+                <Button onClick={() => setShow(!show)}>
+                    Toggle Completed Courses
+                </Button>
             </div>
-            <div className="flex flex-col flex-1 m-4 p-3 px-5 bg-white rounded-md">
+            <div className="flex flex-col flex-1 m-4 p-3 px-5 bg-white rounded-md" style={{visibility: show ? 'visible' : 'hidden' }}>
                 <span className="font-bold text-xl mb-3">Completed Courses</span>
                 {userCourses.length ? userCourses.map((course, i) => <div key={i}  className="mb-2 p-3 bg-gray-200 rounded bg-opacity-25">
                     <Link to={`/course_description?subject=${course.subject}&courseID=${course.courseID}`}>
