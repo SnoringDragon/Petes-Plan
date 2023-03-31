@@ -294,6 +294,14 @@ export function FuturePlan() {
                                 semesterDict[sem].push(course);
                                 return semesterDict;
                             }, {} as { [key: string]: {isNew: boolean, course: UserCourse}[] }))
+                            .sort(([semA], [semB]) => {
+                                const [semATerm, semAYear] = semA.split(' ');
+                                const [semBTerm, semBYear] = semB.split(' ');
+                                const yearCompare = semAYear.localeCompare(semBYear);
+                                if (yearCompare) return yearCompare;
+                                const termOrder = ['Spring', 'Summer', 'Fall', 'Winter'];
+                                return termOrder.indexOf(semATerm) - termOrder.indexOf(semBTerm);
+                            })
                             .map(([semester, courses], i) =>
                                 (<div className="mt-2"><span className="text-lg">{semester}</span>
                                     {courses.map(({ course, isNew }, j) => (<div key={j} className="flex items-center py-2 border-b border-gray-300">
