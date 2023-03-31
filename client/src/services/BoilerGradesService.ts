@@ -1,6 +1,8 @@
 import { Api } from './Api';
 import { Boilergrade, BOILERGRADE_QUALITY_POINTS, BOILERGRADES_GRADES } from '../types/boilergrades';
 
+export type Grades = Partial<{ [key in keyof typeof BOILERGRADES_GRADES]: number } >
+
 class BoilerGradesService extends Api {
     getCourse(options: { courseID: string, subject: string }) {
         return this.get(`/api/boilergrades/course?${new URLSearchParams(options)}`);
@@ -29,9 +31,22 @@ class BoilerGradesService extends Api {
     }
 
     reduceBoilergrades(grades: Boilergrade[], by: 'instructor' | 'course'):
-        Map<string, { gpa: number, diff: number, grades: Partial<{ [key in keyof typeof BOILERGRADES_GRADES]: number } > }> {
+        { data: Map<string, { gpa: number, diff: number, grades: Grades }>, overall: { grades: Grades, gpa: number } } {
 
         const overallAverage = this.calcAvgGpa(grades);
+
+        const totalMap = grades.reduce((dict, val) => {
+            Object.entries(val).forEach(([key, val]) => {
+                if (!(key in BOILERGRADES_GRADES)) return;
+                if (val === null) return;
+                if (!(key in dict)) dict[key] = 0;
+                dict[key] += parseFloat(val as string);
+            })
+
+            return dict;
+        }, {} as any);
+
+        Object.keys(totalMap).forEach(k => totalMap[k] /= grades.length)
 
 
         const bgmap = grades.reduce((dict, bg) => {
@@ -49,10 +64,10 @@ class BoilerGradesService extends Api {
         }, new Map<string, Boilergrade[]>());
 
 
-        return new Map([...bgmap].map(([key, values]) => {
+        return { data: new Map([...bgmap].map(([key, values]) => {
             const average = this.calcAvgGpa(values);
 
-            const totalMap = values.reduce((dict, val) => {
+            const specificMap = values.reduce((dict, val) => {
                 Object.entries(val).forEach(([key, val]) => {
                     if (!(key in BOILERGRADES_GRADES)) return;
                     if (val === null) return;
@@ -63,10 +78,10 @@ class BoilerGradesService extends Api {
                 return dict;
             }, {} as any);
 
-            Object.keys(totalMap).forEach(k => totalMap[k] /= values.length);
+            Object.keys(specificMap).forEach(k => specificMap[k] /= values.length);
 
-            return [key, { grades: totalMap, gpa: average, diff: average - overallAverage }];
-        }));
+            return [key, { grades: specificMap, gpa: average, diff: average - overallAverage }];
+        })), overall: { grades: totalMap, gpa: overallAverage } };
     }
 }
 

@@ -7,9 +7,13 @@ import CourseService from '../src/services/CourseService';
 import RatingService from '../src/services/RatingService';
 
 import ratings from './ratings';
+import boilergrades from './boilergrades';
 import { Course_Description } from '../src/pages/course_description/course_description';
 import CourseHistoryService from '../src/services/CourseHistoryService';
 import UserService from '../src/services/UserService';
+import BoilerGradesService from '../src/services/BoilerGradesService';
+import DegreePlanService from '../src/services/DegreePlanService';
+import SemesterService from '../src/services/SemesterService';
 
 const navigate = vi.fn();
 
@@ -40,6 +44,15 @@ describe('Review page tests', async () => {
         vi.spyOn(CourseHistoryService, 'getCourses')
             .mockReturnValue(Promise.resolve({ courses: [] }))
 
+        vi.spyOn(BoilerGradesService, 'getCourse')
+            .mockReturnValue(Promise.resolve(boilergrades));
+
+        vi.spyOn(DegreePlanService, 'getPlans')
+            .mockReturnValue(Promise.resolve({ degreePlans: [] }))
+
+        vi.spyOn(SemesterService, 'getSemesters')
+            .mockReturnValue(Promise.resolve([]))
+
         render(<MemoryRouter initialEntries={['?courseID=18000&subject=CS']}>
             <Course_Description />
         </MemoryRouter>);
@@ -60,5 +73,9 @@ describe('Review page tests', async () => {
         const reviewContainer = collapse.parentNode.childNodes.item(i + 1);
 
         expect(reviewContainer.childNodes.length).eq(ratings.data.length)
+
+        expect(await screen.queryByText(/Boilergrades/)).not.eq(null);
+
+        expect(await screen.queryByText(new RegExp(boilergrades[0].instructor))).not.eq(null);
     });
 });
