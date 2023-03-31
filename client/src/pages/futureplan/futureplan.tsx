@@ -298,6 +298,7 @@ export function FuturePlan() {
                         </div>))}
                         {courseModifications.add.map((course, i) => (<div key={i} className="flex items-center py-2 border-b border-gray-300">
                             <Link className="mr-auto" to={`/course_description?subject=${course.subject}&courseID=${course.courseID}`}>{course.subject} {course.courseID}</Link>
+                            <div><br />Section Name &emsp;</div>
                             <Button variant="contained" color="secondary" onClick={() => {
                                 setCourseModifications({
                                     ...courseModifications,
