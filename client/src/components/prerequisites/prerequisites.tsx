@@ -72,7 +72,7 @@ export function Prerequisites(props: { prerequisites: Requirement, userCourses: 
                         && data!.subject === course.subject) {
                         planned = true;
 
-                        if (course.semester.localeCompare(month) && yr === course.year) {
+                        if (course.semester === month && yr === course.year) {
                             current = true;
                             break;
                         }
