@@ -97,8 +97,12 @@ export function GradeCalc() {
                         <span className="mx-4">Weight:</span>
                         <TextField type="number" defaultValue={cat.weight} onChange={ev => {
                             const g = [...grades];
-                            g[i].course.grades[j].weight = parseFloat(ev.target.value);
-                            setGrades(g);
+                            const weight = parseFloat(ev.target.value);
+                            g[i].course.grades[j].weight = weight;
+                            if (weight <= 0)
+                                alert('Invalid value for weight')
+                            else
+                                setGrades(g);
                         }}/>
                         <span className="mx-4">Is capped:</span>
                         <Checkbox defaultChecked={cat.capped} onChange={ev => {
@@ -142,6 +146,10 @@ export function GradeCalc() {
                             const assignment = grades[i].course.grades[j].assignments[k];
                             assignment.numerator = parseFloat(numerator);
                             assignment.denominator = parseFloat(denominator);
+
+                            if (assignment.numerator < 0 || assignment.denominator < 0)
+                                return alert('Invalid grade entered');
+
                             assignment.name = name;
                             setGrades(g);
                         }}>Update</Button>
@@ -174,6 +182,9 @@ export function GradeCalc() {
                             const numerator = parseFloat(assignmentAddNumeratorRef.current[i][j].value);
                             const denominator = parseFloat(assignmentAddDenominatorRef.current[i][j].value);
 
+                            if (numerator < 0 || denominator < 0)
+                                return alert('Invalid grade entered')
+
                             const g = [...grades];
                             g[i].course.grades[j].assignments.push({ name, numerator, denominator });
                             setGrades(g);
@@ -195,6 +206,9 @@ export function GradeCalc() {
                 <Button className="ml-auto" variant="outlined" color="inherit" onClick={() => {
                     const name = categoryAddRef.current[i].value;
                     const weight = parseFloat(categoryWeightRef.current[i].value)
+
+                    if (weight <= 0 || Number.isNaN(weight)) return alert('Invalid weight entered')
+
                     const capped = categoryCappedRef.current[i].checked;
                     const g = [...grades];
                     g[i].course.grades.push({
