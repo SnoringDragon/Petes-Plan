@@ -38,7 +38,7 @@ export function Prerequisites(props: { prerequisites: Requirement, userCourses: 
                 if (res.degreePlans.length)
                     setDegreePlan(res.degreePlans[0]);
             });
-        })
+        }, [])
 
         const userCourse = props.userCourses.find(course => course.courseID === data.courseID &&
             course.subject === data.subject);
@@ -49,9 +49,8 @@ export function Prerequisites(props: { prerequisites: Requirement, userCourses: 
         
         let current = false;
         let planned = false;
-        if (userCourse) {
-        
-        if (satisfied) {
+
+        if (!satisfied) {
             let yr = new Date().getFullYear();
             let mon = new Date().getMonth();
             let month;
@@ -66,26 +65,20 @@ export function Prerequisites(props: { prerequisites: Requirement, userCourses: 
                 month = "N/A";
             }
 
-            if (!(userCourse!.semester.localeCompare(month)) && yr == userCourse!.year)  {
-                current = true;
-            }
-        }
+            for (const plan of degreePlans) {
+                for (const course of plan.courses) {
+                    if (data.courseID === course.courseID
+                        && data!.subject === course.subject) {
+                        planned = true;
 
-        if (!satisfied) {
-            for (let j = 0; j < degreePlans!.length; j++) {
-                for (let i = 0; i < degreePlan!.courses.length; i++) {
-                    if (userCourse!.courseID === degreePlan!.courses[i].courseID
-                        && userCourse!.subject === degreePlan!.courses[i].subject) {
-                            planned = true;
+                        if (course.semester.localeCompare(month) && yr === course.year) {
+                            current = true;
                             break;
+                        }
                     }
                 }
-                if (planned) {
-                    break;
-                }
             }
         }
-    }
 
         let color = '';
         if (current) {
