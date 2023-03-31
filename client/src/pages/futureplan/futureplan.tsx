@@ -26,8 +26,12 @@ import { DegreePlan } from '../../types/degree-plan';
 import DegreePlanService from '../../services/DegreePlanService';
 import { UserCourse } from '../../types/user-course';
 import { Section } from '../../types/course-requirements';
+import { ApiProfessor } from '../../types/professor';
 
-const renderSectionMenuItem = (section: Section) => {
+const renderSectionMenuItem = (section: Section, instructorFilter: string = '') => {
+    if (instructorFilter && !section.meetings.some(m => m.instructors.some(i => i._id === instructorFilter)))
+        return null;
+
     return <MenuItem value={section._id} key={section._id}>
         {section.meetings.map(meeting => <span>
                             {meeting.days} {meeting.startTime ? `${meeting.startTime}-${meeting.endTime}` : 'Time TBA'} <br />{meeting.instructors.length ? meeting.instructors.map(instructor => <span>
@@ -58,6 +62,7 @@ export function FuturePlan() {
     const [selectedSem, setSelectedSem] = useState<string | null>(null);
     const [selectedSection, setSelectedSection] = useState<Section | null>(null);
     const [modifyCourse, setModifyCourse] = useState<UserCourse | null>(null);
+    const [instructorFilter, setInstructorFilter] = useState<string>('');
 
     const [degreeSearch, setDegreeSearch] = useState('');
 
@@ -178,11 +183,28 @@ export function FuturePlan() {
                     </MenuItem>))}
                 </Select>
 
+                {section.flat().length ? <>
+                    <div className="mt-4 mb-2">Filter Instructors</div>
+
+                    <Select fullWidth value={instructorFilter}
+                                                 onChange={ev => setInstructorFilter(ev.target.value as string)}>
+                        <MenuItem value={""}>No Filter</MenuItem>
+                        {[...section.flat(2).flatMap(s => s.meetings
+                                .flatMap(m => m.instructors))
+                            .reduce((dict, instructor) => {
+                                dict.set(instructor._id, instructor);
+                                return dict;
+                            }, new Map<string, ApiProfessor>())]
+                            .map(([, instructor]) => <MenuItem key={instructor._id} value={instructor._id}>
+                                {instructor.firstname} {instructor.lastname}
+                            </MenuItem>)}
+                </Select></> : null}
+
                 <div className="mt-4 mb-2">Select Section</div>
 
                 {section.flat().length ? <Select fullWidth className="my-2" value={selectedSection?._id} onChange={ev =>
                     setSelectedSection(section.flat(2).find(({ _id }) => _id === ev.target.value)!)}>
-                    {section.flat(2).map(section => renderSectionMenuItem(section))}
+                    {section.flat(2).map(section => renderSectionMenuItem(section, instructorFilter))}
                 </Select> : 'No sections available'}
             </DialogContent>
 
@@ -232,6 +254,7 @@ export function FuturePlan() {
                         <Button color="inherit" onClick={() => {
                             setSemCourse(course);
                             setSem(true);
+                            setInstructorFilter('');
                             setSection([]);
                             // setCourseModifications({
                             //     ...courseModifications,

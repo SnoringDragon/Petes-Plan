@@ -1,3 +1,5 @@
+import { ApiProfessor } from './professor';
+
 interface AbstractRequirement {
     type: string
 }
@@ -63,13 +65,7 @@ export interface Section {
         startTime: string,
         endTime: string,
         location: string,
-        instructors: {
-            _id: string,
-            email: string,
-            firstname: string,
-            lastname: string,
-            nickname?: string
-        }[]
+        instructors: ApiProfessor[]
     }[]
 }
 
