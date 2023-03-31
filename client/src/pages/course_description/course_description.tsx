@@ -2,12 +2,26 @@ import React, { useEffect, useState } from 'react';
 import { Layout } from '../../components/layout/layout';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { ApiCourse } from '../../types/course-requirements';
+import { Section } from '../../types/course-requirements';
 import { FaArrowLeft } from 'react-icons/fa';
 import { Prerequisites } from '../../components/prerequisites/prerequisites';
 import CourseService from '../../services/CourseService';
 import { UserCourse } from '../../types/user-course';
 import CourseHistoryService from '../../services/CourseHistoryService';
 import { Ratings } from '../../components/ratings/ratings';
+import { Link } from 'react-router-dom';
+import {
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogContentText,
+    DialogTitle,
+    FormControl,
+    InputLabel,
+    MenuItem,
+    Select
+} from '@material-ui/core';
+import { Instructor } from '../instructor/instructor';
 
 export function Course_Description() {
     const [searchParams] = useSearchParams();
@@ -19,6 +33,10 @@ export function Course_Description() {
     const [course, setCourse] = useState<ApiCourse | null>(null);
 
     const [userCourses, setUserCourses] = useState<UserCourse[]>([])
+
+    const [selectedSemester, setSemester] = useState<string | null>(null);
+
+    const [section, setSection] = useState<Section[][][]>([]);
 
     useEffect(() => {
         CourseHistoryService.getCourses()
@@ -43,6 +61,26 @@ export function Course_Description() {
             });
     }, [searchParams])
 
+    useEffect(() => {
+        const subject = searchParams.get('subject') ?? '';
+        const courseID = searchParams.get('courseID') ?? '';
+
+        if (selectedSemester != null) {
+            CourseService.getCourseSections({ subject, courseID, semester: selectedSemester })
+                .then(res => {
+                    if (!res) {
+                        setSection([]);
+                        setError('Course Sections not found');
+                        return;
+                    }
+                    setSection(res);
+                })
+                .catch(err => {
+                    setError(err?.message ?? err);
+                });
+        }
+    }, [selectedSemester])
+
     if (!course) return (<Layout><div className="text-2xl flex flex-col h-full justify-center items-center">
         Loading...
         {error && <>
@@ -51,6 +89,7 @@ export function Course_Description() {
         </>}
     </div></Layout>)
 
+    console.log(course)
     return (<Layout><div className="w-full h-full flex flex-col items-center">
         <header className="text-center text-white text-3xl mt-4 w-full">
             <div className="float-left ml-2 text-2xl cursor-pointer" onClick={() => navigate(-1)}>
@@ -85,6 +124,26 @@ export function Course_Description() {
             <Prerequisites prerequisites={course.requirements} userCourses={userCourses} />
             <div className="mt-5 underline">Reviews:</div>
             <Ratings courseID={course.courseID} subject={course.subject} />
+            <FormControl fullWidth>
+                <InputLabel id="demo-simple-select-label">Semester</InputLabel>
+                <Select fullWidth className="my-2" labelId="demo-simple-select-label"
+                    id="demo-simple-select"
+                    value={selectedSemester}
+                    label="Semester"
+                    onChange={ev => setSemester(ev.target.value as string)} >
+                    {course.semesters.map((semester) => (<MenuItem key={semester._id} value={semester._id}>
+                        {semester.semester} {semester.year}
+                    </MenuItem>))}
+                </Select>
+            </FormControl>
+            <div><span className="underline">Sections:</span></div>
+            {section.map(section => <div>{section.map(
+                section => <div>{section.map(
+                    section => <div>{section.meetings.map(
+                        meetings => <div>{meetings.days} {meetings.startTime}-{meetings.endTime} {meetings.instructors.map(
+                            instructors => <div><Link to={`/professor?id=${instructors._id}`}>
+                                {instructors.firstname} {instructors.lastname}
+                            </Link></div>)}</div>)}</div>)}</div>)}</div>)}
         </div>
     </div></Layout>)
 }
