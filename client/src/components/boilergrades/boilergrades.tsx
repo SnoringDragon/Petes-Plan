@@ -12,7 +12,7 @@ export function Boilergrades(props: { className?: string,
 
     return (<div className={`flex flex-col ${props.className ?? ''}`}>
         <div className="flex items-center mb-2">
-            <span className="underline mr-4">Boilergrades:</span>
+            <a className="underline mr-4" target="_blank" href="https://boilergrades.com">Boilergrades:</a>
             {props.data.size > 0 && <Button color="inherit" size="small" variant="outlined" onClick={() => setHidden(!isHidden)}>
                 {isHidden ? 'Show' : 'Hide'}
             </Button>}
