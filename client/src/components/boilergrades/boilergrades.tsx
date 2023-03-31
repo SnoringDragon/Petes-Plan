@@ -2,10 +2,11 @@ import { BOILERGRADES_GRADES } from '../../types/boilergrades';
 import { Button } from '@material-ui/core';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { Grades } from '../../services/BoilerGradesService';
 
 export function Boilergrades(props: { className?: string,
     isCourseLinks?: boolean,
-    data: Map<string, { gpa: number, diff: number, grades: Partial<{ [key in keyof typeof BOILERGRADES_GRADES]: number } > }>}) {
+    data: { data: Map<string, { gpa: number, diff: number, grades: Grades }>, overall: { grades: Grades, gpa: number } }}) {
 
     const [isHidden, setHidden] = useState(false);
     const [isShowDetails, setShowDetails] = useState(-1);
@@ -13,13 +14,26 @@ export function Boilergrades(props: { className?: string,
     return (<div className={`flex flex-col ${props.className ?? ''}`}>
         <div className="flex items-center mb-2">
             <a className="underline mr-4" target="_blank" href="https://boilergrades.com">Boilergrades:</a>
-            {props.data.size > 0 && <Button color="inherit" size="small" variant="outlined" onClick={() => setHidden(!isHidden)}>
+            {props.data.data.size > 0 && <Button color="inherit" size="small" variant="outlined" onClick={() => setHidden(!isHidden)}>
                 {isHidden ? 'Show' : 'Hide'}
             </Button>}
-            {props.data.size === 0 && <span>No boilergrades found</span>}
+            {props.data.data.size === 0 && <span>No boilergrades found</span>}
         </div>
         <div className={`flex flex-col max-h-64 overflow-auto ${isHidden ? 'hidden' : ''}`}>
-            {[...props.data].sort(([a], [b]) => a.localeCompare(b)).map(([title, { gpa, diff, grades }], i) => {
+            {props.data.data.size > 0 && <div className="flex items-center border border-gray-500 border-b-4">
+                <div className="w-72 pl-2 flex flex-col" >
+                    <span>Overall GPA: {props.data.overall.gpa.toFixed(2)}</span>
+                </div>
+
+                <div className="flex">
+                    {Object.entries(props.data.overall.grades).map(([grade, val]) =>
+                        <div className="flex flex-col w-16 items-center border-x border-gray-500" key={grade}>
+                            <span>{(BOILERGRADES_GRADES as any)[grade]}</span>
+                            <span>{(val).toFixed(1)}%</span>
+                        </div>)}
+                </div>
+            </div>}
+            {[...props.data.data].sort(([a], [b]) => a.localeCompare(b)).map(([title, { gpa, diff, grades }], i) => {
                 let courseID = '';
                 let subject = ''
                 if (props.isCourseLinks)
