@@ -30,9 +30,9 @@ import { Section } from '../../types/course-requirements';
 const renderSectionMenuItem = (section: Section) => {
     return <MenuItem value={section._id} key={section._id}>
         {section.meetings.map(meeting => <span>
-                            {meeting.days} {meeting.startTime}-{meeting.endTime} {meeting.instructors.length ? meeting.instructors.map(instructor => <span>
+                            {meeting.days} {meeting.startTime ? `${meeting.startTime}-${meeting.endTime}` : 'Time TBA'} <br />{meeting.instructors.length ? meeting.instructors.map(instructor => <span>
                             {instructor.firstname} {instructor.lastname}
-                        </span>) : 'To Be Assigned'}
+                        </span>) : 'Instructor To Be Assigned'}
                         </span>)}
     </MenuItem>;
 }
