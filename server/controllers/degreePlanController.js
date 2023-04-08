@@ -679,7 +679,23 @@ exports.getRecommendedCourses = async (req, res) => {
 
     /* Add unmet requirements from degrees to requirements map */
     var degreeReqs = new Map();
-    //TODO: After degree requirements are added to database, add code here
+    user.populate('degreePlans.degrees');
+    
+    //TODO: Uncomment when degree requirements are added
+    //for (const degree of degreePlan.degrees) {
+    //    /* Check if degree requirements met */
+    //    if (!degreeData.requirements) continue;
+    //    const reqs = await meetsReqs(credits, plannedCourses, null, null, degreeData.requirements);
+    //    /* Add requirements to map */
+    //    if (!reqs) continue;
+    //    for (const entry of reqs.entries()) {
+    //        const key = entry[0];
+    //        const value = entry[1];
+    //        if (prereqs.has(key)) continue; // Ignore duplicate requirements
+    //        if (degreeReqs.has(key)) degreeReqs.set(key, degreeReqs.get(key) + value);
+    //        else degreeReqs.set(key, value);
+    //    }
+    //}
 
     /**************  Get Requirements - Planned Degrees - END  **************/
     /**************  Sort Requirements for Recommendations - BEGIN  **************/
@@ -697,14 +713,13 @@ exports.getRecommendedCourses = async (req, res) => {
         degreeReqsArr.push({ course: JSON.parse(entry[0]), count: entry[1] });
     }
     degreeReqsArr.sort(compReqs);
-    //TODO: Remove duplicates
 
-    /* Combine prereqs and degreeReqs arrays */
+    /* Combine prereqs and degreeReqs arrays and remove excess info */
     var tempreqs = prereqsArr.concat(degreeReqsArr);
     var reqs = [];
     for (const req of tempreqs) reqs.push(req.course);
 
-    /**************  Sort Requirements for Recommendations - BEGIN  **************/
+    /**************  Sort Requirements for Recommendations - END  **************/
 
     /* Return recommended courses */
     return res.status(200).json({
