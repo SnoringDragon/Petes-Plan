@@ -15,6 +15,7 @@ module.exports = app => {
     router.delete('/*/remove', authenticate, controller.removeCourse);      /* Removes degrees/courses from a degree plan */
     router.get('/*/gradReqs', authenticate, controller.getGradReqs);        /* Returns graduation requirements for a degree plan */
     router.get('/*/gradReqsIntersect/*', authenticate, controller.getReqIntersection); /* Returns intersection of requiremtns between one degree and a degree plan  */
+    router.get('/*/courseRecommendations', authenticate, controller.getRecommendedCourses); /* Returns ordered list of recommended courses */
     router.get('/*', authenticate, controller.getDegreePlan);               /* Returns degree plan data */
 
     /* Add above reuests as a subdirectory of /degreePlan */

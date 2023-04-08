@@ -2,7 +2,34 @@ const User = require('../models/userModel.js');
 const Degree = require('../models/degreeModel.js');
 const Course = require('../models/courseModel.js');
 const Semester = require('../models/semesterModel');
+const UserCourse = require('../models/userCourseModel');
 const mongoose = require('mongoose');
+
+const grades = {
+    'A+': 15,
+    'A': 14,
+    'A-': 13,
+    'B+': 12,
+    'B': 11,
+    'B-': 10,
+    'C+': 9,
+    'C': 8,
+    'C-': 7,
+    'P': 6,
+    'D+': 5,
+    'D': 4,
+    'D-': 3,
+    'F': 2,
+    'N': 1,
+    'NP': 1
+}
+
+const semesters = {
+    'Spring': 1,
+    'Summer': 2,
+    'Fall': 3,
+    'Winter': 4
+}
 
 /* Returns all degree plans for the user */
 exports.getDegreePlans = async (req, res) => {
@@ -537,3 +564,250 @@ exports.getReqIntersection = async (req, res) => {
         reqs: gradReqsArr
     });
 };
+
+/* Returns ordered list of recommended courses for a degree plan */
+exports.getRecommendedCourses = async (req, res) => {
+    /**************  Check provided values - BEGIN  **************/
+    
+    /* Check if path is valid */
+    const subdir = req.path.split('/');
+    if (subdir.length !== 3) {
+        return res.status(404).json({
+            message: 'Invalid Path'
+        });
+    }
+
+    /* Check if degree plan _id is valid */
+    const user = await req.user.populate('degreePlans.degrees');
+    var degreePlan;
+    try {
+        degreePlan = req.user.degreePlans.id(subdir[1]);
+    } catch (err) { degreePlan = null; }
+    if (!degreePlan) {
+        return res.status(400).json({
+            message: 'Invalid degree plan _id',
+            _id: subdir[1]
+        });
+    }
+
+    /**************  Check provided values - END  **************/
+    /**************  Get passed requirements - BEGIN  **************/
+
+    //TODO: Ignore overridden requirements
+
+    /* Add test scores to tests map */
+    var tests = new Map();
+    await user.populate('apTests.test');
+    for (const test of user.apTests) {
+        if (!tests.has(test.test._id)) {
+            tests.set(test.test._id, test);
+        } else if (test.score > tests.get(test.test._id).score) {
+            tests.set(test.test._id, test);
+        }
+    }
+
+    /* Add test credits to credits map */
+    var credits = new Map();
+    for (const entry of tests.entries()) {
+        const key = entry[0];
+        const value = entry[1];
+
+        for (const credit in value.test.credits) {
+            if (credit.score != value.score) continue;
+
+            const course = Course.findOne({ subject: credit.subject, courseID: credit.courseID });
+            if (!course) {
+                console.log('ERROR: Course not found\nSubject: ' + credit.subject + '\nCourse ID: ' + credit.courseID);
+                continue;
+            }
+
+            credits.set(course._id, new UserCourse({
+                courseData: course,
+                grade: 'A+',
+                courseID: course.courseID,
+                subject: course.subject
+            }));
+        }
+    }
+
+    /* Add course history to credits map */
+    await user.populate('completedCourses.courseData');
+    for (const course of user.completedCourses) {
+        if (!credits.has(course.courseData._id)) {
+            credits.set(course.courseData._id, course);
+        } else if (grades[course.grade] > grades[credits.get(course.courseData._id).grade]) {
+            credits.set(course.courseData._id, course);
+        }
+    }
+
+    /**************  Get passed requirements - END  **************/
+    /**************  Get Requirements - Planned Courses - BEGIN  **************/
+
+    /* Create map of planned courses for easy searching */
+    var plannedCourses = new Map();
+    for (const course of degreePlan.courses) {
+        courseData = await Course.findOne({ subject: course.subject, courseID: course.courseID });
+        if (!plannedCourses.has(courseData._id)) {
+            plannedCourses.set(courseData._id, course);
+        }
+    }
+
+    /* Add planned courses with unmet requirements to requirements map */
+    var prereqs = new Map();
+    for (const course of degreePlan.courses) {
+        const courseData = await Course.findOne({ subject: course.subject, courseID: course.courseID });
+        if (!courseData) {
+            console.log('ERROR: Course not found\nSubject: ' + course.subject + '\nCourse ID: ' + course.courseID);
+            continue;
+        }
+
+        /* Check if course requirements met */
+        if (!courseData.requirements) continue;
+        const reqs = await meetsReqs(credits, plannedCourses, course.semester, course.year, courseData.requirements);
+        /* Add requirements to map */
+        if (!reqs) continue;
+        for (const entry of reqs.entries()) {
+            const key = entry[0];
+            const value = entry[1];
+            if (prereqs.has(key)) prereqs.set(key, prereqs.get(key) + value);
+            else prereqs.set(key, value);
+        }
+    }
+
+    /**************  Get Requirements - Planned Courses - END  **************/
+    /**************  Get Requirements - Planned Degrees - BEGIN  **************/
+
+    /* Add unmet requirements from degrees to requirements map */
+    var degreeReqs = new Map();
+    //TODO: After degree requirements are added to database, add code here
+
+    /**************  Get Requirements - Planned Degrees - END  **************/
+    /**************  Sort Requirements for Recommendations - BEGIN  **************/
+
+    /* Convert prereqs map to array */
+    var prereqsArr = [];
+    for (const entry of prereqs.entries()) {
+        prereqsArr.push({ course: JSON.parse(entry[0]), count: entry[1] });
+    }
+    prereqsArr.sort(compReqs);
+
+    /* Convert degreeReqs map to array */
+    var degreeReqsArr = [];
+    for (const entry of degreeReqs.entries()) {
+        degreeReqsArr.push({ course: JSON.parse(entry[0]), count: entry[1] });
+    }
+    degreeReqsArr.sort(compReqs);
+    //TODO: Remove duplicates
+
+    /* Combine prereqs and degreeReqs arrays */
+    var tempreqs = prereqsArr.concat(degreeReqsArr);
+    var reqs = [];
+    for (const req of tempreqs) reqs.push(req.course);
+
+    /**************  Sort Requirements for Recommendations - BEGIN  **************/
+
+    /* Return recommended courses */
+    return res.status(200).json({
+        message: 'Successfully generated recommended courses',
+        recommendations: reqs
+    });
+};
+
+/* Recursively check course requirements */
+async function meetsReqs(credits, plannedCourses, semester, year, container) {
+    var reqs = new Map();
+
+    /* Check if course requirement met */
+    if (container.type === 'course') { 
+        /* Get course data */
+        const course = await Course.findOne({ subject: container.subject, courseID: container.courseID });
+        if (!course) {
+            console.log('ERROR: Course not found\nSubject: ' + container.subject + '\nCourse ID: ' + container.courseID);
+            return;
+        }
+
+        /* Check if course has been taken and meets minimum grade */
+        if (credits.has(course._id) && (grades[credits.get(course._id).grade] > grades[container.minGrade])) return;
+        
+        /* Check if course is planned and scheduled before course requiring it */
+        if (plannedCourses.has(course._id)) {
+            // Semester irrelevant if for degree
+            if (!semester) return;
+
+            // Get semester object
+            const plannedCourse = plannedCourses.get(course._id);
+            
+            // Check if course is scheduled before course requiring it
+            if (plannedCourse.year < year) return;
+            if (plannedCourse.year == year) {
+                if (semesters[plannedCourse.semester] < semesters[semester]) return;
+                if (plannedCourse.isCorequisite && (semesters[plannedCourse.semester] == semesters[semester])) return;
+            }
+        }
+
+        reqs.set(JSON.stringify({
+            _id: course._id,
+            courseID: course.courseID,
+            subject: course.subject
+        }), 1);
+        return reqs;
+    }
+    
+    /* Check if all child requirements have been met */
+    /* If not, collect list of unmet requirements */
+    if (container.type === 'and') {
+        for (const child of container.children) {
+            const childReqs = await meetsReqs(credits, plannedCourses, semester, year, child);
+            if (!childReqs) return;
+            
+            /* Combine child requirements with parent requirements */
+            for (const entry of childReqs.entries()) {
+                const key = entry[0];
+                const value = entry[1];
+                if (reqs.has(key)) reqs.set(key, reqs.get(key) + value);
+                else reqs.set(key, value);
+            }
+        }
+
+        /* Check if all child requirements have been met */
+        if (reqs.size == 0) return;
+
+        return reqs;
+    }
+    
+    /* Check if any child requirements have been met */
+    /* If not, collect list of unmet requirements */
+    if (container.type === 'or') {
+        for (const child of container.children) {
+            const childReqs = await meetsReqs(credits, plannedCourses, semester, year, child);
+            if (!childReqs) return;
+
+            /* Combine child requirements with parent requirements */
+            for (const entry of childReqs.entries()) {
+                const key = entry[0];
+                const value = entry[1];
+                if (reqs.has(key)) reqs.set(key, reqs.get(key) + value);
+                else reqs.set(key, value);
+            }
+        }
+
+        return reqs;
+    }
+    
+    console.log('ERROR: Unknown container type: ' + container.type);
+    return;
+}
+
+/* Requirement comparison function */
+function compReqs(a, b) {
+    // Sort by number of references
+    if (a.count < b.count) return 1;
+    if (a.count > b.count) return -1;
+    
+    // Subsort by courseID
+    var compID = a.course.courseID.localeCompare(b.course.courseID);
+    if (compID != 0) return compID;
+
+    // Subsort by subject
+    return a.course.subject.localeCompare(b.course.subject);
+}
