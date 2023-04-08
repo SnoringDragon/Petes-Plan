@@ -665,8 +665,8 @@ exports.getRecommendedCourses = async (req, res) => {
         if (!courseData.requirements) continue;
         const reqs = await meetsReqs(credits, plannedCourses, course.semester, course.year, courseData.requirements);
         /* Add requirements to map */
-        if (!reqs) continue;
-        for (const entry of reqs.entries()) {
+        if (reqs.success || !reqs.reqs) continue;
+        for (const entry of reqs.reqs.entries()) {
             const key = entry[0];
             const value = entry[1];
             if (prereqs.has(key)) prereqs.set(key, prereqs.get(key) + value);
@@ -687,8 +687,8 @@ exports.getRecommendedCourses = async (req, res) => {
     //    if (!degreeData.requirements) continue;
     //    const reqs = await meetsReqs(credits, plannedCourses, null, null, degreeData.requirements);
     //    /* Add requirements to map */
-    //    if (!reqs) continue;
-    //    for (const entry of reqs.entries()) {
+    //    if (reqs.success || !reqs.reqs) continue;
+    //    for (const entry of reqs.reqs.entries()) {
     //        const key = entry[0];
     //        const value = entry[1];
     //        if (prereqs.has(key)) continue; // Ignore duplicate requirements
@@ -738,25 +738,25 @@ async function meetsReqs(credits, plannedCourses, semester, year, container) {
         const course = await Course.findOne({ subject: container.subject, courseID: container.courseID });
         if (!course) {
             console.log('ERROR: Course not found\nSubject: ' + container.subject + '\nCourse ID: ' + container.courseID);
-            return;
+            return {success: 0};
         }
 
         /* Check if course has been taken and meets minimum grade */
-        if (credits.has(course._id) && (grades[credits.get(course._id).grade] > grades[container.minGrade])) return;
+        if (credits.has(course._id) && (grades[credits.get(course._id).grade] > grades[container.minGrade])) return {success: 1};
         
         /* Check if course is planned and scheduled before course requiring it */
         if (plannedCourses.has(course._id)) {
             // Semester irrelevant if for degree
-            if (!semester) return;
+            if (!semester) return {success: 1};
 
             // Get semester object
             const plannedCourse = plannedCourses.get(course._id);
             
             // Check if course is scheduled before course requiring it
-            if (plannedCourse.year < year) return;
+            if (plannedCourse.year < year) return {success: 1};
             if (plannedCourse.year == year) {
-                if (semesters[plannedCourse.semester] < semesters[semester]) return;
-                if (plannedCourse.isCorequisite && (semesters[plannedCourse.semester] == semesters[semester])) return;
+                if (semesters[plannedCourse.semester] < semesters[semester]) return {success: 1};
+                if (plannedCourse.isCorequisite && (semesters[plannedCourse.semester] == semesters[semester])) return {success: 1};
             }
         }
 
@@ -765,7 +765,7 @@ async function meetsReqs(credits, plannedCourses, semester, year, container) {
             courseID: course.courseID,
             subject: course.subject
         }), 1);
-        return reqs;
+        return {success: 0, reqs: reqs};
     }
     
     /* Check if all child requirements have been met */
@@ -773,10 +773,10 @@ async function meetsReqs(credits, plannedCourses, semester, year, container) {
     if (container.type === 'and') {
         for (const child of container.children) {
             const childReqs = await meetsReqs(credits, plannedCourses, semester, year, child);
-            if (!childReqs) return;
+            if (childReqs.success || !childReqs.reqs) continue;
             
             /* Combine child requirements with parent requirements */
-            for (const entry of childReqs.entries()) {
+            for (const entry of childReqs.reqs.entries()) {
                 const key = entry[0];
                 const value = entry[1];
                 if (reqs.has(key)) reqs.set(key, reqs.get(key) + value);
@@ -785,9 +785,8 @@ async function meetsReqs(credits, plannedCourses, semester, year, container) {
         }
 
         /* Check if all child requirements have been met */
-        if (reqs.size == 0) return;
-
-        return reqs;
+        if (reqs.size == 0) return {success: 1};
+        else return {success: 0, reqs: reqs};
     }
     
     /* Check if any child requirements have been met */
@@ -795,22 +794,22 @@ async function meetsReqs(credits, plannedCourses, semester, year, container) {
     if (container.type === 'or') {
         for (const child of container.children) {
             const childReqs = await meetsReqs(credits, plannedCourses, semester, year, child);
-            if (!childReqs) return;
+            if (childReqs.success) return {success: 1};
+            else if (!childReqs.reqs) continue;
 
             /* Combine child requirements with parent requirements */
-            for (const entry of childReqs.entries()) {
+            for (const entry of childReqs.reqs.entries()) {
                 const key = entry[0];
                 const value = entry[1];
                 if (reqs.has(key)) reqs.set(key, reqs.get(key) + value);
                 else reqs.set(key, value);
             }
         }
-
-        return reqs;
+        return {success: 0, reqs: reqs};
     }
     
     console.log('ERROR: Unknown container type: ' + container.type);
-    return;
+    return {success: 0};
 }
 
 /* Requirement comparison function */
