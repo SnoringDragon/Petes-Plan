@@ -20,6 +20,10 @@ export function Professor_Page() {
     const [professor, setProfessor] = useState<ApiProfessor | null>(null);
     const [boilergrades, setBoilergrades] = useState<Boilergrade[]>([]);
 
+    const [viewReviews, setViewReviews] = useState(false);
+    const [makeReviews, setMakeReviews] = useState(false);
+
+
     useEffect(() => {
         const id = searchParams.get('id') ?? '';
 
@@ -56,37 +60,13 @@ export function Professor_Page() {
     const bgdata = BoilerGradesService.reduceBoilergrades(boilergrades, 'course');
 
     return (<Layout>
-        <Dialog open={createSem} onClose={() => setSem(false)}>
-            <DialogTitle>Select Past Semester</DialogTitle>    
+        <Dialog open={viewReviews} onClose={() => setViewReviews(false)}>
+            <DialogTitle>Reviews</DialogTitle>    
             <DialogContent>
-                <Select fullWidth value={selectedSem} onChange={e => setSelectedSem(e.target.value as string)}>
-                       <MenuItem value="Fall">Fall</MenuItem>
-                       <MenuItem value="Spring">Spring</MenuItem>
-                       <MenuItem value="Summer">Summer</MenuItem>
-                </Select>
-                <TextField
-                    autoFocus
-                    margin="dense"
-                    label="Year"
-                    fullWidth
-                    variant="standard"
-                    inputRef={yearRef}
-                />
+                <div>Reviews Go Here</div>
             </DialogContent>
             <DialogActions>
-                <Button onClick={() => setSem(false)}>Cancel</Button>
-                <Button onClick={() => {
-                    const modifications = {...courseModifications};
-                    modifications.add = [...modifications.add, {
-                        subject: semCourse!.subject,
-                            courseID: semCourse!.courseID,
-                            semester: selectedSem,
-                            grade: gradeRef.current.value,
-                            year: parseInt(yearRef.current.value)
-                    }];
-                    setCourseModifications(modifications);
-                    setSem(false);
-                }}>Add</Button>
+                <Button onClick={() => setSem(false)}>Close</Button>
             </DialogActions>
         </Dialog>
         <div className="w-full h-full flex flex-col items-center">
@@ -125,7 +105,7 @@ export function Professor_Page() {
             color="primary"
             className="w-full h-6"
             onClick={() => {
-                setSem(true);
+                setViewReviews(true);
             }}>
             Do you want to view the reviews? Click Here.
         </Button>
