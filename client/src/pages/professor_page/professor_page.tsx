@@ -69,6 +69,15 @@ export function Professor_Page() {
                 <Button onClick={() => setSem(false)}>Close</Button>
             </DialogActions>
         </Dialog>
+        <Dialog open={makeReviews} onClose={() => setMakeReviews(false)}>
+            <DialogTitle>Make a Review</DialogTitle>    
+            <DialogContent>
+                <div>Making a review goes here</div>
+            </DialogContent>
+            <DialogActions>
+                <Button onClick={() => setMakeReviews(false)}>Close</Button>
+            </DialogActions>
+        </Dialog>
         <div className="w-full h-full flex flex-col items-center">
         <header className="text-center text-white text-3xl mt-4 w-full">
             <div className="float-left ml-2 text-2xl cursor-pointer" onClick={() => navigate(-1)}>
