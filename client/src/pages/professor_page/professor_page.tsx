@@ -73,6 +73,14 @@ export function Professor_Page() {
             <DialogTitle>Make a Review</DialogTitle>    
             <DialogContent>
                 <div>Making a review goes here</div>
+                <TextField
+                    autoFocus
+                    margin="dense"
+                    label="Review"
+                    fullWidth
+                    variant="standard"
+                    inputRef={}
+                />
             </DialogContent>
             <DialogActions>
                 <Button onClick={() => setMakeReviews(false)}>Close</Button>
