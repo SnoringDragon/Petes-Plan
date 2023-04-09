@@ -7,7 +7,18 @@ const nhm = new NodeHtmlMarkdown({}, {
     a: (args) => {
         const result = defaultTranslators.a(args);
         if (result.postfix && !result.postfix.slice(2).startsWith('http'))
-            result.postfix = `](https://catalog.purdue.edu/${result.postfix.slice(2)}`
+            result.postfix = `](${new URL(result.postfix.slice(2, -1), 'https://catalog.purdue.edu/').href})`
+        return result;
+    },
+    img: (args) => {
+        const result = defaultTranslators.img(args);
+        if (result.content) {
+            result.content = result.content.replace(/\((.+?)\)$/g, (_, url) => {
+                if (!url.startsWith('http'))
+                    return '(' + new URL(url, 'https://catalog.purdue.edu/').href + ')';
+                return '(' + url + ')';
+            })
+        }
         return result;
     }
 });
