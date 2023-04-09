@@ -2,6 +2,7 @@ const ScheduledTask = require('./utils/scheduled-task');
 
 const fetchCourses = require('./scripts/fetch-courses');
 const fetchRateMyProf = require('./scripts/fetch-ratemyprofessor');
+const fetchDegrees = require('./scripts/fetch-degrees');
 
 let tasks = null;
 
@@ -21,7 +22,13 @@ module.exports = () => {
             dependencies: [purdueCatalogTask]
         });
 
-        tasks = [purdueCatalogTask, rateMyProfTask];
+        const fetchDegreeTask = await ScheduledTask.create({
+            taskfunc: fetchDegrees,
+            name: 'Update Degree Catalog',
+            args: { batchSize: 10, sleepTime: 250 }
+        });
+
+        tasks = [purdueCatalogTask, rateMyProfTask, fetchDegreeTask];
 
         await Promise.all(tasks.map(async task => {
             if (task.status === 'running') {
@@ -30,10 +37,15 @@ module.exports = () => {
             }
         }));
 
+        const force = process.argv.includes('--force');
+
         if (process.argv.includes('--update-ratings'))
-            rateMyProfTask.run({}, true);
+            rateMyProfTask.run({}, force);
 
         if (process.argv.includes('--update-courses'))
-            purdueCatalogTask.run({}, true);
+            purdueCatalogTask.run({}, force);
+
+        if (process.argv.includes('--update-degrees'))
+            fetchDegreeTask.run({}, force);
     })();
 };
