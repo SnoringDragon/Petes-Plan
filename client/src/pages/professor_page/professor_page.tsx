@@ -55,7 +55,41 @@ export function Professor_Page() {
 
     const bgdata = BoilerGradesService.reduceBoilergrades(boilergrades, 'course');
 
-    return (<Layout><div className="w-full h-full flex flex-col items-center">
+    return (<Layout>
+        <Dialog open={createSem} onClose={() => setSem(false)}>
+            <DialogTitle>Select Past Semester</DialogTitle>    
+            <DialogContent>
+                <Select fullWidth value={selectedSem} onChange={e => setSelectedSem(e.target.value as string)}>
+                       <MenuItem value="Fall">Fall</MenuItem>
+                       <MenuItem value="Spring">Spring</MenuItem>
+                       <MenuItem value="Summer">Summer</MenuItem>
+                </Select>
+                <TextField
+                    autoFocus
+                    margin="dense"
+                    label="Year"
+                    fullWidth
+                    variant="standard"
+                    inputRef={yearRef}
+                />
+            </DialogContent>
+            <DialogActions>
+                <Button onClick={() => setSem(false)}>Cancel</Button>
+                <Button onClick={() => {
+                    const modifications = {...courseModifications};
+                    modifications.add = [...modifications.add, {
+                        subject: semCourse!.subject,
+                            courseID: semCourse!.courseID,
+                            semester: selectedSem,
+                            grade: gradeRef.current.value,
+                            year: parseInt(yearRef.current.value)
+                    }];
+                    setCourseModifications(modifications);
+                    setSem(false);
+                }}>Add</Button>
+            </DialogActions>
+        </Dialog>
+        <div className="w-full h-full flex flex-col items-center">
         <header className="text-center text-white text-3xl mt-4 w-full">
             <div className="float-left ml-2 text-2xl cursor-pointer" onClick={() => navigate(-1)}>
                 <FaArrowLeft />
@@ -84,5 +118,16 @@ export function Professor_Page() {
         <Boilergrades isCourseLinks={true} data={bgdata} className="w-full mb-4"  />
 
         <Ratings instructor={professor._id} filter={searchParams.get('filter')?.split(',') ?? []} />
+        <div></div>
+        <Button
+                                        variant="contained"
+                                        size="large"
+                                        color="primary"
+                                        className="w-full h-6"
+                                        onClick={() => {
+                                            setSem(true);
+                                        }}>
+                                        Add to History
+                                    </Button>
     </div></Layout>)
 }
