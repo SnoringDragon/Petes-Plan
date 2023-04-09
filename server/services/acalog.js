@@ -1,5 +1,16 @@
 const BaseService = require('./base-service');
 const cheerio = require('cheerio');
+const { NodeHtmlMarkdown } = require('node-html-markdown');
+const { defaultTranslators } = require('node-html-markdown/dist/config');
+
+const nhm = new NodeHtmlMarkdown({}, {
+    a: (args) => {
+        const result = defaultTranslators.a(args);
+        if (result.postfix && !result.postfix.slice(2).startsWith('http'))
+            result.postfix = `](https://catalog.purdue.edu/${result.postfix.slice(2)}`
+        return result;
+    }
+});
 
 class Acalog extends BaseService {
     constructor(options = {
@@ -63,186 +74,165 @@ class Acalog extends BaseService {
     }
 
     async getDegreeInfo({ catalog, degree }) {
-        const res = await this._fetch(`preview_degree_planner.php?catoid=${catalog}&poid=${degree}`);
+        const res = await this._fetch(`preview_program.php?catoid=${catalog}&poid=${degree}`);
 
         const $ = cheerio.load(await res.text());
 
-        let aboutText = '';
         let requiredCredits = 0;
-        let supergroups = [];
-        let lastSupergroup = null;
-        let lastGroup = null;
-        let lastRequirements = null;
-        let isChooseOne = false;
-        let previousCourseOr = false;
+        let links = [];
 
-        const updateRequirementToGroup = () => {
-            if (lastRequirements) {
-                if (!lastGroup) lastGroup = { requirements: [] };
-                lastGroup.requirements.push(lastRequirements);
-                lastRequirements = null;
-            }
-        };
-        const updateGroupToSupergroup = () => {
-            if (lastGroup) {
-                if (!lastSupergroup) return console.log('warning: no supergroup found for group to belong to');
-                lastSupergroup.groups.push(lastGroup);
-                lastGroup = null;
-            }
-        };
-        const updateSupergroups = () => {
-            if (lastSupergroup) {
-                supergroups.push(lastSupergroup);
-                lastSupergroup = null;
-            }
-        };
-
-        const getContents = row => $(row).find('> td > div').text().trim()
-            .replace(/[^\S\r\n]+/g, ' ')
-            .replace(/(?:[^\S\r\n]*\r?\n[^\S\r\n]*)+/g, '\n')
-            .trim() || null;
+        const getContents = row => nhm.translate($(row).find('> :not(:is(h1, h2, h3, h4, h5, h6, ul))')
+            .map((i, el) => $(el).html()).toArray().join('')) || null;
 
         const getCredits = text => {
-            let credits = 0;
+            let credits = null;
 
-            text = text.replace(/\s*\((\d+)\s*credits?\)\s*/ig, (_, c) => {
+            text = text.replace(/\s*\((\d+)(?:\s*-\s*\d+)?\s*credits?\)\s*/ig, (_, c) => {
                 credits = +c;
                 return '';
             });
 
-            return [credits, text];
+            if (credits === null) text = text.replace(/(?:\s*-\s*)?credit\s*hours:?\s*(\d+(?:\.\d+)?)\s*/ig, (_, c) => {
+                credits = +c;
+                return '';
+            });
+
+            return [credits ?? 0, text];
         };
 
         let end = false;
 
-        $('#acalog-degree-planner-content > tbody > tr').map((i, row) => {
-            if (end) return;
+        const contents = $('.block_content_outer .block_content > table > tbody > tr');
 
-            const id = row.attribs.id;
+        const about = nhm.translate(contents.first().find('.program_description').html());
 
-            if (['acalog-degree-planner-logo', 'acalog-degree-planner-info'].includes(id)) return;
+        const parseCourseList = rows => {
+            const courses = [];
+            let previousGroup = null;
 
-            if (id === 'acalog-degree-planner-programs') {
-                const about = $(row).find('div > :is(p, div)');
+            const addGroup = group => {
+                if (previousGroup) courses.push(previousGroup);
+                previousGroup = group
+            };
 
-                aboutText = about.map((_, el) => {
-                    const text = $(el).text().trim();
+            rows.map((_, cell) => {
+                const cellClass = $(cell).attr('class') ?? '';
+                let text = $(cell).text().trim()
+                    .replace(/[^\S\r\n]+/g, ' ')
+                    .replace(/(?:[^\S\r\n]*\r?\n[^\S\r\n]*)+/g, '\n');
 
-                    if (text.endsWith(' Website')) return;
-                    if (text.includes('(CODO) Requirements')) return;
+                if (cellClass.includes('course')) {
+                    const [, subject, courseID] = text.match(/([A-Z]+) ([A-Z\d]+)/) ?? [];
 
-                    return text.replace(/\s+/g, ' ').trim();
-                }).toArray().join('\n').trim();
+                    if (/\sor$/i.test(text))
+                        addGroup({
+                            type: 'or',
+                            groups: []
+                        });
+                    else
+                        addGroup(null);
 
-                return;
-            }
-
-            let headerType = null;
-            let headerText = '';
-
-            const header = $(row).find('td > :is(h1, h2, h3, h4, h5, h6)')[0];
-            if (header) {
-                headerType = header.name;
-                headerText = $(header).text();
-            }
-
-            if (headerType === 'h2' && ['Requirements', 'Degree Requirements'].includes(headerText)) {
-                const text = $(row).find('div h3').text();
-                const credits = text.match(/(\d+) Credits Required/)?.[1];
-                if (credits) requiredCredits = +credits;
-                return;
-            }
-
-            if (headerType === 'h2') {
-                let credits;
-                [credits, headerText] = getCredits(headerText);
-
-                updateRequirementToGroup();
-                updateGroupToSupergroup();
-                updateSupergroups();
-
-                lastSupergroup = {
-                    text: headerText,
-                    credits,
-                    groups: [],
-                    description: getContents(row),
-                    isChooseOne: /choose\s*one/i.test(headerText)
-                };
-
-                isChooseOne = false;
-                previousCourseOr = false;
-
-                return;
-            }
-
-            if (headerType === 'h3') {
-                if (headerText === 'Prerequisite Information:') {
-                    end = true;
-                    return;
-                }
-
-                let credits;
-                [credits, headerText] = getCredits(headerText);
-
-                updateRequirementToGroup();
-                updateGroupToSupergroup();
-
-                lastGroup = {
-                    text: headerText,
-                    credits,
-                    requirements: [],
-                    description: getContents(row)
-                };
-
-                isChooseOne = /choose\s*one/i.test(headerText);
-                previousCourseOr = false;
-
-                return;
-            }
-
-            const cell = $(row).find('> td').first();
-            const cellClass = cell.attr('class') ?? '';
-            const text = cell.text().trim()
-                .replace(/[^\S\r\n]+/g, ' ')
-                .replace(/(?:[^\S\r\n]*\r?\n[^\S\r\n]*)+/g, '\n');
-
-            if (cellClass.includes('course')) {
-                const [, subject, courseID] = text.match(/([A-Z]+) ([A-Z\d]+)/) ?? [];
-
-                if ((isChooseOne || previousCourseOr) && lastRequirements?.type === 'course') {
-                    lastRequirements.courses.push({ subject, courseID });
-                } else {
-                    updateRequirementToGroup();
-                    lastRequirements = {
-                        type: 'course',
-                        courses: [{ subject, courseID }]
-                    };
-                }
-
-                previousCourseOr = /\sor$/i.test(text);
-
-                return;
-            }
-
-            if (cellClass.includes('ad-hoc')) {
-                if (/choose\s*one/i.test(text)) {
-                    isChooseOne = true;
+                    (previousGroup ? previousGroup.groups : courses)
+                        .push({
+                            type: 'course',
+                            subject,
+                            courseID
+                        });
+                } else if (cellClass.includes('acalog-adhoc-before')) {
+                    let credits;
+                    [credits, text] = getCredits(text);
+                    addGroup({
+                        type: 'group',
+                        text: text,
+                        credits,
+                        groups: [],
+                        description: null
+                    });
+                } else if (/choose\s*one/i.test(text)) {
+                    addGroup({
+                        type: 'or',
+                        text: null,
+                        groups: [],
+                        description: null
+                    });
                 } else if (!/^(?:requirements|required):?$/i.test(text) && text) {
-                    isChooseOne = false;
-                    updateRequirementToGroup();
-                    lastRequirements = {
+                    const link = $(cell).find('a').first().attr('href') ?? '';
+
+                    if (link.startsWith('preview_program.php')) {
+                        const linkId = +new URLSearchParams(link.split('?')[1]).get('poid');
+                        if (!Number.isNaN(linkId)) links.push(linkId);
+                    }
+
+                    const [, subject, courseStart, courseEnd] = text.match(/([A-Z]+) ([A-Z\d]+)-([A-Z\d]+)/) ?? [];
+
+                    const req = subject ? {
+                        type: 'course_range',
+                        courseStart: +courseStart,
+                        courseEnd: +courseEnd,
+                        subject
+                    } : {
                         type: 'non_course',
-                        text
+                        text: nhm.translate($(cell).html())
                     };
+
+                    (previousGroup ? previousGroup.groups : courses).push(req);
                 }
-            }
-        });
+            });
 
-        updateRequirementToGroup();
-        updateGroupToSupergroup();
-        updateSupergroups();
+            return courses;
+        }
 
-        return { about: aboutText, requiredCredits, supergroups };
+        const parseGroups = element => {
+            const groups = [];
+
+            element.map((i, row) => {
+                if (end) return;
+
+                let headerText = $(row).find('> :is(h1, h2, h3, h4, h5, h6)')
+                    .first().text().replace(/\s+/g, ' ').trim();
+
+                if (['Requirements', 'Degree Requirements'].includes(headerText) && !requiredCredits) {
+                    const text = $(row).find('h3').text();
+                    const credits = text.match(/(\d+) Credits Required/)?.[1];
+                    if (credits) {
+                        requiredCredits = +credits;
+                        return;
+                    }
+                }
+
+                const rowClass = $(row).attr('class');
+
+                if (rowClass.includes('acalog-core')) {
+                    if (headerText.includes('Program Requirements')) {
+                        end = true;
+                        return;
+                    }
+
+                    let credits;
+                    [credits, headerText] = getCredits(headerText);
+
+                    groups.push({
+                        type: 'group',
+                        text: headerText,
+                        credits,
+                        groups: parseCourseList($(row).find('> ul > li')),
+                        description: getContents(row)
+                    });
+                } else {
+                    const result = parseGroups($(row).find('> div'));
+                    if (groups.length)
+                        groups[groups.length - 1].groups.push(...result);
+                    else
+                        groups.push(...result);
+                }
+            });
+
+            return groups;
+        };
+
+        const groups = parseGroups(contents.last().find('> td > div > div'));
+
+        return { about, requiredCredits, groups, links };
     }
 }
 
