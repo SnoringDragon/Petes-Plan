@@ -120,14 +120,24 @@ export function Professor_Page() {
         <Ratings instructor={professor._id} filter={searchParams.get('filter')?.split(',') ?? []} />
         <div></div>
         <Button
-                                        variant="contained"
-                                        size="large"
-                                        color="primary"
-                                        className="w-full h-6"
-                                        onClick={() => {
-                                            setSem(true);
-                                        }}>
-                                        Add to History
-                                    </Button>
+            variant="contained"
+            size="large"
+            color="primary"
+            className="w-full h-6"
+            onClick={() => {
+                setSem(true);
+            }}>
+            Do you want to view the reviews? Click Here.
+        </Button>
+        <Button
+            variant="contained"
+            size="large"
+            color="primary"
+            className="w-full h-6"
+            onClick={() => {
+                setSem(true);
+            }}>
+            Do you want to make a reviews? Click Here.
+        </Button>
     </div></Layout>)
 }
