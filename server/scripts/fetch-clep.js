@@ -12,7 +12,7 @@ function getClepData() {
 
             // LOOP THROUGH EACH CELL OF THE CURENT ROW TO READ CELL VALUES.
             for (var j = 0; j < objCells.length; j++) {
-                info.innerHTML = info.innerHTML + ' ' + objCells.item(j).innerHTML;
+                //save to database
             }
             info.innerHTML = info.innerHTML + '<br />';     // ADD A BREAK (TAG).
         }
