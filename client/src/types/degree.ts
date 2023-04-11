@@ -37,8 +37,8 @@ export type Degree = {
     name: string,
     type: 'concentration' | 'minor' | 'major' | 'certificate',
     requirements: DegreeRequirementGroup[],
-    concentrations: string[],
+    concentrations: Degree[],
     info: string,
     link: string,
-    requiredCredits: number
+    requiredCredits: number,
 };

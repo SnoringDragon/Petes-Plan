@@ -243,7 +243,17 @@ export function Major_Requirements() {
                 </AccordionDetails>
             </Accordion>
         </div>}
+        {degree.concentrations.length > 0 && <>
+            <span className="text-2xl">Concentrations</span>
+            <div className="my-3 flex gap-5">
+                {degree.concentrations.map((c, i) => <Link to={`/major_requirements?id=${c._id}`} key={i}>
+                    {c.name}
+                </Link>)}
+            </div>
+        </>}
         <span className="text-2xl">Requirements</span>
-        <DegreeRequirements requirements={degree.requirements} depth={0} />
+        <div className="mt-3">
+            <DegreeRequirements requirements={degree.requirements} depth={0} />
+        </div>
     </Layout>);
 }
