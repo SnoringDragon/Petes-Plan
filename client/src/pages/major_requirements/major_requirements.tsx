@@ -27,7 +27,7 @@ import {
 } from '@material-ui/core';
 import { ApiCourse } from '../../types/course-requirements';
 import GPAService from '../../services/GPAService';
-import { FaArrowLeft, FaChevronDown } from 'react-icons/fa';
+import { FaArrowLeft, FaChevronDown, FaExternalLinkAlt } from 'react-icons/fa';
 import ReactMarkdown from 'react-markdown';
 import styles from './major_requirement.module.scss';
 
@@ -208,11 +208,15 @@ export function Major_Requirements() {
                 </Card>
             </div>
         </Modal>
-        <header className="text-center text-white text-3xl mt-4 w-full relative">
+        <header className="text-center text-white text-3xl mt-4 w-full relative flex">
             <div className="float-left ml-2 text-2xl cursor-pointer" onClick={() => navigate(-1)}>
                 <FaArrowLeft />
             </div>
-            {degree.name}
+            <div className="flex m-auto items-center">
+                {degree.name} <a href={degree.link} target="_blank">
+                    <FaExternalLinkAlt className="w-5 ml-3" />
+                </a>
+            </div>
             {degreePlans.length > 0 && <div className="absolute right-0 top-0 text-white">
                 <Select className="text-white my-2 italic mr-2" value={degreePlans.findIndex(p => p.name === degreePlan?.name)}
                          onChange={ev => {
