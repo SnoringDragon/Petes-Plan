@@ -544,16 +544,18 @@ exports.getReqIntersection = async (req, res) => {
     var gradReqs = new Map();
     for (let i = 0; i < degreePlan.degrees.length; i++) {
         const degree = degreePlan.degrees[i];
-        for (let j = 0; j < degree.requirements.length; j++) {
-            gradReqs.set(degree.requirements[j].toString(), false);
+        const reqs = degree.getCourses();
+        for (let j = 0; j < reqs.length; j++) {
+            gradReqs.set(reqs[j].subject + reqs[j].courseID, false);
         }
     }
 
     /* Iterate through selected degree requirements and add to array if in map */
     var gradReqsArr = [];
-    for (let i = 0; i < compDegree.requirements.length; i++) {
-        const req = compDegree.requirements[i];
-        if (gradReqs.has(req.toString())) {
+    const reqs = compDegree.getCourses();
+    for (let i = 0; i < reqs.length; i++) {
+        const req = reqs[i];
+        if (gradReqs.has(req.subject + req.courseID)) {
             gradReqsArr.push(req);
         }
     }

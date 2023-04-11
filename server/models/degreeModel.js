@@ -21,4 +21,11 @@ degreeSchema.index({ name: 1 }, {
     unique: true
 });
 
+const getCourses = group => group.map(g => 'groups' in g ? getCourses(g.groups) : g)
+    .flat(Infinity).filter(g => g.type === 'course');
+
+degreeSchema.methods.getCourses = function () {
+    return getCourses(this.requirements);
+};
+
 module.exports = mongoose.model('Degree', degreeSchema);
