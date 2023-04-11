@@ -7,6 +7,10 @@ import { DegreePlan } from '../../types/degree-plan';
 import { Link } from 'react-router-dom';
 import Confetti from 'react-confetti';
 import Button from '@material-ui/core/Button';
+import { DegreeRequirement, DegreeRequirementCourse } from '../../types/degree';
+
+const getCourses = (group: DegreeRequirement[]): DegreeRequirementCourse[] => group.map(g => 'groups' in g ? getCourses((g as any).groups) : g)
+    .flat(Infinity).filter(g => (g as any).type === 'course') as DegreeRequirementCourse[];
 
 export function GraduationRequirements() {
     const [userCourses, setUserCourses] = useState<UserCourse[] | null>(null);
@@ -27,7 +31,7 @@ export function GraduationRequirements() {
         return <Layout>Loading...</Layout>;
 
     const degreeCourses = degreePlans.flatMap(deg => deg.degrees)
-        .flatMap(deg => deg.requirements);
+        .flatMap(deg => getCourses(deg.requirements));
 
     const remaining = degreeCourses.filter(course =>
         !userCourses.find(userCourse => userCourse.courseID === course.courseID &&
