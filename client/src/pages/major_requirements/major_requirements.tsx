@@ -35,6 +35,9 @@ function DegreeRequirements(props: { requirements: DegreeRequirement[], depth: n
     if (!props.requirements) return null;
 
     if (props.depth < 2) {
+        if (props.requirements.every(r => r.type !== 'group'))
+            return <DegreeRequirements requirements={props.requirements} depth={props.depth + 1} />
+
         return (<div>
             {props.requirements.map((req, i) => {
                 if (req.type === 'group') {

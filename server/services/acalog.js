@@ -162,13 +162,14 @@ class Acalog extends BaseService {
                 } else if (cellClass.includes('acalog-adhoc-before')) {
                     let credits;
                     [credits, text] = getCredits(text);
-                    addGroup({
-                        type: 'group',
-                        text: text,
-                        credits,
-                        groups: [],
-                        description: null
-                    });
+                    if (text || credits)
+                        addGroup({
+                            type: 'group',
+                            text: text,
+                            credits,
+                            groups: [],
+                            description: null
+                        });
                 } else if (/choose\s*one/i.test(text)) {
                     addGroup({
                         type: 'or',
@@ -248,7 +249,11 @@ class Acalog extends BaseService {
                 }
             });
 
-            return groups;
+            return groups.filter(g => {
+                if (g.type === 'group' && !g.groups.length && !g.text && !g.description)
+                    return false;
+                return true
+            });
         };
 
         const groups = parseGroups(contents.last().find('> td > div > div'));
