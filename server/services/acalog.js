@@ -92,8 +92,13 @@ class Acalog extends BaseService {
         let requiredCredits = 0;
         let links = [];
 
-        const getContents = row => nhm.translate($(row).find('> :not(:is(h1, h2, h3, h4, h5, h6, ul))')
-            .map((i, el) => $(el).html()).toArray().join('')) || null;
+        const getContents = row => {
+            const contents = $(row).find('> :not(:is(h1, h2, h3, h4, h5, h6))');
+            return nhm.translate(contents.map((i, el) => {
+                if (i === contents.length - 1 && el.name === 'ul') return;
+                return $.html(el);
+            }).toArray().join('')) || null;
+        };
 
         const getCredits = text => {
             let credits = null;
@@ -117,16 +122,20 @@ class Acalog extends BaseService {
 
         const about = nhm.translate(contents.first().find('.program_description').html());
 
-        const parseCourseList = rows => {
+        const parseCourseList = row => {
+            const rows = $(row).find('> *').last()[0];
+
+            if (rows.name !== 'ul') return [];
+
             const courses = [];
             let previousGroup = null;
 
             const addGroup = group => {
                 if (previousGroup) courses.push(previousGroup);
-                previousGroup = group
+                previousGroup = group;
             };
 
-            rows.map((_, cell) => {
+            $(rows).find('> li').map((_, cell) => {
                 const cellClass = $(cell).attr('class') ?? '';
                 let text = $(cell).text().trim()
                     .replace(/[^\S\r\n]+/g, ' ')
@@ -135,13 +144,11 @@ class Acalog extends BaseService {
                 if (cellClass.includes('course')) {
                     const [, subject, courseID] = text.match(/([A-Z]+) ([A-Z\d]+)/) ?? [];
 
-                    if (/\sor$/i.test(text))
+                    if (/\sor$/i.test(text) && previousGroup?.type !== 'or')
                         addGroup({
                             type: 'or',
                             groups: []
                         });
-                    else
-                        addGroup(null);
 
                     (previousGroup ? previousGroup.groups : courses)
                         .push({
@@ -149,6 +156,9 @@ class Acalog extends BaseService {
                             subject,
                             courseID
                         });
+
+                    if (!/\sor$/i.test(text) && previousGroup?.type === 'or')
+                        addGroup(null);
                 } else if (cellClass.includes('acalog-adhoc-before')) {
                     let credits;
                     [credits, text] = getCredits(text);
@@ -226,7 +236,7 @@ class Acalog extends BaseService {
                         type: 'group',
                         text: headerText,
                         credits,
-                        groups: parseCourseList($(row).find('> ul > li')),
+                        groups: parseCourseList(row),
                         description: getContents(row)
                     });
                 } else {
