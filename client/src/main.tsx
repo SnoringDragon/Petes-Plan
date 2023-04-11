@@ -31,6 +31,7 @@ import { AdminDashboard } from './pages/admin-dashboard/admin-dashboard';
 import { TotalDeg } from './pages/total_deg/total_deg';
 import { Professor_Page } from './pages/professor_page/professor_page';
 import { GraduationRequirements } from './pages/graduation-reqs/graduation-reqs';
+import { SemesterCalendar } from './pages/semester-calendar/semester-calendar';
 
 const router = createBrowserRouter([
   {
@@ -128,16 +129,20 @@ const router = createBrowserRouter([
       path: "/professor",
       element: <Professor_Page />
     },
-      {
-        path:'/graduation-requirements',
-        element: <GraduationRequirements />
-      },
+    {
+      path:'/graduation-requirements',
+      element: <GraduationRequirements />
+    },
     {
       path: '/admin',
       children: [{
         index: true,
         element: <AdminDashboard />
       }]
+    },
+    {
+      path: '/calendar',
+      element: <SemesterCalendar />
     }
     ]
   }
