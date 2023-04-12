@@ -30,6 +30,7 @@ import GPAService from '../../services/GPAService';
 import { FaArrowLeft, FaChevronDown, FaExternalLinkAlt } from 'react-icons/fa';
 import ReactMarkdown from 'react-markdown';
 import styles from './major_requirement.module.scss';
+import { CourseLink } from '../../components/course-link/course-link';
 
 function DegreeRequirements(props: { requirements: DegreeRequirement[], depth: number }) : JSX.Element | null {
     if (!props.requirements) return null;
@@ -79,12 +80,12 @@ function DegreeRequirements(props: { requirements: DegreeRequirement[], depth: n
     return <div>
         {props.requirements.map((req, i) => {
             if (req.type === 'course')
-                return (<div key={i} className="px-2 py-1">{req.subject} {req.courseID}</div>);
+                return (<div key={i} className="px-2 py-1"><CourseLink courseID={req.courseID} subject={req.subject} /></div>);
             if (req.type === 'or')
                 return (<div key={i} className="px-2 py-1">{req.groups.map((c, j) => {
                     let contents = null;
                     if (c.type === 'course')
-                        contents = <span>{c.subject} {c.courseID}</span>;
+                        contents = <CourseLink courseID={c.courseID} subject={c.subject} />;
                     else if (c.type === 'course_range')
                         contents = <span>{c.subject} {c.courseStart}-{c.courseEnd}</span>;
                     else
@@ -136,66 +137,7 @@ export function Major_Requirements() {
     }, [searchParams]);
 
 
-    if (!degree) return (<span>'Degree not found'</span>);
-
-    const mapCourse = (course: { courseID: string, subject: string }, i: number) => {
-        const isSatisfied = userCourses.find(other => other.courseID === course.courseID &&
-            other.subject === course.subject);
-
-        let current = false;
-        let planned = false;
-
-        if (!isSatisfied) {
-            let yr = new Date().getFullYear();
-            let mon = new Date().getMonth();
-            let month;
-
-            if (mon > 7 && mon < 13) {
-                month = "Fall";
-            } else if (mon < 5 && mon > 0) {
-                month = "Spring";
-            } else if (mon > 4 && mon < 8) {
-                month = "Summer";
-            } else {
-                month = "N/A";
-            }
-
-            for (const plan of degreePlans) {
-                for (const c of plan.courses) {
-                    if (c.courseID === course.courseID
-                        && c.subject === course.subject) {
-                        planned = true;
-
-                        if (c.semester === month && yr === c.year) {
-                            current = true;
-                            break;
-                        }
-                    }
-                }
-            }
-        }
-
-        if (!degreePlan) return;
-
-        let color = '';
-        if (current) {
-            color = 'bg-blue-500';
-        } else if (planned) {
-            color = 'bg-yellow-500';
-        } else if (isSatisfied != null) {
-            color = 'bg-green-500';
-        } else {
-            color = 'bg-red-500';
-        }
-
-        return (<span key={i}>
-            {i !== 0 && <b> AND </b>}
-            <Link className={`bg-opacity-25 ${color}`}
-                  to={`/course_description?subject=${course.subject}&courseID=${course.courseID}`}>
-                {course.subject} {course.courseID}
-            </Link>
-        </span>)
-    }
+    if (!degree) return (<span>Degree not found</span>);
 
     return (<Layout>
         <Modal open={shared !== null} onClose={() => setShared(null)}>
@@ -204,7 +146,9 @@ export function Major_Requirements() {
                     <CardHeader title={"Comparison to Current Plan"} className="text-center bg-zinc-500 text-white" />
                     <CardContent>
                         <div className="p-4">
-                            <u>Shared Requirements: </u> {shared?.length ? shared?.map(mapCourse) : ' None'}
+                            <u>Shared Requirements: </u> {shared?.length ? shared?.map(s => (<div className="inline-block">
+                                <CourseLink courseID={s.courseID} subject={s.subject} />&nbsp;
+                            </div>)) : ' None'}
                             <p></p>
                         </div>
                     </CardContent>
