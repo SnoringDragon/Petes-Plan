@@ -5,6 +5,7 @@ import { Layout } from '../../components/layout/layout';
 import { Accordion, AccordionDetails, AccordionSummary, Button, TextField } from '@material-ui/core';
 import { FaChevronDown } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
+import { CourseLink } from '../../components/course-link/course-link';
 
 
 export function AP_Class() {
@@ -65,10 +66,9 @@ export function AP_Class() {
                                      onClick={() => setSelected(test, credit.score)}>
                             <div className="border-b border-gray-300 p-2 text-center">{credit.score}</div>
                             <div className="p-2 px-6">
-                                {credit.courses.map((course, i) => (<>{i !== 0 && '&'} <Link
-                                    to={`/course_description?subject=${course.subject}&courseID=${course.courseID}`}>
-                                    {course.subject} {course.courseID}
-                                </Link> </>))}
+                                {credit.courses.map((course, i) => (<>{i !== 0 && '&'} <CourseLink
+                                    subject={course.subject}
+                                    courseID={course.courseID} useColor={false}/> </>))}
                             </div>
                         </div>);
                     })}

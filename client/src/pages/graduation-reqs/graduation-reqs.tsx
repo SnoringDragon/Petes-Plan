@@ -8,6 +8,7 @@ import { Link } from 'react-router-dom';
 import Confetti from 'react-confetti';
 import Button from '@material-ui/core/Button';
 import { DegreeRequirement, DegreeRequirementCourse } from '../../types/degree';
+import { CourseLink } from '../../components/course-link/course-link';
 
 const getCourses = (group: DegreeRequirement[]): DegreeRequirementCourse[] => group.map(g => 'groups' in g ? getCourses((g as any).groups) : g)
     .flat(Infinity).filter(g => (g as any).type === 'course') as DegreeRequirementCourse[];
@@ -48,8 +49,7 @@ export function GraduationRequirements() {
             <div className="flex flex-col flex-1 m-4 p-3 px-5 bg-white rounded-md">
                 <span className="font-bold text-xl mb-3">Degree Requirements</span>
                 {degreeCourses.map((course, i) => <div key={i}  className="mb-2 p-3 bg-gray-200 rounded bg-opacity-25">
-                    <Link to={`/course_description?subject=${course.subject}&courseID=${course.courseID}`}>
-                        {course.subject} {course.courseID}</Link>
+                    <CourseLink courseID={course.courseID} subject={course.subject} useColor={false} />
                 </div>)}
                 <Button onClick={() => setShow(!show)}>
                     Toggle Completed Courses
@@ -58,15 +58,13 @@ export function GraduationRequirements() {
             <div className="flex flex-col flex-1 m-4 p-3 px-5 bg-white rounded-md" style={{visibility: show ? 'visible' : 'hidden' }}>
                 <span className="font-bold text-xl mb-3">Completed Courses</span>
                 {userCourses.length ? userCourses.map((course, i) => <div key={i}  className="mb-2 p-3 bg-gray-200 rounded bg-opacity-25">
-                    <Link to={`/course_description?subject=${course.subject}&courseID=${course.courseID}`}>
-                        {course.subject} {course.courseID}</Link>
+                    <CourseLink courseID={course.courseID} subject={course.subject} useColor={false} />
                 </div>) : 'None'}
             </div>
             <div className="flex flex-col flex-1 m-4 p-3 px-5 bg-white rounded-md">
                 <span className="font-bold text-xl mb-3">Remaining Courses</span>
                 {remaining.length ? remaining.map((course, i) => <div key={i}  className="mb-2 p-3 bg-gray-200 rounded bg-opacity-25">
-                    <Link to={`/course_description?subject=${course.subject}&courseID=${course.courseID}`}>
-                        {course.subject} {course.courseID}</Link>
+                    <CourseLink courseID={course.courseID} subject={course.subject} useColor={false} />
                 </div>) : 'None'}
             </div>
         </div>

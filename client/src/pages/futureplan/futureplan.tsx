@@ -31,6 +31,7 @@ import { ApiProfessor } from '../../types/professor';
 import { Semester } from '../../types/semester';
 import SemesterService from '../../services/SemesterService';
 import GPAService from '../../services/GPAService';
+import { CourseLink } from '../../components/course-link/course-link';
 
 const renderSectionMenuItem = (section: Section, instructorFilter: string = '') => {
     if (instructorFilter && !section.meetings.some(m => m.instructors.some(i => i._id === instructorFilter)))
@@ -300,7 +301,7 @@ export function FuturePlan() {
                 <div className="border-x border-gray-500 bg-slate-500 rounded mt-4 w-full flex flex-col">
                     {courses.map((course, i) => (<div
                         className="w-full py-3 px-4 bg-gray-600 border-y border-gray-500 flex items-center" key={i}>
-                        <Link to={`/course_description?subject=${course.subject}&courseID=${course.courseID}`} className="mr-auto">{course.subject} {course.courseID}: {course.name}</Link>
+                        <CourseLink className="mr-auto" courseID={course.courseID} subject={course.subject} useColor={false} />
                         <Button color="inherit" onClick={() => {
                             setSemCourse(course);
                             setSem(true);
@@ -399,9 +400,7 @@ export function FuturePlan() {
                                     <AccordionDetails className="flex flex-col">
                                     {courses.map(({ course, isNew }, j) => (<div key={j} className="flex items-center py-2 border-b border-gray-300">
                             <div className="flex flex-col">
-                                <Link to={`/course_description?subject=${course.subject}&courseID=${course.courseID}`}>
-                                    {course.subject} {course.courseID}
-                                </Link>
+                                <CourseLink courseID={course.courseID} subject={course.subject} useColor={false} />
 
                                 <div>{course.section?.name} ({course.section?.sectionID})</div>
                                 <div>Instructors: {(() => {

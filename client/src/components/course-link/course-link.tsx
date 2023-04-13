@@ -17,7 +17,7 @@ let gradeValues: { [key: string]: number } = {
     'D-': 1, 'D': 2, 'D+': 3, 'C-': 4, 'C': 5, 'C+': 6, 'B-': 7, 'B': 8, 'B+': 9, 'A-': 10, 'A': 11, 'A+': 12
 };
 
-export function CourseLink(props: { courseID: string, subject: string,
+export function CourseLink(props: { courseID: string, subject: string, filter?: string,
     className?: string, useColor?: boolean, minGrade?: string, useTooltip?: boolean }) {
     const [userCourses, setUserCourses] = useState<UserCourse[]>([]);
     const [degreePlans, setDegreePlans] = useState<DegreePlan[]>([]);
@@ -132,9 +132,9 @@ export function CourseLink(props: { courseID: string, subject: string,
             </div>
             <div className="absolute left-0 right-0 -bottom-4 h-7 pointer-events-auto"
                  onMouseEnter={() => setHovering(1, true)} onMouseLeave={() => setHovering(1, false)}></div>
-         </>} placement="top" arrow className={`inline-block ${props.className ?? ''}`}>
-        <Link to={`/course_description?subject=${props.subject}&courseID=${props.courseID}`}
-              className={`${color} bg-opacity-25`} onMouseEnter={() => setHovering(2, true)} onMouseLeave={() => setHovering(2, false)}>
+         </>} placement="top" arrow className={`${props.className ?? ''}`}>
+        <Link to={`/course_description?subject=${props.subject}&courseID=${props.courseID}${props.filter ? '&filter=' + props.filter : ''}`}
+              className={`${color} bg-opacity-50`} onMouseEnter={() => setHovering(2, true)} onMouseLeave={() => setHovering(2, false)}>
             {props.subject} {props.courseID}
         </Link>
     </Tooltip>);
