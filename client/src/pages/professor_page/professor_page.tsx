@@ -132,7 +132,7 @@ export function Professor_Page() {
             color="primary"
             className="w-full h-6"
             onClick={() => {
-                setSem(true);
+                setMakeReviews(true);
             }}>
             Do you want to make a reviews? Click Here.
         </Button>
