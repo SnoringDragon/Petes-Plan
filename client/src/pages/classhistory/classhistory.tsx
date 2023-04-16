@@ -25,6 +25,7 @@ import {
 import { Semester } from '../../types/semester';
 import SemesterService from '../../services/SemesterService';
 import GPAService from '../../services/GPAService';
+import { CourseLink } from '../../components/course-link/course-link';
 
 
 const gradeRegex = /^(?:[A-D][-+]?|[EFPNSIWU]|(?:PI|PO|IN|WN|IX|WF|SI|IU|WU|AU|CR|NS))$/;
@@ -203,7 +204,7 @@ export function ClassHistory() {
                                             className="text-center h-10 bg-zinc-500 text-white"/>
                                 <CardContent>
                                     <div className="p-1 h-8 px-4 ml-4">
-                                        <Link to={`/course_description?subject=${course.subject}&courseID=${course.courseID}`}>{course.name}</Link>
+                                        <CourseLink courseID={course.courseID} subject={course.subject} useColor={false} />
                                         <br></br>
                                         <p></p>
                                         Credit Hours: {course.minCredits} to {course.maxCredits}
@@ -297,7 +298,7 @@ export function ClassHistory() {
                         <CardHeader title="Completed Courses" className="text-center h-10 bg-zinc-800 text-white" />
                         <CardContent>
                             {userCourses.map((course, i) => (<div className="flex items-center mb-2" key={i}>
-                                <Link to={`/course_description?subject=${course.subject}&courseID=${course.courseID}`} className="mr-2 w-40">{course.subject} {course.courseID}:</Link>
+                                <CourseLink courseID={course.courseID} subject={course.subject} className="mr-2 w-40" useColor={false} />
                                 <div className="ml-2  mr-8"><TextField value={course.grade} onChange={ev => {
                                     const newCourses = [...userCourses];
                                     newCourses[i].grade = ev.target.value;

@@ -7,6 +7,7 @@ import CourseService from '../../services/CourseService';
 import { Link, useSearchParams } from 'react-router-dom';
 import ProfessorService from '../../services/ProfessorService';
 import { ApiProfessor } from '../../types/professor';
+import { CourseLink } from '../../components/course-link/course-link';
 
 export function CourseInstructorSearch() {
     const [courses, setCourses] = useState<ApiCourse[]>([]);
@@ -39,10 +40,10 @@ export function CourseInstructorSearch() {
                 <FaSearch className="ml-6 mr-2 cursor-pointer" onClick={courseSearch} />
             </div>
             <div className="border-x border-gray-500 rounded flex flex-col">
-            {courses.map((course, i) => (<Link to={`/course_description?subject=${course.subject}&courseID=${course.courseID}`}
+            {courses.map((course, i) => (<div
                 className="w-full py-3 px-4 bg-gray-600 border-y border-gray-500 cursor-pointer" key={i}>
-                {course.subject} {course.courseID}: {course.name}
-            </Link>))}
+                <CourseLink courseID={course.courseID} subject={course.subject} useColor={false} />
+            </div>))}
             </div>
         </div>
         <div className="flex-grow">

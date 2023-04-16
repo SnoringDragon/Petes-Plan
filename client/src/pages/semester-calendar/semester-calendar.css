@@ -1,0 +1,43 @@
+.blockStyle {
+    height: 60px;
+    padding-right: 0.5em;
+    text-align: center;
+}
+
+.CourseStyle {
+    position: absolute;
+    left: 0px;
+    width: 95%;
+    border-top: 1px solid #000000;
+    border-right: 1px solid #000000;
+    border-left: 1px solid #000000;
+    border-bottom: 1px solid #000000;
+}
+
+.MajorGridStyle {
+    position: absolute;
+    left: 0px;
+    height: 60px;
+    width: 100%;
+    border-top: 1px solid #000000;
+    border-right: 1px solid #000000;
+    border-left: 1px solid #000000;
+}
+
+.MinorGridStyle {
+    position: absolute;
+    left: 0px;
+    height: 15px;
+    width: 100%;
+    border-top: 1px dotted #000000;
+}
+
+.dayStyle {
+    position: relative;
+    height: calc(100% - 48px);
+    border-bottom: 1px solid #000000;
+}
+
+.rad-4 {
+    border-radius: 4px;
+}

@@ -3,6 +3,7 @@ import { Button } from '@material-ui/core';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Grades } from '../../services/BoilerGradesService';
+import { CourseLink } from '../course-link/course-link';
 
 export function Boilergrades(props: { className?: string,
     isCourseLinks?: boolean,
@@ -42,9 +43,7 @@ export function Boilergrades(props: { className?: string,
                 return <div key={i} className="flex items-center border border-gray-500" onMouseOver={() => setShowDetails(i)}
                             onMouseOut={() => setShowDetails(-1)}>
                     <div className="w-72 pl-2 flex flex-col" >
-                        {props.isCourseLinks ? <Link  to={`/course_description?courseID=${courseID}&subject=${subject}`}>
-                            {title}
-                        </Link> : <span >{title}</span>}
+                        {props.isCourseLinks ? <CourseLink useColor={false} courseID={courseID} subject={subject} /> : <span >{title}</span>}
 
                         {isShowDetails === i && <span>
                             Average GPA: {gpa.toFixed(2)} ({Math.abs(diff).toFixed(2)} {diff > 0 ? 'above' : 'below'} average)

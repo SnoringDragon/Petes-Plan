@@ -135,7 +135,7 @@ export function Course_Description() {
             </div> : null}
             <div className="mt-5 underline">Prerequisities:</div>
             <p></p>
-            <Prerequisites prerequisites={course.requirements} userCourses={userCourses} />
+            <Prerequisites prerequisites={course.requirements} />
 
             <div className="mt-4 mb-2 flex items-center">
                 <span className="underline mr-4">Sections:</span>

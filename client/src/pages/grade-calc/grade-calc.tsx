@@ -2,6 +2,7 @@ import { Layout } from "../../components/layout/layout";
 import { useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button, Checkbox, TextField } from '@material-ui/core';
+import { CourseLink } from '../../components/course-link/course-link';
 
 export function GradeCalc() {
     const [grades, _setGrades] = useState<{
@@ -72,9 +73,7 @@ export function GradeCalc() {
         {grades.map((course, i) =>
             <div key={i} className="p-4 flex flex-col bg-gray-500 rounded-md bg-opacity-25 mb-4 text-white">
                 <div className="flex mb-4 items-center">
-                    <Link className="text-3xl" to={`/course_description?courseID=${course.course.courseID}&subject=${course.course.subject}`}>
-                        {course.course.subject} {course.course.courseID}
-                    </Link>
+                    <CourseLink courseID={course.course.courseID} subject={course.course.subject} className="text-3xl" useColor={false} />
 
                     <span className="ml-4 font-bold text-xl">Grade: {(calculateGrade(course) * 100).toFixed(2)}%</span>
 

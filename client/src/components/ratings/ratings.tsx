@@ -4,6 +4,7 @@ import RatingService from '../../services/RatingService';
 import { Box, Chip, CircularProgress, IconButton, MenuItem, OutlinedInput, Select, Tooltip } from '@material-ui/core';
 import { FaTimes, FaLaptop, FaChevronUp, FaChevronDown } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
+import { CourseLink } from '../course-link/course-link';
 
 function RatingSquare(props: {
     rating: number,
@@ -243,11 +244,12 @@ export function Ratings(props: RatingSearch & { filter?: string[] }) {
                             <FaLaptop className="w-5 h-5 -m-1.5 text-white" />
                         </IconButton>
                     </Tooltip>}
-                    {rating.course ? <Link className="text-lg" to={isCourse ? `/professor?id=${rating.instructor._id}&filter=${course._id}` :
-                        `/course_description?subject=${rating.course.subject}&courseID=${rating.course.courseID}&filter=${instructor._id}`}>{
-                        isCourse ? renderProfessor(rating.instructor):
-                            `${rating.course.subject} ${rating.course.courseID}`
-                    }</Link> : <span className="italic font-normal">No course found</span>}
+                    {rating.course ? (isCourse ?
+                            <Link className="text-lg" to={`/professor?id=${rating.instructor._id}&filter=${course._id}`}>
+                                {renderProfessor(rating.instructor)
+                                }</Link> :
+                            <CourseLink className="text-lg" courseID={rating.course.courseID} subject={rating.course.subject} useColor={false} filter={instructor._id} />)
+                        : <span className="italic font-normal">No course found</span>}
                     <span className="ml-auto">{
                         new Date(rating.createdAt).toLocaleDateString(undefined, { dateStyle: 'long' })
                     }</span>

@@ -65,7 +65,6 @@ async function semesterGPA(req, res, semesterInput, yearInput) {
 }
 
 async function concentrationGPA(req, res, major, concentrations) {
-    debugger;
     //cycle through all of user's concentrations, see which ones apply to major -- if it applies, add it to major GPA
     // let majorDoc = degreeModel.findOne({ name: major, type: 'major' });
     // majorDoc.exec(function (err) {
@@ -94,9 +93,10 @@ async function concentrationGPA(req, res, major, concentrations) {
         //if user is taking a concentration that applies to the current major
         if (major_concentrations_ids.includes(concentrations[i]._id.toString())) {
             const concentration = await degreeModel.findOne({ _id: concentrations[i] });
+            const courses = concentration.getCourses();
 
-            for (let i = 0; i < concentration.requirements.length; i++) {
-                const requirement = concentration.requirements[i];
+            for (let i = 0; i < courses.length; i++) {
+                const requirement = courses[i];
                 const course = req.user.completedCourses
                     .find(({ subject, courseID }) => subject === requirement.subject && courseID === requirement.courseID);
                 // let course = usercourseModel.findOne({ courseID: req.user.degreePlans.degrees[i].requirements[i].courseID });
@@ -122,7 +122,7 @@ async function majorGPA(req, res, majorDoc, concentrations) {
     uniqueCourses = new Map();
     //doesn't include concentration GPA
     // let majorDoc = await degreeModel.findOne({ name: major, type: 'major' }).exec();
-    let requirements = majorDoc.requirements; //series of requirements: Course objects
+    let requirements = majorDoc.getCourses(); //series of requirements: Course objects
     let userCourseModels = req.user.completedCourses;  //completed courses: UserCourse objects
     let majorCourses = [];
     let requirementIDs = [];

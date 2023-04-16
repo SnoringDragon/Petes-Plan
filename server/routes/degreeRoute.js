@@ -18,7 +18,7 @@ module.exports = app => {
             return res.json(null);
         }
 
-        return res.json(await Degree.findOne({ _id }));
+        return res.json(await Degree.findOne({ _id }).populate('concentrations'));
     });
 
     app.use('/api/degrees', router);

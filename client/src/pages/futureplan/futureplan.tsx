@@ -31,6 +31,7 @@ import { ApiProfessor } from '../../types/professor';
 import { Semester } from '../../types/semester';
 import SemesterService from '../../services/SemesterService';
 import GPAService from '../../services/GPAService';
+import { CourseLink } from '../../components/course-link/course-link';
 
 const renderSectionMenuItem = (section: Section, instructorFilter: string = '') => {
     if (instructorFilter && !section.meetings.some(m => m.instructors.some(i => i._id === instructorFilter)))
@@ -300,7 +301,7 @@ export function FuturePlan() {
                 <div className="border-x border-gray-500 bg-slate-500 rounded mt-4 w-full flex flex-col">
                     {courses.map((course, i) => (<div
                         className="w-full py-3 px-4 bg-gray-600 border-y border-gray-500 flex items-center" key={i}>
-                        <Link to={`/course_description?subject=${course.subject}&courseID=${course.courseID}`} className="mr-auto">{course.subject} {course.courseID}: {course.name}</Link>
+                        <CourseLink className="mr-auto" courseID={course.courseID} subject={course.subject} useColor={false} />
                         <Button color="inherit" onClick={() => {
                             setSemCourse(course);
                             setSem(true);
@@ -320,7 +321,7 @@ export function FuturePlan() {
                     </div>))}
                 </div>
             </div>
-            <div className="bg-white rounded px-4 pb-3 pt-4 text-black w-full">
+            <div className="bg-white rounded px-4 pb-3 pt-4 text-black w-full overflow-auto h-96">
                 <div className="text-2xl">Degrees</div>
                 <TextField
                     fullWidth
@@ -330,9 +331,10 @@ export function FuturePlan() {
                     value={degreeSearch}
                     onChange={ev => setDegreeSearch(ev.target.value)}
                 />
+                
                 {degrees.filter(d => d.name.toLowerCase().includes(degreeSearch.toLowerCase()))
                     .map((degree, i) => (<div key={i} className="my-2 flex">
-                        <Link to={`/major_requirements?id=${degree._id}`} className="mr-auto">{degree.type[0].toUpperCase()}{degree.type.slice(1)} in {degree.name}</Link>
+                        <Link to={`/major_requirements?id=${degree._id}`} className="mr-auto">{degree.name}</Link>
                         <Button variant="contained" color="secondary" onClick={() => {
                             setDegreeModifications({
                                 ...degreeModifications,
@@ -398,9 +400,7 @@ export function FuturePlan() {
                                     <AccordionDetails className="flex flex-col">
                                     {courses.map(({ course, isNew }, j) => (<div key={j} className="flex items-center py-2 border-b border-gray-300">
                             <div className="flex flex-col">
-                                <Link to={`/course_description?subject=${course.subject}&courseID=${course.courseID}`}>
-                                    {course.subject} {course.courseID}
-                                </Link>
+                                <CourseLink courseID={course.courseID} subject={course.subject} useColor={false} />
 
                                 <div>{course.section?.name} ({course.section?.sectionID})</div>
                                 <div>Instructors: {(() => {
