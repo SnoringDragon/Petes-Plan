@@ -44,6 +44,7 @@ export function Course_Description() {
     const [boilergrades, setBoilergrades] = useState<Boilergrade[]>([]);
 
     const [viewReviews, setViewReviews] = useState(false);
+    const [makeReviews, setMakeReviews] = useState(false);
 
     useEffect(() => {
         CourseHistoryService.getCourses()
@@ -114,6 +115,23 @@ export function Course_Description() {
             </DialogContent>
             <DialogActions>
                 <Button onClick={() => setViewReviews(false)}>Close</Button>
+            </DialogActions>
+        </Dialog>
+        <Dialog open={makeReviews} onClose={() => setMakeReviews(false)}>
+            <DialogTitle>Make a Review</DialogTitle>    
+            <DialogContent>
+                <div>Making a review goes here</div>
+                <TextField
+                    autoFocus
+                    margin="dense"
+                    label="Review"
+                    fullWidth
+                    variant="standard"
+                    inputRef={}
+                />
+            </DialogContent>
+            <DialogActions>
+                <Button onClick={() => setMakeReviews(false)}>Close</Button>
             </DialogActions>
         </Dialog>
         <div className="w-full h-full flex flex-col items-center">
