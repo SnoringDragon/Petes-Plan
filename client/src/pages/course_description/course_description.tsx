@@ -211,6 +211,17 @@ export function Course_Description() {
 
             <div className="mt-5 underline">Reviews:</div>
             <Ratings courseID={course.courseID} subject={course.subject} filter={searchParams.get('filter')?.split(',') ?? []} />
+            <div></div>
+            <Button
+            variant="contained"
+            size="large"
+            color="primary"
+            className="w-full h-6"
+            onClick={() => {
+                setViewReviews(true);
+            }}>
+            Do you want to view the reviews? Click Here.
+        </Button>
         </div>
     </div></Layout>)
 }
