@@ -66,7 +66,7 @@ export function Professor_Page() {
                 <div>Reviews Go Here</div>
             </DialogContent>
             <DialogActions>
-                <Button onClick={() => setSem(false)}>Close</Button>
+                <Button onClick={() => setViewReviews(false)}>Close</Button>
             </DialogActions>
         </Dialog>
         <Dialog open={makeReviews} onClose={() => setMakeReviews(false)}>

@@ -43,6 +43,8 @@ export function Course_Description() {
     const [semesters, setSemesters] = useState<Semester[]>([]);
     const [boilergrades, setBoilergrades] = useState<Boilergrade[]>([]);
 
+    const [viewReviews, setViewReviews] = useState(false);
+
     useEffect(() => {
         CourseHistoryService.getCourses()
             .then(res => setUserCourses(res.courses));
@@ -104,7 +106,9 @@ export function Course_Description() {
     const bgdata = BoilerGradesService.reduceBoilergrades(boilergrades, 'instructor');
 
     console.log(course)
-    return (<Layout><div className="w-full h-full flex flex-col items-center">
+    return (<Layout>
+
+        <div className="w-full h-full flex flex-col items-center">
         <header className="text-center text-white text-3xl mt-4 w-full">
             <div className="float-left ml-2 text-2xl cursor-pointer" onClick={() => navigate(-1)}>
                 <FaArrowLeft />
