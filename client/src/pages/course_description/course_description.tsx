@@ -240,6 +240,16 @@ export function Course_Description() {
             }}>
             Do you want to view the reviews? Click Here.
         </Button>
+        <Button
+            variant="contained"
+            size="large"
+            color="primary"
+            className="w-full h-6"
+            onClick={() => {
+                setSem(true);
+            }}>
+            Do you want to make a reviews? Click Here.
+        </Button>
         </div>
     </div></Layout>)
 }
