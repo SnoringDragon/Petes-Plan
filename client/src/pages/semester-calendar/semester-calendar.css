@@ -1,6 +1,17 @@
 .blockStyle {
     height: 60px;
-    padding-bottom: -1px;
+    padding-right: 0.5em;
+    text-align: center;
+}
+
+.CourseStyle {
+    position: absolute;
+    left: 0px;
+    width: 95%;
+    border-top: 1px solid #000000;
+    border-right: 1px solid #000000;
+    border-left: 1px solid #000000;
+    border-bottom: 1px solid #000000;
 }
 
 .MajorGridStyle {
