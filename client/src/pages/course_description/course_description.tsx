@@ -107,7 +107,15 @@ export function Course_Description() {
 
     console.log(course)
     return (<Layout>
-
+        <Dialog open={viewReviews} onClose={() => setViewReviews(false)}>
+            <DialogTitle>Reviews</DialogTitle>    
+            <DialogContent>
+                <div>Reviews Go Here</div>
+            </DialogContent>
+            <DialogActions>
+                <Button onClick={() => setViewReviews(false)}>Close</Button>
+            </DialogActions>
+        </Dialog>
         <div className="w-full h-full flex flex-col items-center">
         <header className="text-center text-white text-3xl mt-4 w-full">
             <div className="float-left ml-2 text-2xl cursor-pointer" onClick={() => navigate(-1)}>
