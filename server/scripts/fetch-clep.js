@@ -1,19 +1,30 @@
 const mongoose = require('mongoose');
 
+//get Table of CLEP Credit
+//table.getElementsByTagName('table-responsive')
 function getClepData() {
-    document.getElementById('info').innerHTML = "https://www.admissions.purdue.edu/transfercredit/clep.php?_ga=2.156040763.1830545689.1680885941-405777200.1660331919";
-        var table = document.getElementById('empTable');
+    //gets table
+    fetch('https://api.codetabs.com/v1/proxy?quest=google.com').then((response) => response.text()).then((text) => console.log(text));
 
-        // LOOP THROUGH EACH ROW OF THE TABLE AFTER HEADER.
-        for (i = 1; i < table.rows.length; i++) {
+    var oTable = document.getElementById('myTable');
 
-            // GET THE CELLS COLLECTION OF THE CURRENT ROW.
-            var tests = table.rows.item(i).cells;
+    //gets rows of table   
+    var rowLength = oTable.rows.length;
 
-            // LOOP THROUGH EACH CELL OF THE CURENT ROW TO READ CELL VALUES.
-            for (var j = 0; j < tests.length; j++) {
-                //save to database
-            }
-            info.innerHTML = info.innerHTML + '<br />';     // ADD A BREAK (TAG).
-        }
+    //loops through rows    
+    for (i = 0; i < rowLength; i++){
+
+    //gets cells of current row  
+   var oCells = oTable.rows.item(i).cells;
+
+   //gets amount of cells of current row
+   var cellLength = oCells.length;
+
+   //loops through each cell in current row
+    for(var j = 0; j < cellLength; j++){
+      // get your cell info here
+      var cellVal = oCells.item(j).innerHTML;
+      console.log(cellVal);
+   }
+}
 }
