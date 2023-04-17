@@ -283,16 +283,32 @@ export function FuturePlan() {
                     </div>
 
                 </div>
+
                 <div className="bg-white rounded px-4 pb-3 pt-4 text-black w-full overflow-auto h-96">
                 <div className="text-2xl">Course Recommendations</div>
                 
-                {degrees.filter(d => d.name.toLowerCase().includes(degreeSearch.toLowerCase()))
-                    .map((degree, i) => (<div key={i} className="my-2 flex">
-                        <Link to={`/major_requirements?id=${degree._id}`} className="mr-auto">{degree.type[0].toUpperCase()}{degree.type.slice(1)} in {degree.name}</Link>
-                        <Button variant="contained" color="secondary" onClick={() => {
+                {courses.map((course, i) => (<div
+                        className="w-full py-3 px-4 border-y flex items-center" key={i}>
+                        <Link to={`/course_description?subject=${course.subject}&courseID=${course.courseID}`} className="mr-auto">{course.subject} {course.courseID}: {course.name}</Link>
+                        <Button color="inherit" onClick={() => {
+                            setSemCourse(course);
+                            setSem(true);
+                            setInstructorFilter('');
+                            setSection([]);
+                            // setCourseModifications({
+                            //     ...courseModifications,
+                            //     add: [...courseModifications.add, {
+                            //         subject: course.subject,
+                            //         courseID: course.courseID,
+                            //         semester: 'Spring',
+                            //         grade: 'A',
+                            //         year: 2022
+                            //     }]
+                            // });
                         }}>Add</Button>
                     </div>))}
                 </div>
+
                 <div className="bg-white rounded px-4 pb-3 mt-4 pt-4 text-black w-full">
                     <div className="text-2xl">Search Courses</div>
                     <div className="flex items-center">
