@@ -35,3 +35,5 @@ async function getReviewsByCourse(in_courseSubject, in_courseID) {
     ret_reviews+="]}"
     return ret_reviews;
 }
+
+module.exports = saveReviews, getReviewsByProfessor, getReviewsByCourse;
