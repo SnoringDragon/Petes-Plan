@@ -96,7 +96,7 @@ export function FuturePlan() {
     };
     
     const recc = () => {
-        DegreePlanService.getRecommendations(degreePlan!._id).then(res =>{setRecs(res.recs)});
+        //DegreePlanService.getRecommendations(degreePlan!._id).then(res =>{setRecs(res.recs)});
     }
 
     const save = async () => {
