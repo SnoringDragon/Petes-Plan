@@ -76,6 +76,8 @@ export function FuturePlan() {
     const [selectedGpaSemester, setSelectedGpaSemester] = useState('');
 
     const [degreeSearch, setDegreeSearch] = useState('');
+    
+    const [recs, setRecs] = useState<{uniqueID: string, courseID: string, subject: string}[] | null>(null);
 
     const [courseModifications, setCourseModifications] = useState<{
         add: UserCourse[],
@@ -92,6 +94,10 @@ export function FuturePlan() {
         CourseService.searchCourse(searchRef.current.value)
             .then(res => setCourses(res));
     };
+    
+    const recc = () => {
+        DegreePlanService.getRecommendations(degreePlan!._id).then(res =>{setRecs(res.recs)});
+    }
 
     const save = async () => {
         try {
@@ -122,6 +128,7 @@ export function FuturePlan() {
             if (res.degreePlans.length)
                 setDegreePlan(res.degreePlans[0]);
         });
+        
         SemesterService.getSemesters().then(res => setSemesters(res));
         GPAService.getCumulativeGPA().then(res => setCumulativeGpa(res));
     }, []);
@@ -286,25 +293,17 @@ export function FuturePlan() {
 
                 <div className="bg-white rounded px-4 pb-3 pt-4 text-black w-full overflow-auto h-96">
                 <div className="text-2xl">Course Recommendations</div>
+
+                <Button variant="contained" color="secondary" onClick={recc}>Generate Reccomendations</Button>
                 
-                {courses.map((course, i) => (<div
+                {recs?.map((rec, i) => (<div
                         className="w-full py-3 px-4 border-y flex items-center" key={i}>
-                        <Link to={`/course_description?subject=${course.subject}&courseID=${course.courseID}`} className="mr-auto">{course.subject} {course.courseID}: {course.name}</Link>
+                        <Link to={`/course_description?subject=${rec.subject}&courseID=${rec.courseID}`} className="mr-auto">{rec.subject} {rec.courseID}</Link>
                         <Button color="inherit" onClick={() => {
-                            setSemCourse(course);
-                            setSem(true);
-                            setInstructorFilter('');
-                            setSection([]);
-                            // setCourseModifications({
-                            //     ...courseModifications,
-                            //     add: [...courseModifications.add, {
-                            //         subject: course.subject,
-                            //         courseID: course.courseID,
-                            //         semester: 'Spring',
-                            //         grade: 'A',
-                            //         year: 2022
-                            //     }]
-                            // });
+                            // setSemCourse(rec);
+                            // setSem(true);
+                            // setInstructorFilter('');
+                            // setSection([]);
                         }}>Add</Button>
                     </div>))}
                 </div>
