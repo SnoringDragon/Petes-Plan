@@ -13,15 +13,13 @@ async function getReviewsByProfessor(instructor_fname, instructor_lname) {
     let reviews = await ratingModel.find({ instructor: instructor_ret});
     reviews = res.json(reviews);
     //process reviews
-    let ret_reviews = []
-    for (let i = 0; i < reviews.length; i ++) {
-        let ret_review = []
-        ret_review.push(reviews[i].dateSubmitted)
-        ret_review.push(reviews[i].course.subject + " " + reviews[i].course.courseId);
-        ret_review.push(instructor_fname);
-        ret_review.push(instructor_lname);
+    let ret_reviews = "{ \"reviews\" : [";
+    for (let i = 0; i < reviews.length; i++) {
+        ret_reviews += JSON.stringify(reviews[i]);
+        ret_reviews += ","
     }
-    let retArray = [reviews]
+    ret_reviews+="]}"
+    return ret_reviews;
 }
 
 async function getReviewsByCourse(in_courseSubject, in_courseID) {
