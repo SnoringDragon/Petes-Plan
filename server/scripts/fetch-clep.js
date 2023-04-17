@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 //table.getElementsByTagName('table-responsive')
 function getClepData() {
     //gets table
-    fetch('https://api.codetabs.com/v1/proxy?quest=google.com').then((response) => response.text()).then((text) => console.log(text));
+    fetch('https://www.admissions.purdue.edu/transfercredit/clep.php?_ga=2.156040763.1830545689.1680885941-405777200.1660331919').then((response) => response.text()).then((text) => console.log(text));
 
     var oTable = document.getElementById('myTable');
 
