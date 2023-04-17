@@ -159,16 +159,8 @@ export function ClassHistory() {
             <DialogActions>
                 <Button onClick={() => setSem(false)}>Cancel</Button>
                 <Button onClick={() => {
-                    const modifications = {...courseModifications};
-                    modifications.add = [...modifications.add, {
-                        subject: semCourse!.subject,
-                            courseID: semCourse!.courseID,
-                            semester: selectedSem,
-                            grade: gradeRef.current.value,
-                            year: parseInt(yearRef.current.value)
-                    }];
-                    setCourseModifications(modifications);
-                    setSem(false);
+                   setSemCourse(course!);
+                   setSem(true);
                     //TODO Update Integration 
                 }}>Override</Button>
             </DialogActions>
@@ -247,8 +239,12 @@ export function ClassHistory() {
                                         color="primary"
                                         className="w-full h-6"
                                         onClick={() => {
+                                            if (showWarning) {
+                                                setWarning(true);
+                                            } else {
                                             setSemCourse(course);
                                             setSem(true);
+                                            }
                                         }}>
                                         Add to History
                                     </Button>
