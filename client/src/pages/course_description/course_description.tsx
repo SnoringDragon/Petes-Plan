@@ -139,7 +139,36 @@ export function Course_Description() {
         </Dialog>
         <Dialog open={makeReviews} onClose={() => setMakeReviews(false)}>
             <DialogTitle>Make a Review</DialogTitle>    
-            
+            <DialogContent>
+                <TextField
+                    autoFocus
+                    margin="dense"
+                    label="Professor"
+                    fullWidth
+                    variant="standard"
+                />
+                <TextField
+                    autoFocus
+                    margin="dense"
+                    label="Rating"
+                    fullWidth
+                    variant="standard"
+                />
+                <TextField multiline={true}
+                    autoFocus
+                    margin="dense"
+                    label="Comment"
+                    fullWidth
+                    variant="standard"
+                />
+                <TextField
+                    autoFocus
+                    margin="dense"
+                    label="Grade"
+                    fullWidth
+                    variant="standard"
+                />
+            </DialogContent>
             <DialogActions>
                 <Button onClick={() => setMakeReviews(false)}>Close</Button>
             </DialogActions>
