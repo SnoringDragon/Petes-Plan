@@ -20,7 +20,8 @@ import {
     FormControl,
     InputLabel,
     MenuItem,
-    Select
+    Select,
+    TextField
 } from '@material-ui/core';
 import { Instructor } from '../instructor/instructor';
 import { Semester } from '../../types/semester';
@@ -111,7 +112,26 @@ export function Course_Description() {
         <Dialog open={viewReviews} onClose={() => setViewReviews(false)}>
             <DialogTitle>Reviews</DialogTitle>    
             <DialogContent>
-                <div>Reviews Go Here</div>
+                <Button
+                    variant="contained"
+                    size="large"
+                    color="primary"
+                    className="w-full h-6"
+                    onClick={() => {
+                        setMakeReviews(true);
+                    }}>
+                    Do you want to make a reviews? Click Here.
+                </Button>
+                <div>
+                    Reviews Go Here
+                </div>
+                {course.reviews?.map(review => <span>Professor: {review.professor}<br />
+                                                    User email: {review.email}<br />
+                                                    Date: {review.dateSubmitted}<br />
+                                                    Rating: {review.rating}<br />
+                                                    {review.comment}<br />
+                                                    Grade: {review.grade}<br />
+                                                    Is attendence mandatory? {review.attendanceReq}<br /></span>)}
             </DialogContent>
             <DialogActions>
                 <Button onClick={() => setViewReviews(false)}>Close</Button>
@@ -119,9 +139,7 @@ export function Course_Description() {
         </Dialog>
         <Dialog open={makeReviews} onClose={() => setMakeReviews(false)}>
             <DialogTitle>Make a Review</DialogTitle>    
-            <DialogContent>
-                <div>Making a review goes here</div>
-            </DialogContent>
+            
             <DialogActions>
                 <Button onClick={() => setMakeReviews(false)}>Close</Button>
             </DialogActions>
@@ -231,16 +249,6 @@ export function Course_Description() {
                 setViewReviews(true);
             }}>
             Do you want to view the reviews? Click Here.
-        </Button>
-        <Button
-            variant="contained"
-            size="large"
-            color="primary"
-            className="w-full h-6"
-            onClick={() => {
-                setMakeReviews(true);
-            }}>
-            Do you want to make a reviews? Click Here.
         </Button>
         </div>
     </div></Layout>)
