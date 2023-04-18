@@ -43,6 +43,15 @@ export interface ApiCourse {
         semester: string,
         year: number,
         term: string
+    }[],
+    reviews: {
+        email: string,
+        dateSubmitted: string,
+        professor: string
+        attendanceReq: boolean,
+        rating: number,
+        comment: string,
+        grade: string
     }[]
 }
 
