@@ -9,6 +9,7 @@ import { Ratings } from '../../components/ratings/ratings';
 import { Boilergrades } from '../../components/boilergrades/boilergrades';
 import { Boilergrade } from '../../types/boilergrades';
 import BoilerGradesService from '../../services/BoilerGradesService';
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField } from '@material-ui/core';
 
 export function Professor_Page() {
     const [searchParams] = useSearchParams();
@@ -63,7 +64,26 @@ export function Professor_Page() {
         <Dialog open={viewReviews} onClose={() => setViewReviews(false)}>
             <DialogTitle>Reviews</DialogTitle>    
             <DialogContent>
-                <div>Reviews Go Here</div>
+                <Button
+                    variant="contained"
+                    size="large"
+                    color="primary"
+                    className="w-full h-6"
+                    onClick={() => {
+                        setMakeReviews(true);
+                    }}>
+                    Do you want to make a reviews? Click Here.
+                </Button>
+                <div>
+                    Reviews Go Here
+                </div>
+                {professor.reviews.map(review => <span>Course: {review.course}<br />
+                                                    User email: {review.email}<br />
+                                                    Date: {review.dateSubmitted}<br />
+                                                    Rating: {review.rating}<br />
+                                                    {review.comment}<br />
+                                                    Grade: {review.grade}<br />
+                                                    Is attendence mandatory? {review.attendanceReq}</span>)}
             </DialogContent>
             <DialogActions>
                 <Button onClick={() => setViewReviews(false)}>Close</Button>
@@ -79,7 +99,6 @@ export function Professor_Page() {
                     label="Review"
                     fullWidth
                     variant="standard"
-                    inputRef={}
                 />
             </DialogContent>
             <DialogActions>
@@ -125,16 +144,6 @@ export function Professor_Page() {
                 setViewReviews(true);
             }}>
             Do you want to view the reviews? Click Here.
-        </Button>
-        <Button
-            variant="contained"
-            size="large"
-            color="primary"
-            className="w-full h-6"
-            onClick={() => {
-                setMakeReviews(true);
-            }}>
-            Do you want to make a reviews? Click Here.
         </Button>
     </div></Layout>)
 }
