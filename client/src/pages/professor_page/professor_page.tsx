@@ -77,13 +77,13 @@ export function Professor_Page() {
                 <div>
                     Reviews Go Here
                 </div>
-                {professor.reviews.map(review => <span>Course: {review.course}<br />
+                {professor.reviews?.map(review => <span>Course: {review.course}<br />
                                                     User email: {review.email}<br />
                                                     Date: {review.dateSubmitted}<br />
                                                     Rating: {review.rating}<br />
                                                     {review.comment}<br />
                                                     Grade: {review.grade}<br />
-                                                    Is attendence mandatory? {review.attendanceReq}</span>)}
+                                                    Is attendence mandatory? {review.attendanceReq}<br /></span>)}
             </DialogContent>
             <DialogActions>
                 <Button onClick={() => setViewReviews(false)}>Close</Button>
@@ -92,11 +92,31 @@ export function Professor_Page() {
         <Dialog open={makeReviews} onClose={() => setMakeReviews(false)}>
             <DialogTitle>Make a Review</DialogTitle>    
             <DialogContent>
-                <div>Making a review goes here</div>
                 <TextField
                     autoFocus
                     margin="dense"
-                    label="Review"
+                    label="Course"
+                    fullWidth
+                    variant="standard"
+                />
+                <TextField
+                    autoFocus
+                    margin="dense"
+                    label="Rating"
+                    fullWidth
+                    variant="standard"
+                />
+                <TextField multiline={true}
+                    autoFocus
+                    margin="dense"
+                    label="Comment"
+                    fullWidth
+                    variant="standard"
+                />
+                <TextField
+                    autoFocus
+                    margin="dense"
+                    label="Grade"
                     fullWidth
                     variant="standard"
                 />
