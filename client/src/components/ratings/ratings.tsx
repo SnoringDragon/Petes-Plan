@@ -75,6 +75,8 @@ function TagList(props: { tags: string[], className?: string }) {
 const isRateMyProfessor = (rating: Rating): rating is RateMyProfRating => rating.type === 'ratemyprofessor';
 
 const renderProfessor = (instructor: BaseRating['instructor']) => {
+    if (!instructor) return '';
+
     if (instructor.nickname)
         return `${instructor.firstname} (${instructor.nickname}) ${instructor.lastname}`;
     return `${instructor.firstname} ${instructor.lastname}`;
@@ -126,6 +128,10 @@ export function Ratings(props: RatingSearch & { filter?: string[] }) {
         data = ratings.data.filter(rating => {
             return filter.includes(isCourse ? rating.instructor._id : rating.course?._id ?? '');
         });
+
+        if (!data.length)
+            setFilter([]);
+
         avgQuality = data.reduce((t, x) => t + x.quality, 0) / data.length;
         avgDifficulty = data.reduce((t, x) => t + x.difficulty, 0) / data.length;
         count = data.length;

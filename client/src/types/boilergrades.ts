@@ -1,62 +1,13 @@
-export const BOILERGRADE_QUALITY_POINTS = {
-    "a": 4,
-    "a_minus": 3.7,
-    "a_plus": 4,
-    "b": 3,
-    "b_minus": 2.7,
-    "b_plus": 3.3,
-    "c": 2,
-    "c_minus": 1.7,
-    "c_plus": 2.3,
-    "d": 1,
-    "d_minus": 0.7,
-    "d_plus": 1.3,
-    "e": 0,
-    "f": 0,
-    "i_f": 0,
-} as const;
-
-export const BOILERGRADES_GRADES = {
-    "a": "A",
-    "a_minus": "A-",
-    "a_plus": "A+",
-    "au": "AU",
-    "b": "B",
-    "b_minus": "B-",
-    "b_plus": "B+",
-    "c": "C",
-    "c_minus": "C-",
-    "c_plus": "C+",
-    "d": "D",
-    "d_minus": "D-",
-    "d_plus": "D+",
-    "e": "E",
-    "f": "F",
-    // "fn": "FN",
-    "i": "I",
-    "i_f": "IF",
-    "n": "N",
-    "ns": "NS",
-    "p": "P",
-    "p_i": "PI",
-    "s": "S",
-    "s_i": "SI",
-    "u": "U",
-    "w": "W",
-    "w_f": "WF",
-    "w_n": "WN",
-    "w_u": "WU",
-} as const;
+import { ApiProfessor } from './professor';
+import { ApiCourse, Section } from './course-requirements';
+import { Semester } from './semester';
 
 export type Boilergrade = {
-    id: number,
-    subject: string,
-    subject_desc: string,
-    course_num: number,
-    title: string,
-    academic_period: string,
-    academic_period_desc: string,
-    section: string,
-    crn: number,
-    instructor: string,
-} & { [key in keyof typeof BOILERGRADES_GRADES]: string | null };
+    _id: string,
+    instructor: ApiProfessor,
+    section: Section,
+    course: ApiCourse,
+    semester: Semester,
+    gpa: [number, number][] | null,
+    grades: [string, number][]
+};

@@ -4,11 +4,9 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { ApiProfessor } from '../../types/professor';
 import { FaArrowLeft } from 'react-icons/fa';
 import ProfessorService from '../../services/ProfessorService';
-import { Link } from 'react-router-dom';
 import { Ratings } from '../../components/ratings/ratings';
 import { Boilergrades } from '../../components/boilergrades/boilergrades';
 import { Boilergrade } from '../../types/boilergrades';
-import BoilerGradesService from '../../services/BoilerGradesService';
 
 export function Professor_Page() {
     const [searchParams] = useSearchParams();
@@ -31,12 +29,6 @@ export function Professor_Page() {
                     return;
                 }
                 setProfessor(res);
-
-                const first = res.firstname.replace(/([A-Z])$/g, '$1.');
-                const last = res.lastname;
-
-                BoilerGradesService.getInstructor({ first, last })
-                    .then(res => setBoilergrades(res));
             })
             .catch(err => {
                 setError(err?.message ?? err);
@@ -52,8 +44,6 @@ export function Professor_Page() {
             <a className="text-sm mt-2 cursor-pointer" onClick={() => navigate(-1)}>Go back</a>
         </>}
     </div></Layout>)
-
-    const bgdata = BoilerGradesService.reduceBoilergrades(boilergrades, 'course');
 
     return (<Layout><div className="w-full h-full flex flex-col items-center">
         <header className="text-center text-white text-3xl mt-4 w-full">
@@ -81,7 +71,7 @@ export function Professor_Page() {
             </div> : null}
         </div>
 
-        <Boilergrades isCourseLinks={true} data={bgdata} className="w-full mb-4"  />
+        <Boilergrades instructor={professor._id} className="w-full mb-4"  />
 
         <Ratings instructor={professor._id} filter={searchParams.get('filter')?.split(',') ?? []} />
     </div></Layout>)
