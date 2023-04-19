@@ -8,6 +8,7 @@ import DegreePlanService from "../../services/DegreePlanService";
 import { UserCourse } from "../../types/user-course";
 import "./semester-calendar.css";
 import { Meeting } from "../../types/course-requirements";
+import { Link } from "react-router-dom";
 
 export function SemesterCalendar() {
     const [selectedSem, setSem] = useState<string>((): string => {
@@ -205,13 +206,20 @@ export function SemesterCalendar() {
                                 onMouseOver={() => {setHoveredMeeting(course._id+j+day);}}
                                 onMouseOut={() => {setHoveredMeeting(undefined);}}
                             >
-                                <p className="courseName">{course.courseData.subject+" "+course.courseData.courseID+": "+course.courseData.name}</p>
+                                <Link to={`/course_description?subject=${course.subject}&courseID=${course.courseID}`}>
+                                    <p className="courseName">{course.subject+" "+course.courseID+": "+course.courseData.name}</p>
+                                </Link>
                                 <p className="courseDetails">{meeting.location}</p>
                                 <p className="courseDetails">{getInstructorName(meeting)}</p>
                                 <p className="courseDetails">{meeting.startTime+"-"+meeting.endTime}</p>
                                 <p className="courseDetails">{meeting.startDate+"-"+meeting.endDate}</p>
                             </div>
-                            <div className="tooltip" style={{display: hoveredMeeting === course._id+j+day ? 'flex' : 'none', top: top+"px"}}>
+                            <div className="tooltip" style={{
+                                display: hoveredMeeting === course._id+j+day ? 'flex' : 'none', 
+                                top: top+"px",
+                                left: day < 4 ? "100%" : "",
+                                right: day < 4 ? "" : "100%"
+                            }}>
                                 <p className="courseName">{course.courseData.subject+" "+course.courseData.courseID+": "+course.courseData.name}</p>
                                 <p className="courseName">{meeting.location}</p>
                                 <p className="courseName">{getInstructorName(meeting)}</p>
