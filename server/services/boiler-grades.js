@@ -44,7 +44,7 @@ function getBGCourse({ courseID, subject }) {
 }
 
 const getBGSubject = async (subject) => {
-    return (await (await fetch).default('https://boilergrades.com/api/grades?subject=' + subject)).json
+    return (await (await fetch).default('https://boilergrades.com/api/grades?subject=' + subject)).json()
 }
 
 // Instruc Ex: console.log("inside, ", getBGInstructor(fName = "Sula", mName = null, lName = "Lee"));
