@@ -13,7 +13,9 @@ class ScheduledTask extends EventEmitter {
 
     #logLines = [];
 
-    constructor({ taskfunc, args, model, dependencies }) {
+    #lastSave = null;
+
+    constructor({ taskfunc, args, model, dependencies, defaultSchedule }) {
         super();
 
         this.#taskfunc = taskfunc;
@@ -23,7 +25,11 @@ class ScheduledTask extends EventEmitter {
         this.#abort = null;
         this.#lastSchedule = null;
 
-        this.reschedule(model.scheduledAt);
+        this.reschedule(model.scheduledAt)
+            .catch(err => {
+                console.log('failed to schedule task', model.name, 'with time', model.scheduleRepeat, 'using default of', defaultSchedule, err);
+                return this.reschedule(defaultSchedule);
+            });
 
         dependencies.forEach(d => d.on('status', () => {
             if (this.status === 'deferred' && dependencies.every(d => d.status === 'successful'))
@@ -34,7 +40,14 @@ class ScheduledTask extends EventEmitter {
     #setStatus(status) {
         this.model.status = status;
         this.emit('status', status);
-        this.model.save();
+        this.#save();
+    }
+
+    #save() {
+        clearTimeout(this.#lastSave)
+        this.#lastSave = setTimeout(() => {
+            this.model.save();
+        }, 100);
     }
 
     async reschedule(time) {
@@ -59,7 +72,7 @@ class ScheduledTask extends EventEmitter {
             if (type === 'undefined')
                 return 'undefined';
             if (type === 'object') {
-                if (a?.toString !== Object.prototype.toString) // custom toString
+                if (a !== null && a?.toString !== Object.prototype.toString) // custom toString
                     return a.toString();
                 return JSON.stringify(a, null, 2);
             }
@@ -108,6 +121,7 @@ class ScheduledTask extends EventEmitter {
             .catch(err => {
                 if (this.status !== 'aborted')
                     this.#setStatus('errored');
+                console.error('task errored:', err);
             });
     }
 
@@ -122,9 +136,9 @@ class ScheduledTask extends EventEmitter {
         return this.model.status;
     }
 
-    static async create({ taskfunc, name, args = {}, dependencies = [] }) {
-        const model = await ScheduledTaskModel.findOneAndUpdate({ name }, {}, { upsert: true, new: true });
-        return new ScheduledTask({ taskfunc, args, model, dependencies });
+    static async create({ taskfunc, name, args = {}, dependencies = [], defaultSchedule }) {
+        const model = await ScheduledTaskModel.findOneAndUpdate({ name }, { $setOnInsert: { scheduledAt: defaultSchedule } }, { upsert: true, new: true });
+        return new ScheduledTask({ taskfunc, args, model, dependencies, defaultSchedule });
     }
 
     toJSON() {
