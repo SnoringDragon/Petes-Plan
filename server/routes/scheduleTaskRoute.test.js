@@ -107,12 +107,12 @@ describe('Scheduled Tasks', () => {
         await request(getApp()).post('/api/admin/scheduled-task/reschedule')
             .send({
                 id: t.model._id.toString(),
-                time: '5 AM',
+                time: '* * * * *',
             })
             .set('Authorization', `Bearer ${adminToken}`)
             .expect(200)
 
-        expect(t.model.scheduledAt).toBe('5 AM')
+        expect(t.model.scheduledAt).toBe('* * * * *')
     })
 
     it('should not reschedule given invalid time', async () => {

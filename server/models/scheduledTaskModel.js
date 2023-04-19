@@ -15,7 +15,7 @@ const scheduledTaskSchema = new mongoose.Schema({
     scheduledAt: {
         type: String,
         required: true,
-        default: '4 AM'
+        default: '0 4 * * *'
     }
 });
 

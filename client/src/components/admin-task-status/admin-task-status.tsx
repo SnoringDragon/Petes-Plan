@@ -1,8 +1,10 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import ScheduledTaskService from '../../services/ScheduledTaskService';
 import { ScheduledTask } from '../../types/scheduled-task';
-import { Button, CircularProgress, IconButton, TextField, Tooltip } from '@material-ui/core';
-import { FaCheck, FaExclamationCircle, FaQuestion, FaTimes, FaForward, FaSave } from 'react-icons/fa';
+import { Button, CircularProgress, IconButton, Modal, TextField, Tooltip } from '@material-ui/core';
+import { FaCheck, FaExclamationCircle, FaQuestion, FaTimes, FaForward, FaSave, FaInfoCircle } from 'react-icons/fa';
+import Cron from 'react-js-cron';
+import cronParser from 'cron-parser';
 
 type Messages = {
     initial: ScheduledTask[],
@@ -15,21 +17,30 @@ type Payload<T extends keyof Messages> = {
     data: Messages[T]
 };
 
+const tryParse = (s: string | null | undefined) => {
+    if (s === null || s === undefined) return null;
+    try {
+        return cronParser.parseExpression(s).next().toDate();
+    } catch {
+        return null;
+    }
+};
+
 export function AdminTaskStatus() {
     const [tasks, setTasks] = useState<Messages['initial']>([]);
     const [log, setLog] = useState<string[]>([]);
     const [disabledButtons, setDisabledButtons] = useState<boolean[]>([]);
     const [errors, setErrors] = useState<string[]>([]);
     const [showLog, setShowLog] = useState(false);
+    const [cronError, setCronError] = useState('');
+    const [rescheduleTask, setRescheduledTask] = useState<ScheduledTask | null>(null);
 
     const timeRefs = useRef<({ value: string } | null)[]>([]);
-    const [modifiedTimes, setModifiedTimes] = useState<boolean[]>([]);
 
     const handleInitial = useCallback((payload: Payload<'initial'>) => {
         setTasks(payload.data);
         setLog(payload.data.flatMap(x => x.log));
         setDisabledButtons([...new Array(payload.data.length)].map(() => false));
-        setModifiedTimes([...new Array(payload.data.length)].map(() => false));
         setErrors([...new Array(payload.data.length)].map(() => ''));
     }, []);
 
@@ -89,6 +100,66 @@ export function AdminTaskStatus() {
         setErrors(errors.map((e, j) => i === j ? state : e));
 
     return (<div className="p-4 bg-opacity-25 bg-gray-500  rounded-md">
+        <Modal open={rescheduleTask !== null} onClose={() => setRescheduledTask(null)}>
+            <div className="w-full h-full flex" onClick={() => setRescheduledTask(null)}>
+                <div className="w-3/4 h-1/2 m-auto bg-gray-100 rounded-lg text-slate-900 z-50 flex flex-col p-4" onClick={ev => ev.stopPropagation()}>
+                    <div className="text-lg mb-2">Set Schedule:</div>
+                    <Cron className="ml-2" value={rescheduleTask?.scheduledAt ?? ''}
+                          shortcuts defaultPeriod="day" mode="multiple"
+                          humanizeLabels periodicityOnDoubleClick clockFormat="12-hour-clock"
+                          onError={(ev: any) => setCronError(ev?.description ?? '')}
+                          setValue={(val: string) => rescheduleTask && setRescheduledTask({
+                        ...rescheduleTask,
+                        scheduledAt: val
+                    })} />
+                    <div className="flex items-center text-sm italic ml-3">
+                        <FaInfoCircle className="mr-2" />
+                        Double click on a dropdown option to automatically select/deselect a periodicity
+                    </div>
+                    <div className="w-full my-2 font-bold relative text-center text-xl flex">
+                        <div className="absolute top-0 left-0 right-0 h-1/2 border-b border-gray-200 z-0">
+
+                        </div>
+                        <div className="bg-gray-100 z-10 m-auto px-2">
+                            OR
+                        </div>
+                    </div>
+                    <div className="text-lg mb-2">Edit Cron Instruction Manually</div>
+                    <TextField variant="outlined" color="secondary" size="small"
+                               value={rescheduleTask?.scheduledAt ?? ''}
+                               onChange={ev => rescheduleTask && setRescheduledTask({
+                        ...rescheduleTask,
+                        scheduledAt: ev.target.value
+                    })}></TextField>
+                    {cronError && <div className="mt-2 text-red-600">Error: {cronError}</div>}
+                    {tryParse(rescheduleTask?.scheduledAt) && !cronError && <div className="mt-2">Next run time: {tryParse(rescheduleTask?.scheduledAt)?.toLocaleString(undefined, {
+                        dateStyle: 'long',
+                        timeStyle: 'long'
+                    }) ?? ''}</div>}
+                    <div className="mt-auto flex">
+                        <Button className="mr-2 ml-auto" variant="outlined" color="secondary"
+                                onClick={() => setRescheduledTask(null)}>
+                            Cancel
+                        </Button>
+                        <Button disabled={cronError !== ''} variant="contained" color="secondary" onClick={() => {
+                            if (!rescheduleTask) return;
+                            ScheduledTaskService.rescheduleTask({ id: rescheduleTask._id, time: rescheduleTask.scheduledAt })
+                                .then(() => {
+                                    setTasks(tasks.map(t => t.name === rescheduleTask.name ? {
+                                        ...t,
+                                        scheduledAt: rescheduleTask.scheduledAt
+                                    } : t));
+                                    setRescheduledTask(null);
+                                })
+                                .catch(err => setCronError(err?.message ?? err));
+                        }}>
+                            Save
+                        </Button>
+                    </div>
+                </div>
+            </div>
+        </Modal>
+
         {showLog && <div className="fixed inset-0 bg-zinc-800 bg-opacity-50 w-full h-full z-50 flex items-center justify-center" onClick={() => setShowLog(false)}>
             <div className="w-3/4 h-5/6 bg-zinc-900 p-4 shadow-2xl rounded-lg relative">
                 <div className="h-full w-full text-sm overflow-auto flex flex-col-reverse relative" onClick={ev => ev.stopPropagation()}>
@@ -123,30 +194,14 @@ export function AdminTaskStatus() {
                     Error: {errors[i]}
                 </span>}
 
-                <div className="mr-2 relative">
-                    <TextField label="Scheduled Time" variant="outlined" size="small"
-                               defaultValue={task.scheduledAt}
-                               inputRef={el => timeRefs.current[i] = el}
-                               onChange={() => setModifiedTimes(modifiedTimes
-                                   .map((val, j) => j === i ? true : val))}
-                               FormHelperTextProps={{className: 'text-white -m-2'}}
-                               SelectProps={{className: 'text-white text-sm'}}
-                               InputLabelProps={{className: 'text-white'}}
-                               InputProps={{ className: 'text-white text-sm'}} />
-                    {modifiedTimes[i] && <div className="absolute right-0 top-0 bottom-0 flex items-center">
-                        <IconButton onClick={() => {
-                            setButtonDisabledState(i, true);
-                            setErrorState(i, '');
-                            ScheduledTaskService.rescheduleTask({ id: task._id, time: timeRefs.current[i]?.value ?? '' })
-                                .then(() => setModifiedTimes(modifiedTimes.map((val, j) => j === i ? false : val)))
-                                .catch(err => setErrorState(i, err?.message ?? err))
-                                .finally(() => setButtonDisabledState(i, false));
-                        }} >
-                            <FaSave className="cursor-pointer text-white w-4 h-4"/>
-                        </IconButton>
-                    </div>}
-                </div>
+                <span className="mr-2">Next Run Time: {tryParse(task.scheduledAt)?.toLocaleString() ?? 'unknown'}</span>
 
+
+                <Button variant="outlined" size="small" color="inherit" className="mr-2" onClick={() => {
+                    setRescheduledTask(task);
+                }}>
+                    Reschedule
+                </Button>
 
                 <Button variant="outlined" size="small" color="inherit" disabled={disabledButtons[i]} onClick={() => {
                     setButtonDisabledState(i, true);

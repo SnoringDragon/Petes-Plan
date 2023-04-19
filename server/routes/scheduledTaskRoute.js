@@ -1,7 +1,7 @@
 const { Router } = require('express');
 const { authenticate } = require('../middleware/authenticate');
 const tasks = require('../tasks');
-const {timeUntil} = require("../utils/scheduler");
+const parser = require('cron-parser');
 
 module.exports = app => {
     const router = Router();
@@ -41,7 +41,7 @@ module.exports = app => {
 
     router.post('/reschedule', findTask, async (req, res) => {
         try {
-            timeUntil(req.body.time);
+            parser.parseExpression(req.body.time);
         } catch {
             return res.status(400).json({ message: 'invalid time specification' });
         }
