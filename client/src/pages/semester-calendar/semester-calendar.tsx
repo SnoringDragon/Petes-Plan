@@ -1,12 +1,13 @@
 import { Card, CardContent, CardHeader, FormControl, InputLabel, MenuItem, Select, TextField } from "@material-ui/core";
 import { Layout } from "../../components/layout/layout";
-import { useEffect, useRef, useState } from "react";
+import { CSSProperties, useEffect, useRef, useState } from "react";
 import SemesterService from "../../services/SemesterService";
 import { Semester } from "../../types/semester";
 import { DegreePlan } from "../../types/degree-plan";
 import DegreePlanService from "../../services/DegreePlanService";
 import { UserCourse } from "../../types/user-course";
 import "./semester-calendar.css";
+import { Meeting } from "../../types/course-requirements";
 
 export function SemesterCalendar() {
     const [selectedSem, setSem] = useState<string>((): string => {
@@ -22,11 +23,22 @@ export function SemesterCalendar() {
     const [degreePlans, setDegreePlans] = useState<DegreePlan[]>([]);
     const [degreePlan, setDegreePlan] = useState<number>(0);
     const [courses, setCourses] = useState<UserCourse[]>([]);
+    const [colWidth, setColWidth] = useState<CSSProperties>({ width: "14%" });
+    const [hoveredMeeting, setHoveredMeeting] = useState<string>();
     
-    // Get semesters and degree plans from database on page load
+    // Get semesters and degree plans from database on page load and set event listeners
     useEffect(() => {
         DegreePlanService.getPlans().then(res => setDegreePlans(res.degreePlans));
         SemesterService.getSemesters().then(res => setSemesters(res));
+        
+        // Set and update column size on page load and window resize
+        window.addEventListener("resize", () => {
+            const parentWidth: number = document.getElementById("calendar")?.offsetWidth ?? 0;
+            const timeLabelsWidth: number = document.getElementById("timeLabels")?.offsetWidth ?? 0;
+            setColWidth({
+                width: 100*(parentWidth - timeLabelsWidth) / 7 / parentWidth + "%",
+            });
+        });
     }, []);
 
     // Update semester when semester or year is changed
@@ -140,11 +152,18 @@ export function SemesterCalendar() {
     }
 
     function renderCalendar(): JSX.Element {
-        const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+        const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
         const colors = ["rgb(227, 23, 10)", "rgb(169, 229, 187)", "rgb(252, 246, 177)", "rgb(247, 179, 43)", "rgb(56, 145, 166)", "rgb(154, 196, 248)", "rgb(171, 146, 191)", "rgb(175, 77, 152)", "rgb(89, 210, 254)", "rgb(56, 102, 65)", "rgb(134, 22, 87)"];
+        const operatingHours = ["7AM", "8AM", "9AM", "10AM", "11AM", "12PM", "1PM", "2PM", "3PM", "4PM", "5PM"];
+
+        // Get the name of the instructor for a section meeting time
+        function getInstructorName(meeting: Meeting): string {
+            if (meeting.instructors.length == 0) return "TBA";
+            if (meeting.instructors[0].nickname) return meeting.instructors[0].lastname + ", " + meeting.instructors[0].nickname;
+            return meeting.instructors[0].lastname + ", " + meeting.instructors[0].firstname;
+        }
 
         // Generate column of time markers
-        const operatingHours = ["7AM", "8AM", "9AM", "10AM", "11AM", "12PM", "1PM", "2PM", "3PM", "4PM", "5PM"];
         const timeBlocks = operatingHours.map((hour, i) => (
             <div className="blockStyle">
                 {hour}
@@ -173,26 +192,41 @@ export function SemesterCalendar() {
             courses.forEach((course, i) => {
                 if (!course.section || course.section.meetings.length == 0) return;
                 
-                course.section?.meetings.forEach(meeting => {
+                course.section?.meetings.forEach((meeting, j) => {
                     if (meeting.days.find(d => days[day].startsWith(d))) {
                         const start = parseTime(meeting.startTime);
                         const end = parseTime(meeting.endTime);
                         const duration = (end.getTime() - start.getTime()) / 1000 / 60;
                         const top = (start.getTime() - (new Date(0,0,0,7)).getTime()) /1000 / 60;
-                        meetings.push(
-                            <div className="CourseStyle" style={{top: top+"px", height: duration+"px", backgroundColor: colors[i%colors.length]}}>
-
+                        meetings.push(<>
+                            <div 
+                                className="CourseStyle"
+                                style={{top: top+"px", height: duration+"px", backgroundColor: colors[i%colors.length]}}
+                                onMouseOver={() => {setHoveredMeeting(course._id+j+day);}}
+                                onMouseOut={() => {setHoveredMeeting(undefined);}}
+                            >
+                                <p className="courseName">{course.courseData.subject+" "+course.courseData.courseID+": "+course.courseData.name}</p>
+                                <p className="courseDetails">{meeting.location}</p>
+                                <p className="courseDetails">{getInstructorName(meeting)}</p>
+                                <p className="courseDetails">{meeting.startTime+"-"+meeting.endTime}</p>
+                                <p className="courseDetails">{meeting.startDate+"-"+meeting.endDate}</p>
                             </div>
-                        );
+                            <div className="tooltip" style={{display: hoveredMeeting === course._id+j+day ? 'flex' : 'none', top: top+"px"}}>
+                                <p className="courseName">{course.courseData.subject+" "+course.courseData.courseID+": "+course.courseData.name}</p>
+                                <p className="courseName">{meeting.location}</p>
+                                <p className="courseName">{getInstructorName(meeting)}</p>
+                                <p className="courseName">{meeting.startTime+"-"+meeting.endTime}</p>
+                                <p className="courseName">{meeting.startDate+"-"+meeting.endDate}</p>
+                            </div>
+                        </>);
                     }
                 });
             });
             return meetings;
         }
 
-        // Generate columns for each day
         const columns = days.map((day, i) => (
-            <div className="w-full">
+            <div style={colWidth}>
                 <CardHeader title={day} className="text-center h-12 rad-4 bg-neutral-700 text-white" />
                 <div className="dayStyle">
                     {calendarGrid}
@@ -203,8 +237,8 @@ export function SemesterCalendar() {
         
         // Combine elements into one element
         return (
-            <div className="flex mt-6">
-                <div className="inline-block h-full">
+            <div id="calendar" className="flex mt-6">
+                <div id="timeLabels" className="inline-block h-full">
                     <CardHeader className="h-12 w-0" />
                     {timeBlocks}
                 </div>

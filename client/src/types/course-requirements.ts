@@ -46,6 +46,16 @@ export interface ApiCourse {
     }[]
 }
 
+export interface Meeting {
+    startDate: string,
+    endDate: string,
+    days: string[],
+    startTime: string,
+    endTime: string,
+    location: string,
+    instructors: ApiProfessor[]
+}
+
 export interface Section {
     _id: string,
     semester: string,
@@ -57,16 +67,7 @@ export interface Section {
     sectionID: string,
     crn: number,
     scheduleType: string,
-
-    meetings: {
-        startDate: string,
-        endDate: string,
-        days: string[],
-        startTime: string,
-        endTime: string,
-        location: string,
-        instructors: ApiProfessor[]
-    }[]
+    meetings: Meeting[]
 }
 
 export interface CourseRequirement extends AbstractRequirement {
