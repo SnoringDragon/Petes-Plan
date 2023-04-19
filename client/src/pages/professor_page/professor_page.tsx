@@ -71,7 +71,7 @@ export function Professor_Page() {
             </div> : null}
         </div>
 
-        <Boilergrades isCourseLinks={true} instructor={professor._id} className="w-full mb-4"  />
+        <Boilergrades instructor={professor._id} className="w-full mb-4"  />
 
         <Ratings instructor={professor._id} filter={searchParams.get('filter')?.split(',') ?? []} />
     </div></Layout>)
