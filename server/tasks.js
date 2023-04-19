@@ -47,7 +47,7 @@ module.exports = () => {
                 await task.model.save();
             }
 
-            if (task.status === 'unknown') {
+            if (task.status === 'unknown' && process.env.NODE_ENV === 'production') {
                 console.log('task', task.model.name, 'never run before, running for first time');
                 task.run();
             }
