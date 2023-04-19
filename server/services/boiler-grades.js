@@ -47,7 +47,11 @@ const getBGSubject = async (subject) => {
     return (await (await fetch).default('https://boilergrades.com/api/grades?subject=' + subject)).json()
 }
 
+const getBGIndexes = async () => {
+    return (await (await fetch).default('https://boilergrades.com/api/indexes')).json()
+}
+
 // Instruc Ex: console.log("inside, ", getBGInstructor(fName = "Sula", mName = null, lName = "Lee"));
 // Course Ex: 
 // console.log(getBGCourse("BIOL 11000"))
-module.exports = { getBGInstructor, getBGCourse, getBGSubject };
+module.exports = { getBGInstructor, getBGCourse, getBGSubject, getBGIndexes };

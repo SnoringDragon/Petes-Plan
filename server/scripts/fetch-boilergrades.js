@@ -96,13 +96,11 @@ const SORT = Object.fromEntries([
     'NS'
 ].map((key, i) => [key, i]));
 
-module.exports = async ({ batchSize = 10, sleepTime = 250, abort = new AbortController(),
+module.exports = async ({ batchSize = 20, sleepTime = 50, abort = new AbortController(),
                             log = console.log,
                             error = console.error } = {}) => {
     let listener;
     const abortPromise = new Promise((_, reject) => abort.signal.addEventListener('abort', listener = reject));
-
-    const subjects = await race([Course.distinct('subject'), abortPromise]);
 
     const terms = {};
 
@@ -112,14 +110,25 @@ module.exports = async ({ batchSize = 10, sleepTime = 250, abort = new AbortCont
 
     const cachedQuery = makePromiseCache(queryInstructor);
 
+    const indexes = await race([boilergrades.getBGIndexes(), abortPromise]);
+    const courses = indexes.filter(s => /^[A-Z]+\d+$/.test(s))
+        .sort()
+        .map(c => {
+            const subject = c.match(/^[A-Z]+/g)?.[0];
+            const courseID = c.match(/\d+$/g)?.[0];
+
+            return { courseID, subject };
+        });
+
     await Promise.all([...new Array(batchSize)].map(async () => {
         while (!abort.signal.aborted) {
             await sleep(sleepTime);
 
-            const subject = subjects.pop();
-            if (!subject) return;
+            const course = courses.pop();
+            if (!course) return;
 
-            const grades = await race([boilergrades.getBGSubject(subject), abortPromise]);
+            log('fetching boilergrades for', course.subject, course.courseID);
+            const grades = await race([boilergrades.getBGCourse(course), abortPromise]);
 
             const data = await Promise.all(grades.map(async data => {
                 const { subject, course_num, academic_period, crn, section, instructor } = data;
@@ -130,10 +139,16 @@ module.exports = async ({ batchSize = 10, sleepTime = 250, abort = new AbortCont
                 let { first, last } = parseFullName(instructor);
 
                 if (!first || !last) {
-                    const parts = instructor.split(', ');
+                    const parts = instructor?.split(', ');
+                    if (!parts) {
+                        error('unknown instructor');
+                        return;
+                    }
+
                     last = parts[0];
                     first = parts[1].match(/^\S+/g)?.[0] ?? parts[1];
                 }
+
 
                 const [course, instructorModel] = await race([Promise.all([
                     Course.findOne({ subject, courseID: '' + course_num }),
@@ -160,8 +175,11 @@ module.exports = async ({ batchSize = 10, sleepTime = 250, abort = new AbortCont
 
                 const total = Object.values(grades).reduce((t, x) => t + x);
 
-                for (const key in grades)
+                for (const key in grades) {
                     grades[key] /= total;
+                    if (Number.isNaN(grades[key]))
+                        grades[key] = 0;
+                }
 
                 const gpa = {};
                 Object.entries(grades)
@@ -185,7 +203,7 @@ module.exports = async ({ batchSize = 10, sleepTime = 250, abort = new AbortCont
                     section: sectionModel,
                     instructor: instructorModel,
                     grades: gradesArray,
-                    gpa: gpaTotal === 0 ? null : gpaArray
+                    gpa: gpaArray.some(([key, val]) => Number.isNaN(val)) ? null : gpaArray
                 };
             }));
 
@@ -202,7 +220,7 @@ module.exports = async ({ batchSize = 10, sleepTime = 250, abort = new AbortCont
                 }
             }))), abortPromise]);
 
-            log('updated boilergrades for subject', subject);
+            log('updated boilergrades for', course.subject, course.courseID);
         }
     }));
 

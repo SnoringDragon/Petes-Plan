@@ -32,7 +32,7 @@ module.exports = () => {
         const boilergradesTask = await ScheduledTask.create({
             taskfunc: fetchBoilergrades,
             name: 'Update BoilerGrades Info',
-            args: { batchSize: 10, sleepTime: 250 }
+            args: { batchSize: 20, sleepTime: 50 }
         });
 
         tasks = [purdueCatalogTask, rateMyProfTask, fetchDegreeTask, boilergradesTask];

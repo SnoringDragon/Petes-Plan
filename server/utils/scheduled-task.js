@@ -59,7 +59,7 @@ class ScheduledTask extends EventEmitter {
             if (type === 'undefined')
                 return 'undefined';
             if (type === 'object') {
-                if (a?.toString !== Object.prototype.toString) // custom toString
+                if (a !== null && a?.toString !== Object.prototype.toString) // custom toString
                     return a.toString();
                 return JSON.stringify(a, null, 2);
             }
@@ -108,6 +108,7 @@ class ScheduledTask extends EventEmitter {
             .catch(err => {
                 if (this.status !== 'aborted')
                     this.#setStatus('errored');
+                console.error('task errored:', err);
             });
     }
 
