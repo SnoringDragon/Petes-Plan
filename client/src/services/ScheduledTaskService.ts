@@ -10,7 +10,7 @@ class ScheduledTaskService extends Api {
         return this.post('/api/admin/scheduled-task/abort', body);
     }
 
-    runTask(body: { id: string, force?: boolean }) {
+    runTask(body: { id: string, force?: boolean, args?: any }) {
         return this.post('/api/admin/scheduled-task/run', body);
     }
 

@@ -37,6 +37,8 @@ export function AdminTaskStatus() {
 
     const timeRefs = useRef<({ value: string } | null)[]>([]);
 
+    const yearRef = useRef({ value: '' });
+
     const handleInitial = useCallback((payload: Payload<'initial'>) => {
         setTasks(payload.data);
         setLog(payload.data.flatMap(x => x.log));
@@ -203,10 +205,24 @@ export function AdminTaskStatus() {
                     Reschedule
                 </Button>
 
+                {task.name === 'Update Course Catalog' &&
+                    <TextField label="Number of Years to Fetch" defaultValue={0} color="secondary" type="number" size="small"
+                               className="-my-1 mr-2" inputRef={yearRef}
+                               InputProps={{ className: 'text-slate-200' }} InputLabelProps={{ className: 'text-slate-200' }}>
+                </TextField>}
+
                 <Button variant="outlined" size="small" color="inherit" disabled={disabledButtons[i]} onClick={() => {
                     setButtonDisabledState(i, true);
                     setErrorState(i, '');
-                    ScheduledTaskService.runTask({ id: task._id, force: true })
+                    const body = { id: task._id, force: true } as any;
+
+                    if (task.name === 'Update Course Catalog') {
+                        const val = +yearRef.current.value;
+                        if (val > 0)
+                            body.args = { numYears: val };
+                    }
+
+                    ScheduledTaskService.runTask(body)
                         .catch(err => setErrorState(i, err?.message ?? err))
                         .finally(() => setButtonDisabledState(i, false));
                 }}>
@@ -216,8 +232,17 @@ export function AdminTaskStatus() {
                 <Button variant="outlined" size="small" disabled={disabledButtons[i]} color="inherit" onClick={() => {
                     setButtonDisabledState(i, true);
                     setErrorState(i, '');
+
+                    const body = { id: task._id } as any;
+
+                    if (task.name === 'Update Course Catalog') {
+                        const val = +yearRef.current.value;
+                        if (val > 0)
+                            body.args = { numYears: val };
+                    }
+
                     (task.status === 'running' ? ScheduledTaskService.abortTask({ id: task._id }) :
-                        ScheduledTaskService.runTask({ id: task._id }))
+                        ScheduledTaskService.runTask(body))
                         .catch(err => setErrorState(i, err?.message ?? err))
                         .finally(() => setButtonDisabledState(i, false));
                 }}>
