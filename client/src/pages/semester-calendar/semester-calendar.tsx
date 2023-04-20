@@ -11,6 +11,11 @@ import { Meeting } from "../../types/course-requirements";
 import { Link } from "react-router-dom";
 
 export function SemesterCalendar() {
+    // Constant config options
+    const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+    const colors = ["rgb(227, 23, 10)", "rgb(169, 229, 187)", "rgb(252, 246, 177)", "rgb(247, 179, 43)", "rgb(56, 145, 166)", "rgb(154, 196, 248)", "rgb(171, 146, 191)", "rgb(175, 77, 152)", "rgb(89, 210, 254)", "rgb(56, 102, 65)", "rgb(134, 22, 87)"];
+    const operatingHours = ["7AM", "8AM", "9AM", "10AM", "11AM", "12PM", "1PM", "2PM", "3PM", "4PM", "5PM"];
+
     const [selectedSem, setSem] = useState<string>((): string => {
         const date = new Date();
         if (date.getMonth() <= 4) return "Spring";
@@ -25,7 +30,15 @@ export function SemesterCalendar() {
     const [degreePlan, setDegreePlan] = useState<number>(0);
     const [courses, setCourses] = useState<UserCourse[]>([]);
     const [colWidth, setColWidth] = useState<CSSProperties>({ width: "14%" });
-    const [hoveredMeeting, setHoveredMeeting] = useState<string>();
+    const [coursesByDay, setCoursesByDay] = useState<JSX.Element[][]>([[], [], [], [], [], [], []]);
+    const [weekBounds, setWeekBounds] = useState<Date[]>([new Date(), new Date()]);
+
+    // Get a Date object from a time string
+    function parseTime(time: string): Date {
+        return new Date(0, 0, 0, 
+            Number(time.split(":")[0])%12 + (time.split(" ")[1] === "PM" ? 12 : 0),
+            Number(time.split(":")[1].split(" ")[0]));
+    }
     
     // Get semesters and degree plans from database on page load and set event listeners
     useEffect(() => {
@@ -58,6 +71,73 @@ export function SemesterCalendar() {
         });
         setCourses(courses);
     }, [semester, degreePlan, degreePlans]);
+
+    // Load courses to internal array by day
+    //TODO: Check date boundaries for different weeks
+    useEffect(() => {
+        // Get the name of the instructor for a section meeting time
+        function getInstructorName(meeting: Meeting): string {
+            if (meeting.instructors.length == 0) return "TBA";
+            if (meeting.instructors[0].nickname) return meeting.instructors[0].lastname + ", " + meeting.instructors[0].nickname;
+            return meeting.instructors[0].lastname + ", " + meeting.instructors[0].firstname;
+        }
+
+        // Iterate through added courses
+        var coursesByDay: JSX.Element[][] = [[], [], [], [], [], [], []];
+        courses.forEach((course: UserCourse, i: number) => {
+            // Add courses that have a selected section
+            if (course.section) {
+                if (course.section.meetings.length == 0) return; // Skip courses with no meetings
+
+                //TODO: Add support for multiple sections
+                // Iterate through meetings
+                course.section.meetings.forEach((meeting: Meeting, j: number) => {
+                    // Calculate meeting height and top offset
+                    const start = parseTime(meeting.startTime);
+                    const end = parseTime(meeting.endTime);
+                    const duration = (end.getTime() - start.getTime()) / 1000 / 60;
+                    const top = (start.getTime() - (new Date(0,0,0,7)).getTime()) / 1000 / 60;
+
+                    // Iterate through days in meeting
+                    meeting.days.forEach((day: string) => {
+                        // Add meeting to day
+                        var dayIndex: number = days.findIndex(d => d.toLocaleLowerCase().includes(day.toLocaleLowerCase()));
+                        if (dayIndex < 0) return; // Skip days that are not in the calendar
+
+                        // Add meeting to day
+                        coursesByDay[dayIndex].push(<div key={parseInt(`${i}${j}${dayIndex}`)}>
+                            <div 
+                                className="CourseStyle"
+                                style={{top: top+"px", height: duration+"px", backgroundColor: colors[i%colors.length]}}
+                            >
+                                <Link to={`/course_description?subject=${course.subject}&courseID=${course.courseID}`}>
+                                    <p className="courseName">{course.subject+" "+course.courseID+": "+course.courseData.name}</p>
+                                </Link>
+                                <p className="courseDetails">{meeting.location}</p>
+                                <p className="courseDetails">{getInstructorName(meeting)}</p>
+                                <p className="courseDetails">{meeting.startTime+"-"+meeting.endTime}</p>
+                                <p className="courseDetails">{meeting.startDate+"-"+meeting.endDate}</p>
+                            </div>
+                            <div className="tooltip" style={{
+                                top: top+"px",
+                                left: dayIndex < 4 ? "100%" : "",
+                                right: dayIndex < 4 ? "" : "100%"
+                            }}>
+                                <p className="courseName">{course.courseData.subject+" "+course.courseData.courseID+": "+course.courseData.name}</p>
+                                <p className="courseName">{meeting.location}</p>
+                                <p className="courseName">{getInstructorName(meeting)}</p>
+                                <p className="courseName">{meeting.startTime+"-"+meeting.endTime}</p>
+                                <p className="courseName">{meeting.startDate+"-"+meeting.endDate}</p>
+                            </div>
+                        </div>);
+                    });
+                });
+            }
+
+            // Add courses that have no selected section
+        });
+        setCoursesByDay(coursesByDay);
+    }, [courses]);
     
     // Render semester selection with error if semester is not found
     function renderSemesterSelection(): (undefined | JSX.Element) {
@@ -153,17 +233,6 @@ export function SemesterCalendar() {
     }
 
     function renderCalendar(): JSX.Element {
-        const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-        const colors = ["rgb(227, 23, 10)", "rgb(169, 229, 187)", "rgb(252, 246, 177)", "rgb(247, 179, 43)", "rgb(56, 145, 166)", "rgb(154, 196, 248)", "rgb(171, 146, 191)", "rgb(175, 77, 152)", "rgb(89, 210, 254)", "rgb(56, 102, 65)", "rgb(134, 22, 87)"];
-        const operatingHours = ["7AM", "8AM", "9AM", "10AM", "11AM", "12PM", "1PM", "2PM", "3PM", "4PM", "5PM"];
-
-        // Get the name of the instructor for a section meeting time
-        function getInstructorName(meeting: Meeting): string {
-            if (meeting.instructors.length == 0) return "TBA";
-            if (meeting.instructors[0].nickname) return meeting.instructors[0].lastname + ", " + meeting.instructors[0].nickname;
-            return meeting.instructors[0].lastname + ", " + meeting.instructors[0].firstname;
-        }
-
         // Generate column of time markers
         const timeBlocks = operatingHours.map((hour, i) => (
             <div className="blockStyle">
@@ -180,65 +249,12 @@ export function SemesterCalendar() {
             </div>
         ));
 
-        // Populate course times for each day
-        //TODO: Check date boundaries for different weeks
-        function populateCourses(day: number): JSX.Element[] {
-            function parseTime(time: string): Date {
-                return new Date(0, 0, 0, 
-                    Number(time.split(":")[0])%12 + (time.split(" ")[1] === "PM" ? 12 : 0),
-                    Number(time.split(":")[1].split(" ")[0]));
-            }
-
-            var meetings: JSX.Element[] = [];
-            courses.forEach((course, i) => {
-                if (!course.section || course.section.meetings.length == 0) return;
-                
-                course.section?.meetings.forEach((meeting, j) => {
-                    if (meeting.days.find(d => days[day].startsWith(d))) {
-                        const start = parseTime(meeting.startTime);
-                        const end = parseTime(meeting.endTime);
-                        const duration = (end.getTime() - start.getTime()) / 1000 / 60;
-                        const top = (start.getTime() - (new Date(0,0,0,7)).getTime()) /1000 / 60;
-                        meetings.push(<>
-                            <div 
-                                className="CourseStyle"
-                                style={{top: top+"px", height: duration+"px", backgroundColor: colors[i%colors.length]}}
-                                onMouseOver={() => {setHoveredMeeting(course._id+j+day);}}
-                                onMouseOut={() => {setHoveredMeeting(undefined);}}
-                            >
-                                <Link to={`/course_description?subject=${course.subject}&courseID=${course.courseID}`}>
-                                    <p className="courseName">{course.subject+" "+course.courseID+": "+course.courseData.name}</p>
-                                </Link>
-                                <p className="courseDetails">{meeting.location}</p>
-                                <p className="courseDetails">{getInstructorName(meeting)}</p>
-                                <p className="courseDetails">{meeting.startTime+"-"+meeting.endTime}</p>
-                                <p className="courseDetails">{meeting.startDate+"-"+meeting.endDate}</p>
-                            </div>
-                            <div className="tooltip" style={{
-                                display: hoveredMeeting === course._id+j+day ? 'flex' : 'none', 
-                                top: top+"px",
-                                left: day < 4 ? "100%" : "",
-                                right: day < 4 ? "" : "100%"
-                            }}>
-                                <p className="courseName">{course.courseData.subject+" "+course.courseData.courseID+": "+course.courseData.name}</p>
-                                <p className="courseName">{meeting.location}</p>
-                                <p className="courseName">{getInstructorName(meeting)}</p>
-                                <p className="courseName">{meeting.startTime+"-"+meeting.endTime}</p>
-                                <p className="courseName">{meeting.startDate+"-"+meeting.endDate}</p>
-                            </div>
-                        </>);
-                    }
-                });
-            });
-            return meetings;
-        }
-
         const columns = days.map((day, i) => (
             <div style={colWidth}>
-                <CardHeader title={day} className="text-center h-12 rad-4 bg-neutral-700 text-white" />
+                <CardHeader title={day.substring(0,3)} className="text-center h-12 rad-4 bg-neutral-700 text-white" />
                 <div className="dayStyle">
                     {calendarGrid}
-                    {populateCourses(i)}
+                    {coursesByDay[i]}
                 </div>
             </div>
         ));
