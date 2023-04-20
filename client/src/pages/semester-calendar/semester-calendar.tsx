@@ -1,4 +1,4 @@
-import { Card, CardContent, CardHeader, FormControl, InputLabel, MenuItem, Select, TextField } from "@material-ui/core";
+import { Button, Card, CardContent, CardHeader, FormControl, IconButton, InputLabel, MenuItem, Select, TextField } from "@material-ui/core";
 import { Layout } from "../../components/layout/layout";
 import { CSSProperties, useEffect, useRef, useState } from "react";
 import SemesterService from "../../services/SemesterService";
@@ -9,6 +9,7 @@ import { UserCourse } from "../../types/user-course";
 import "./semester-calendar.css";
 import { Meeting } from "../../types/course-requirements";
 import { Link } from "react-router-dom";
+import {AiOutlineLeft, AiOutlineRight} from "react-icons/ai";
 
 export function SemesterCalendar() {
     // Constant config options
@@ -34,8 +35,6 @@ export function SemesterCalendar() {
     const [selectedWeek, setSelectedWeek] = useState<Date>();
     const [dateBounds, setDateBounds] = useState<(Date | undefined)[]>([undefined, undefined]);
     const [timeBounds, setTimeBounds] = useState<(Date | undefined)[]>([undefined, undefined]);
-    
-    //TODO: Add week selection
 
     // Get a Date object from a time string
     function parseTime(time: string): Date {
@@ -82,7 +81,6 @@ export function SemesterCalendar() {
 
                     // Update date/time bounds
                     if (course.section) {
-                        //TODO: Add support for courses with multiple sections
                         course.section.meetings.forEach((meeting: Meeting) => {
                             // Update date bounds
                             var startDate: Date = parseDate(meeting.startDate);
@@ -132,12 +130,21 @@ export function SemesterCalendar() {
 
         // Iterate through added courses
         var coursesByDay: JSX.Element[][] = [[], [], [], [], [], [], []];
+        var colorMap: Map<string, string> = new Map();
         courses.forEach((course: UserCourse, i: number) => {
+            // Get course color
+            var color: string;
+            if (colorMap.has(course.courseData._id)) {
+                color = colorMap.get(course.courseData._id) ?? "";
+            } else {
+                color = colors[colorMap.size % colors.length];
+                colorMap.set(course.courseData._id, color);
+            }
+
             // Add courses that have a selected section
             if (course.section) {
                 if (course.section.meetings.length == 0) return; // Skip courses with no meetings
 
-                //TODO: Add support for multiple sections
                 // Iterate through meetings
                 course.section.meetings.forEach((meeting: Meeting, j: number) => {
                     // Calculate meeting height and top offset
@@ -162,7 +169,7 @@ export function SemesterCalendar() {
                         coursesByDay[dayIndex].push(<div key={parseInt(`${i}${j}${dayIndex}`)}>
                             <div 
                                 className="CourseStyle"
-                                style={{top: top+"px", height: duration+"px", backgroundColor: colors[i%colors.length]}}
+                                style={{top: top+"px", height: duration+"px", backgroundColor: color}}
                             >
                                 <Link to={`/course_description?subject=${course.subject}&courseID=${course.courseID}`}>
                                     <p className="courseName">{course.subject+" "+course.courseID+": "+course.courseData.name}</p>
@@ -191,7 +198,7 @@ export function SemesterCalendar() {
             //TODO: Add courses that have no selected section
         });
         setCoursesByDay(coursesByDay);
-    }, [courses]);
+    }, [courses, selectedWeek]);
     
     // Render semester selection with error if semester is not found
     function renderSemesterSelection(): (undefined | JSX.Element) {
@@ -271,7 +278,26 @@ export function SemesterCalendar() {
         }
 
         function weekModifier(): (undefined | JSX.Element) {
-            return (<></>);
+            if (!selectedWeek || !dateBounds[0] || !dateBounds[1]) return;
+
+            const prevDate = new Date(selectedWeek.getTime());
+            prevDate.setDate(prevDate.getDate() - 7);
+            const nextDate = new Date(selectedWeek.getTime());
+            nextDate.setDate(nextDate.getDate() + 7);
+            const endWeek = new Date(selectedWeek.getTime());
+            endWeek.setDate(endWeek.getDate() + 6);
+
+            return (
+                <div className="flex items-center">
+                    <IconButton size="small" disabled={prevDate < dateBounds[0]} onClick={() => setSelectedWeek(prevDate)}>
+                        <AiOutlineLeft />
+                    </IconButton>
+                    <p>{selectedWeek.toDateString().substring(4)} - {endWeek.toDateString().substring(4)}</p>
+                    <IconButton size="small" disabled={nextDate > dateBounds[1]} onClick={() => setSelectedWeek(nextDate)}>
+                        <AiOutlineRight />
+                    </IconButton>
+                </div>
+            );
         }
 
         // Render semester selection
