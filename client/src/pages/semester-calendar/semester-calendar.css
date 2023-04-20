@@ -7,11 +7,37 @@
 .CourseStyle {
     position: absolute;
     left: 0px;
-    width: 95%;
+    width: 100%;
     border-top: 1px solid #000000;
     border-right: 1px solid #000000;
     border-left: 1px solid #000000;
     border-bottom: 1px solid #000000;
+    overflow: hidden;
+}
+
+.tooltip {
+    display: flex;
+    visibility: hidden;
+    flex-direction: column;
+    position: absolute;
+    z-index: 1000;
+
+    opacity: 0;
+    background-color: gray;
+    border: 1px solid #000000;
+    border-radius: 6px;
+    transition: opacity .1s;
+
+    padding: 0.5em;
+    padding-left: 0.5em;
+    padding-right: 1em;
+
+    color: #ffffff;
+}
+
+.CourseStyle:hover + .tooltip {
+    visibility: visible;
+    opacity: .85;
 }
 
 .MajorGridStyle {
@@ -40,4 +66,19 @@
 
 .rad-4 {
     border-radius: 4px;
+}
+
+.courseName {
+    font-size: small;
+    margin-left: 5px;
+    font-weight: bold;
+    white-space: nowrap;
+    opacity: 1;
+}
+
+.courseDetails {
+    font-size: x-small;
+    margin-left: 5px;
+    white-space: nowrap;
+    opacity: 1;
 }

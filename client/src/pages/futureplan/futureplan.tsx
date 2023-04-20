@@ -5,11 +5,11 @@ import CardContent from '@material-ui/core/CardContent';
 import CardActions from '@material-ui/core/CardActions';
 import CardHeader from '@material-ui/core/CardHeader';
 import Button from '@material-ui/core/Button';
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { FaSearch } from 'react-icons/fa';
-import { ApiCourse } from '../../types/course-requirements';
+import {FaChevronDown, FaMinus, FaPlus, FaSearch} from 'react-icons/fa';
+import { ApiCourse, Meeting } from '../../types/course-requirements';
 import CourseService from '../../services/CourseService';
 import { Degree } from '../../types/degree';
 import DegreeService from '../../services/DegreeService';
@@ -20,8 +20,8 @@ import {
     DialogContent,
     DialogContentText,
     DialogTitle,
-    MenuItem,
-    Select
+    MenuItem, Modal,
+    Select, Tooltip
 } from '@material-ui/core';
 import { DegreePlan } from '../../types/degree-plan';
 import DegreePlanService from '../../services/DegreePlanService';
@@ -32,6 +32,8 @@ import { Semester } from '../../types/semester';
 import SemesterService from '../../services/SemesterService';
 import GPAService from '../../services/GPAService';
 import { CourseLink } from '../../components/course-link/course-link';
+import { SCHEDULE_ORDER, SCHEDULE_TYPES } from '../../types/schedule-type';
+import { ProcessedEvent, Scheduler } from "@aldabil/react-scheduler";
 
 const renderSectionMenuItem = (section: Section, instructorFilter: string = '') => {
     if (instructorFilter && !section.meetings.some(m => m.instructors.some(i => i._id === instructorFilter)))
@@ -55,6 +57,7 @@ export function FuturePlan() {
     const [degreePlan, setDegreePlan] = useState<DegreePlan | null>(null);
     const [error, setError] = useState('');
     const [section, setSection] = useState<Section[][][]>([]);
+    const [hiddenSections, setHiddenSections] = useState<Set<string>>(new Set());
 
     const [createNewPlan, setCreateNewPlan] = useState(false);
 
@@ -65,12 +68,13 @@ export function FuturePlan() {
     const yearRef = useRef({ value: '' });
     const [semCourse, setSemCourse] = useState<ApiCourse>();
     const [selectedSem, setSelectedSem] = useState<string | null>(null);
-    const [selectedSection, setSelectedSection] = useState<Section | null>(null);
+    const [selectedSection, setSelectedSection] = useState<Section[] | null>(null);
     const [modifyCourse, setModifyCourse] = useState<UserCourse | null>(null);
     const [instructorFilter, setInstructorFilter] = useState<string>('');
 
     const [semesterFilter, setSemesterFilter] = useState<string>('');
     const [semesters, setSemesters] = useState<Semester[]>([]);
+    const [hoveringSection, setHoveringSection] = useState<Section | null>(null);
 
     const [cumulativeGpa, setCumulativeGpa] = useState<number | null>(null)
     const [semesterGpa, setSemesterGpa] = useState<number | null>(null)
@@ -153,7 +157,113 @@ export function FuturePlan() {
                     setError(err?.message ?? err);
                 });
         }
-    }, [selectedSem, semCourse])
+    }, [selectedSem, semCourse]);
+
+    const selectedSectionSet = new Set<string>();
+    selectedSection?.forEach(s => selectedSectionSet.add(s._id));
+
+    const previewSectionCalendar: JSX.Element | null = useMemo(() => {
+        if (!createSem) return null;
+        if (!selectedSection) return null;
+        if (!section.length) return <span>No sections found</span>;
+
+        const startDate = section.flat(2).flatMap(s => s.meetings)
+            .reduce((earliest, current) => {
+                if (!current.startDate) return earliest;
+                const earliestDate = new Date(earliest.startDate);
+                const currentDate = new Date(current.startDate);
+                if (currentDate < earliestDate) return current;
+                return earliest;
+            });
+
+        if (!startDate.startDate)
+            return <span>No dates found</span>;
+
+        let selectedDate = new Date(startDate.startDate);
+        if (selectedDate.getDay() !== 1) {
+            const dayOffset = selectedDate.getDay() - 1;
+            selectedDate = new Date(Date.parse(selectedDate as any) - dayOffset * 86400000);
+        }
+
+        const getDate = (day: string, time: string) => {
+            const dayIndex = ['M', 'T', 'W', 'R', 'F'].indexOf(day);
+            if (dayIndex === -1) return null;
+            const dayDate = new Date(Date.parse(selectedDate as any) + dayIndex * 86400000);
+            let [, hours, mins, amPm] = time.toLowerCase().match(/^(\d+):(\d+)\s+([ap]m)$/i) ?? [];
+            if (!hours) return null;
+            if (amPm === 'pm' && hours !== '12') hours = ''+(+hours + 12);
+
+            return new Date(dayDate.setHours(+hours, +mins, 0, 0));
+        };
+        
+        const events: ProcessedEvent[] = [];
+        const semester = semesters.find(sem => sem._id === selectedSem);
+        let event_id = 0;
+
+        const addMeetings = (course?: { courseID: string, subject: string } | null, section?: Section | null) => {
+            if (!section || !course) return;
+
+            section.meetings.forEach(meeting => {
+                if (!(meeting.startTime && meeting.endTime && meeting.days?.length)) return;
+
+                meeting.days.forEach(day => {
+                    const start = getDate(day, meeting.startTime);
+                    const end = getDate(day, meeting.endTime);
+
+                    if (start && end)
+                        events.push({
+                            event_id: event_id++,
+                            title: `${course.subject} ${course.courseID} ${section.name}`,
+                            start,
+                            end
+                        })
+                })
+            });
+        }
+
+        if (semester)
+            degreePlan?.courses.forEach(course => {
+                if (!(course.semester === semester.semester && course.year === semester.year)) return;
+
+                addMeetings(course, course.section);
+            });
+
+        if (hoveringSection) {
+            selectedSection?.filter(s => s.scheduleType !== hoveringSection.scheduleType)
+                .forEach(section => {
+                    addMeetings(semCourse, section);
+                })
+
+            addMeetings(semCourse, hoveringSection);
+        }
+
+        return <Scheduler view="week" selectedDate={selectedDate} day={null} month={null} dialogMaxWidth={'sm'} direction="ltr" events={events}
+                          week={{ weekDays: [1,2,3,4,5], weekStartOn: 0, startHour: 6, endHour: 18, step: 180 }}  fields={[]} height={0} locale={undefined}
+                          resourceFields={undefined} resourceViewMode="tabs" resources={undefined} />;
+    }, [createSem, selectedSection, selectedSem, section, degreePlan, semesters, hoveringSection]);
+
+    const sectionAddError = useMemo(() => {
+        let selectedGroups = section.filter(s => s.flat().find(s => selectedSectionSet.has(s._id)));
+        const selectedGroup = selectedGroups[0];
+
+        if (selectedGroup === undefined && section.length)
+            return 'you must select some sections';
+
+        if (selectedGroups.length > 1)
+            return 'you must select from one group only';
+
+        for (let i = 0; i < section.length; ++i) {
+            const group = section[i];
+            for (const sectionTypes of group) {
+                const hasSelection = sectionTypes.some(section => selectedSectionSet.has(section._id));
+
+                if (!hasSelection && selectedGroup === group)
+                    return `you must select a ${sectionTypes[0].scheduleType} section from group ${i + 1}`;
+            }
+        }
+
+        return '';
+    }, [selectedSection, section])
 
     return (<Layout>
         <Dialog open={createNewPlan} onClose={() => setCreateNewPlan(false)}>
@@ -186,18 +296,17 @@ export function FuturePlan() {
             </DialogActions>
         </Dialog>
 
-        <Dialog open={createSem} onClose={() => setSem(false)}>
-            <DialogTitle>Select Planned Semester</DialogTitle>
-            <DialogContent>
-                <div className="mb-2">Select Semester</div>
-
-                <Select fullWidth className="text-red-500" labelId="demo-simple-select-label"
+        <Modal open={createSem} onClose={() => setSem(false)}>
+            <div className="flex flex-col absolute left-1/2 top-1/2 w-3/4 h-3/4 bg-gray-200 rounded-md
+                -translate-x-1/2 -translate-y-1/2 p-6 text-slate-800">
+                <div className="text-2xl mb-2">Select Planned Semester</div>
+                <Select fullWidth
                     value={selectedSem}
                     label="Semester"
                     onChange={ev => {
                         setSection([])
                         setSelectedSem(ev.target.value as string)
-                        setSelectedSection(null);
+                        setSelectedSection([]);
                     }} >
                     {semCourse?.semesters?.filter(semester => semester.year >= new Date().getFullYear())
                         .map((semester) => (<MenuItem key={semester._id} value={semester._id}>
@@ -208,8 +317,11 @@ export function FuturePlan() {
                 {section.flat().length ? <>
                     <div className="mt-4 mb-2">Filter Instructors</div>
 
-                    <Select fullWidth value={instructorFilter}
-                                                 onChange={ev => setInstructorFilter(ev.target.value as string)}>
+                    <Select fullWidth value={instructorFilter} MenuProps={{ className: 'max-h-96' }}
+                                                 onChange={ev => {
+                                                     setInstructorFilter(ev.target.value as string);
+                                                     setSelectedSection([]);
+                                                 }}>
                         <MenuItem value={""}>No Filter</MenuItem>
                         {[...section.flat(2).flatMap(s => s.meetings
                                 .flatMap(m => m.instructors))
@@ -222,36 +334,116 @@ export function FuturePlan() {
                             </MenuItem>)}
                 </Select></> : null}
 
-                <div className="mt-4 mb-2">Select Section</div>
+                <hr className="w-full mt-6 mb-3 bg-slate-900" />
 
-                {section.flat().length ? <Select fullWidth className="my-2" value={selectedSection?._id} onChange={ev =>
-                    setSelectedSection(section.flat(2).find(({ _id }) => _id === ev.target.value)!)}>
-                    {section.flat(2).map(section => renderSectionMenuItem(section, instructorFilter))}
-                </Select> : 'No sections available'}
-            </DialogContent>
+                {section.flat().length ? <div className="flex flex-col grow basis-0">
+                    <div className="text-lg italic mb-2">Choose a course group, and pick one section of each schedule type from each group</div>
 
-            <DialogActions>
-                <Button onClick={() => setSem(false)}>Cancel</Button>
-                <Button disabled={!selectedSection} onClick={() => {
-                    setSem(false);
+                    <div className="overflow-y-auto flex flex-col grow basis-0">
+                        {section.filter(groups => {
+                            if (!instructorFilter) return true;
+                            const instructors = groups.flat(2).flatMap(s => s.meetings.flatMap(m => m.instructors));
+                            return instructors.find(inst => inst._id === instructorFilter);
+                        }).map((group, i) => <div key={i} className="mb-2">
+                            <Accordion defaultExpanded={true}>
+                                <AccordionSummary expandIcon={<FaChevronDown />}>
+                                    <div className="text-xl">Group {i + 1}</div>
+                                </AccordionSummary>
+                                <AccordionDetails className="flex flex-col">
+                                    {[...group].sort((a, b) => SCHEDULE_ORDER[a[0].scheduleType] - SCHEDULE_ORDER[b[0].scheduleType]).map((sections, i) => <div key={i} className="px-3 py-2 bg-gray-300 bg-opacity-25 mb-2 rounded-md">
+                                        <div className="text-lg mb-1"><Tooltip arrow title={SCHEDULE_TYPES[sections[0].scheduleType as keyof typeof SCHEDULE_TYPES]}>
+                                            <span>{sections[0].scheduleType}</span>
+                                        </Tooltip> Schedule Type</div>
+                                        {sections.map((section, i) => <Tooltip arrow placement="top" enterDelay={250}
+                                                                               title={<div className="pointer-events-none -mx-6 -mb-12 -mt-20 scale-90 scale-y-75">{previewSectionCalendar}</div>}
+                                                                               classes={{ tooltip: 'max-w-2xl overflow-hidden' }}>
+                                            <div key={i} className={`p-1 border-gray-400 border rounded mb-1 cursor-pointer
+                                            ${selectedSectionSet.has(section._id) ? 'bg-pink-400 bg-opacity-25' : ''}`}
+                                                 onClick={() => {
+                                                     if (selectedSectionSet.has(section._id))
+                                                         setSelectedSection(selectedSection!.filter(s => s._id !== section._id))
+                                                     else
+                                                         setSelectedSection([...(selectedSection ?? []).filter(s => s.scheduleType !== section.scheduleType), section])
+                                                 }} onMouseEnter={() => setHoveringSection(section)} onMouseLeave={() => setHoveringSection(null)}>
+                                                <div className="flex items-center">{section.name} (CRN {section.crn}), {section.minCredits === section.maxCredits ?
+                                                    `${section.minCredits} Credits` : `${section.minCredits}-${section.maxCredits} Credits`}
 
-                    const semesters = semCourse?.semesters.find(other => other._id === selectedSem)!;
-                    setCourseModifications({
-                        ...courseModifications,
-                        add: [...courseModifications.add, {
-                            _id: '' + Date.now(),
-                            subject: semCourse!.subject,
-                            courseID: semCourse!.courseID,
-                            semester: semesters?.semester,
-                            grade: 'A',
-                            year: semesters?.year,
-                            section: selectedSection!,
-                            courseData: { ...semCourse!, sections: section }
-                        }]
-                    });
-                }}>Add</Button>
-            </DialogActions>
-        </Dialog>
+                                                    <div className="ml-auto" onClick={(ev) => {
+                                                        if (hiddenSections.has(section._id))
+                                                            setHiddenSections(new Set([...hiddenSections].filter(s => s !== section._id)))
+                                                        else
+                                                            setHiddenSections(new Set([...hiddenSections, section._id]));
+                                                        ev.stopPropagation();
+                                                    }}>
+                                                        {hiddenSections.has(section._id) ? <FaPlus /> : <FaMinus />}
+                                                    </div>
+                                                </div>
+                                                {!hiddenSections.has(section._id) && <div className="ml-2 grid" style={{
+                                                    gridTemplateColumns: 'minmax(0, .5fr) minmax(0, .5fr) minmax(0, 1fr) minmax(0, .75fr) minmax(0, 1fr)'
+                                                }}>
+                                                    <div className="px-1 py-0.5 border border-gray-400 font-semibold">Time</div>
+                                                    <div className="px-1 py-0.5 border border-gray-400 font-semibold">Days</div>
+                                                    <div className="px-1 py-0.5 border border-gray-400 font-semibold">Location</div>
+                                                    <div className="px-1 py-0.5 border border-gray-400 font-semibold">Date Range</div>
+                                                    <div className="px-1 py-0.5 border border-gray-400 font-semibold">Instructors</div>
+
+                                                    {section.meetings.map((meeting, i) => <React.Fragment key={i}>
+                                                        <div className="px-1 py-0.5 border border-gray-400">{meeting.startTime && meeting.endTime ? `${meeting.startTime}-${meeting.endTime}` : 'TBA'}</div>
+                                                        <div className="px-1 py-0.5 border border-gray-400">{meeting.days?.length ? meeting.days.join(', ') : 'TBA'}</div>
+                                                        <div className="px-1 py-0.5 border border-gray-400">{meeting.location ?? 'TBA'}</div>
+                                                        <div className="px-1 py-0.5 border border-gray-400">{meeting.startDate && meeting.endDate ? `${meeting.startDate}-${meeting.endDate}` : 'TBA'}</div>
+                                                        <div className="px-1 py-0.5 border border-gray-400">{meeting.instructors.length ? meeting.instructors.map((ins, i) => <Link to={'/'}>
+                                                            {ins.firstname} {ins.lastname}
+                                                        </Link>) : 'TBA'}</div>
+                                                    </React.Fragment>)}
+                                                </div>}
+                                            </div>
+                                        </Tooltip>)}
+                                    </div>)}
+                                </AccordionDetails>
+                            </Accordion>
+                        </div>)}
+                    </div>
+                </div> : <div>No sections available</div>}
+
+                <div className="mt-auto pt-2 flex">
+                    {sectionAddError && <span className="text-red-500 mt-auto">Error: {sectionAddError}</span>}
+                    <Button variant="contained" className="mr-2 ml-auto" onClick={() => {
+                        setSem(false);
+                        setSelectedSection(null);
+                    }}>Cancel</Button>
+                    <Button variant="contained" color="secondary" disabled={sectionAddError !== '' || !section.length} onClick={() => {
+                        const now = Date.now();
+                        const semesters = semCourse?.semesters.find(o => o._id === selectedSem);
+                        if (!semCourse || !semesters) {
+                            console.log(semCourse, semesters)
+                            setSem(false);
+                            setSelectedSection(null);
+                            return;
+                        }
+                        setCourseModifications({
+                            ...courseModifications,
+                            add: [...courseModifications.add, ...(selectedSection?.map((s, i) => {
+                                return {
+                                    _id: '' + (now + i),
+                                    subject: semCourse.subject,
+                                    courseID: semCourse.courseID,
+                                    semester: semesters.semester,
+                                    grade: 'A',
+                                    year: semesters.year,
+                                    section: s,
+                                    courseData: {  ...semCourse, sections: section }
+                                }
+                            }).filter(x => x) ?? [])]
+                        })
+                        setSem(false);
+                        setSelectedSection(null);
+                    }}>
+                        Save
+                    </Button>
+                </div>
+            </div>
+        </Modal>
 
         <div className="grid grid-cols-3 gap-y-2 gap-x-3">
             <div className="w-full h-full flex flex-col items-center justify-left">
@@ -305,6 +497,7 @@ export function FuturePlan() {
                         <Button color="inherit" onClick={() => {
                             setSemCourse(course);
                             setSem(true);
+                            setSelectedSem(null);
                             setInstructorFilter('');
                             setSection([]);
                             // setCourseModifications({
