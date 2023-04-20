@@ -4,7 +4,6 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { ApiProfessor } from '../../types/professor';
 import { FaArrowLeft } from 'react-icons/fa';
 import ProfessorService from '../../services/ProfessorService';
-import { Link } from 'react-router-dom';
 import { Ratings } from '../../components/ratings/ratings';
 import { Boilergrades } from '../../components/boilergrades/boilergrades';
 import { Boilergrade } from '../../types/boilergrades';
@@ -36,12 +35,6 @@ export function Professor_Page() {
                     return;
                 }
                 setProfessor(res);
-
-                const first = res.firstname.replace(/([A-Z])$/g, '$1.');
-                const last = res.lastname;
-
-                BoilerGradesService.getInstructor({ first, last })
-                    .then(res => setBoilergrades(res));
             })
             .catch(err => {
                 setError(err?.message ?? err);
@@ -58,74 +51,7 @@ export function Professor_Page() {
         </>}
     </div></Layout>)
 
-    const bgdata = BoilerGradesService.reduceBoilergrades(boilergrades, 'course');
-
-    return (<Layout>
-        <Dialog open={viewReviews} onClose={() => setViewReviews(false)}>
-            <DialogTitle>Reviews</DialogTitle>    
-            <DialogContent>
-                <Button
-                    variant="contained"
-                    size="large"
-                    color="primary"
-                    className="w-full h-6"
-                    onClick={() => {
-                        setMakeReviews(true);
-                    }}>
-                    Do you want to make a reviews? Click Here.
-                </Button>
-                <div>
-                    Reviews Go Here
-                </div>
-                {professor.reviews?.map(review => <span>Course: {review.course}<br />
-                                                    User email: {review.email}<br />
-                                                    Date: {review.dateSubmitted}<br />
-                                                    Rating: {review.rating}<br />
-                                                    {review.comment}<br />
-                                                    Grade: {review.grade}<br />
-                                                    Is attendence mandatory? {review.attendanceReq}<br /></span>)}
-            </DialogContent>
-            <DialogActions>
-                <Button onClick={() => setViewReviews(false)}>Close</Button>
-            </DialogActions>
-        </Dialog>
-        <Dialog open={makeReviews} onClose={() => setMakeReviews(false)}>
-            <DialogTitle>Make a Review</DialogTitle>    
-            <DialogContent>
-                <TextField
-                    autoFocus
-                    margin="dense"
-                    label="Course"
-                    fullWidth
-                    variant="standard"
-                />
-                <TextField
-                    autoFocus
-                    margin="dense"
-                    label="Rating"
-                    fullWidth
-                    variant="standard"
-                />
-                <TextField multiline={true}
-                    autoFocus
-                    margin="dense"
-                    label="Comment"
-                    fullWidth
-                    variant="standard"
-                />
-                <TextField
-                    autoFocus
-                    margin="dense"
-                    label="Grade"
-                    fullWidth
-                    variant="standard"
-                />
-            </DialogContent>
-            <DialogActions>
-                <Button onClick={() => setMakeReviews(false)}>Close</Button>
-            </DialogActions>
-        </Dialog>
-        <div className="w-full h-full flex flex-col items-center">
+    return (<Layout><div className="w-full h-full flex flex-col items-center">
         <header className="text-center text-white text-3xl mt-4 w-full">
             <div className="float-left ml-2 text-2xl cursor-pointer" onClick={() => navigate(-1)}>
                 <FaArrowLeft />
@@ -151,7 +77,7 @@ export function Professor_Page() {
             </div> : null}
         </div>
 
-        <Boilergrades isCourseLinks={true} data={bgdata} className="w-full mb-4"  />
+        <Boilergrades instructor={professor._id} className="w-full mb-4"  />
 
         <Ratings instructor={professor._id} filter={searchParams.get('filter')?.split(',') ?? []} />
         <div></div>

@@ -1,6 +1,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@import 'react-js-cron/dist/styles.css';
 
 html, body, #root, #root > div {
   height: 100%;
@@ -9,4 +10,8 @@ html, body, #root, #root > div {
 a {
   @apply underline cursor-pointer;
 
+}
+
+.ant-select-dropdown {
+  z-index: 1500;
 }

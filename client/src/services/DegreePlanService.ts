@@ -32,6 +32,10 @@ class DegreePlanService extends Api {
     getTotalReqs(plan: string) {
         return this.get<{reqs: {courseID: string, subject: string}[]}>(`/api/degreePlan/${plan}/gradReqs`);
     }
+
+    getRecommendations(plan: string) {
+        return this.get<{recs: {uniqueID: string, courseID: string, subject: string}[]}>(`/api/degreePlan/${plan}/courseRecommendations`);
+    }
 }
 
 export default new DegreePlanService();
