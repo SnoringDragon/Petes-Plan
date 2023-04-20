@@ -44,6 +44,7 @@ export function ClassHistory() {
     const yearRef = useRef({value:''});
     const [semCourse, setSemCourse] = useState<ApiCourse>();
     const [selectedSem, setSelectedSem] = useState('Fall');
+    const [showWarning, setWarning] = useState(false);
 
     const [semesters, setSemesters] = useState<Semester[]>([]);
     const [selectedGpaSemester, setSelectedGpaSemester] = useState<string>(''
@@ -154,6 +155,18 @@ export function ClassHistory() {
             </DialogActions>
         </Dialog>
 
+        <Dialog open={showWarning} onClose={() => setWarning(false)}>
+            <DialogTitle>The prerequisites for this course have not been fulfilled!</DialogTitle>    
+            <DialogActions>
+                <Button onClick={() => setSem(false)}>Cancel</Button>
+                <Button onClick={() => {
+                   setSemCourse(course!);
+                   setSem(true);
+                    //TODO Update Integration 
+                }}>Override</Button>
+            </DialogActions>
+        </Dialog>
+
         <Dialog open={!!error} onClose={() => setError('')}>
             <DialogTitle>Error</DialogTitle>
             <DialogContent>
@@ -227,8 +240,12 @@ export function ClassHistory() {
                                         color="primary"
                                         className="w-full h-6"
                                         onClick={() => {
+                                            if (showWarning) {
+                                                setWarning(true);
+                                            } else {
                                             setSemCourse(course);
                                             setSem(true);
+                                            }
                                         }}>
                                         Add to History
                                     </Button>

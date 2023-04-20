@@ -81,6 +81,8 @@ export function FuturePlan() {
     const [selectedGpaSemester, setSelectedGpaSemester] = useState('');
 
     const [degreeSearch, setDegreeSearch] = useState('');
+    
+    const [recs, setRecs] = useState<{uniqueID: string, courseID: string, subject: string}[] | null>(null);
 
     const [courseModifications, setCourseModifications] = useState<{
         add: UserCourse[],
@@ -97,6 +99,10 @@ export function FuturePlan() {
         CourseService.searchCourse(searchRef.current.value)
             .then(res => setCourses(res));
     };
+    
+    const recc = () => {
+        //DegreePlanService.getRecommendations(degreePlan!._id).then(res =>{setRecs(res.recs)});
+    }
 
     const save = async () => {
         try {
@@ -127,6 +133,7 @@ export function FuturePlan() {
             if (res.degreePlans.length)
                 setDegreePlan(res.degreePlans[0]);
         });
+        
         SemesterService.getSemesters().then(res => setSemesters(res));
         GPAService.getCumulativeGPA().then(res => setCumulativeGpa(res));
     }, []);
@@ -337,7 +344,15 @@ export function FuturePlan() {
                 <hr className="w-full mt-6 mb-3 bg-slate-900" />
 
                 {section.flat().length ? <div className="flex flex-col grow basis-0">
-                    <div className="text-lg italic mb-2">Choose a course group, and pick one section of each schedule type from each group</div>
+                    <div className="text-lg italic mb-2 flex items-center">
+                        Choose a course group, and pick one section of each schedule type from each group
+                        <Button className="ml-auto" onClick={() => {
+                            if (hiddenSections.size)
+                                setHiddenSections(new Set());
+                            else
+                                setHiddenSections(new Set(section.flat(2).map(s => s._id)));
+                        }}>{hiddenSections.size ? 'Show' : 'Hide'} All</Button>
+                    </div>
 
                     <div className="overflow-y-auto flex flex-col grow basis-0">
                         {section.filter(groups => {
@@ -476,7 +491,25 @@ export function FuturePlan() {
                     </div>
 
                 </div>
-                <div className="bg-white rounded px-4 pb-3 pt-4 text-black w-full">
+
+                <div className="bg-white rounded px-4 pb-3 pt-4 text-black w-full overflow-auto h-96">
+                <div className="text-2xl">Course Recommendations</div>
+
+                <Button variant="contained" color="secondary" onClick={recc}>Generate Reccomendations</Button>
+                
+                {recs?.map((rec, i) => (<div
+                        className="w-full py-3 px-4 border-y flex items-center" key={i}>
+                        <Link to={`/course_description?subject=${rec.subject}&courseID=${rec.courseID}`} className="mr-auto">{rec.subject} {rec.courseID}</Link>
+                        <Button color="inherit" onClick={() => {
+                            // setSemCourse(rec);
+                            // setSem(true);
+                            // setInstructorFilter('');
+                            // setSection([]);
+                        }}>Add</Button>
+                    </div>))}
+                </div>
+
+                <div className="bg-white rounded px-4 pb-3 mt-4 pt-4 text-black w-full">
                     <div className="text-2xl">Search Courses</div>
                     <div className="flex items-center">
                         <TextField
