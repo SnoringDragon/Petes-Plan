@@ -26,11 +26,17 @@ const ratingSchema = new mongoose.Schema({
         type: [String],
         index: true
     },
+    from_rmp: {
+        type: Boolean,
+        default: true
+    },
+    dateSubmitted: String,
 
     wouldTakeAgain: Boolean,
     grade: String,
 
     typeSpecificId: String
+    
 
 }, {
     discriminatorKey: 'type',
