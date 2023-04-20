@@ -40,4 +40,4 @@ async function getReviewsByCourse(in_courseSubject, in_courseID) {
     return ret_reviews;
 }
 
-module.exports = saveReviews, getReviewsByProfessor, getReviewsByCourse;
+module.exports = {saveReview, getReviewsByProfessor, getReviewsByCourse};

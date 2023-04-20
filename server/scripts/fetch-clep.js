@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const cheerio = require('cheerio');
 
 //get Table of CLEP Credit
 //table.getElementsByTagName('table-responsive')
@@ -7,11 +8,13 @@ function getClepData() {
   .then(response => response.text())
   .then(content => {
     // parse the content using DOMParser
-    var tempDiv = document.createElement('div');
-    tempDiv.innerHTML = content;
+    //cheerio - selector
+    var selector = cheerio.load(content)
+    // var parser = new DOMParser();
+    var htmlDoc = parser.parseFromString(content, 'text/html');
     
     // find all elements with the tag name 'div' and class 'table-responsive'
-    var tableResponsiveElements = htmlDoc.getElementsByTagName('div');
+    var tableResponsiveElements = selector.getElementsByTagName('div');
     for (var i = 0; i < tableResponsiveElements.length; i++) {
       if (tableResponsiveElements[i].className == 'table-responsive') {
         // do something with the element
