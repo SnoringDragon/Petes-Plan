@@ -8,7 +8,7 @@ import Button from '@material-ui/core/Button';
 import React, { useEffect, useMemo, useRef } from 'react';
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import {FaChevronDown, FaSearch} from 'react-icons/fa';
+import {FaChevronDown, FaMinus, FaPlus, FaSearch} from 'react-icons/fa';
 import { ApiCourse, Meeting } from '../../types/course-requirements';
 import CourseService from '../../services/CourseService';
 import { Degree } from '../../types/degree';
@@ -57,6 +57,7 @@ export function FuturePlan() {
     const [degreePlan, setDegreePlan] = useState<DegreePlan | null>(null);
     const [error, setError] = useState('');
     const [section, setSection] = useState<Section[][][]>([]);
+    const [hiddenSections, setHiddenSections] = useState<Set<string>>(new Set());
 
     const [createNewPlan, setCreateNewPlan] = useState(false);
 
@@ -364,9 +365,20 @@ export function FuturePlan() {
                                                      else
                                                          setSelectedSection([...(selectedSection ?? []).filter(s => s.scheduleType !== section.scheduleType), section])
                                                  }} onMouseEnter={() => setHoveringSection(section)} onMouseLeave={() => setHoveringSection(null)}>
-                                                <div>{section.name} (CRN {section.crn}), {section.minCredits === section.maxCredits ?
-                                                    `${section.minCredits} Credits` : `${section.minCredits}-${section.maxCredits} Credits`}</div>
-                                                <div className="ml-2 grid" style={{
+                                                <div className="flex items-center">{section.name} (CRN {section.crn}), {section.minCredits === section.maxCredits ?
+                                                    `${section.minCredits} Credits` : `${section.minCredits}-${section.maxCredits} Credits`}
+
+                                                    <div className="ml-auto" onClick={(ev) => {
+                                                        if (hiddenSections.has(section._id))
+                                                            setHiddenSections(new Set([...hiddenSections].filter(s => s !== section._id)))
+                                                        else
+                                                            setHiddenSections(new Set([...hiddenSections, section._id]));
+                                                        ev.stopPropagation();
+                                                    }}>
+                                                        {hiddenSections.has(section._id) ? <FaPlus /> : <FaMinus />}
+                                                    </div>
+                                                </div>
+                                                {!hiddenSections.has(section._id) && <div className="ml-2 grid" style={{
                                                     gridTemplateColumns: 'minmax(0, .5fr) minmax(0, .5fr) minmax(0, 1fr) minmax(0, .75fr) minmax(0, 1fr)'
                                                 }}>
                                                     <div className="px-1 py-0.5 border border-gray-400 font-semibold">Time</div>
@@ -384,7 +396,7 @@ export function FuturePlan() {
                                                             {ins.firstname} {ins.lastname}
                                                         </Link>) : 'TBA'}</div>
                                                     </React.Fragment>)}
-                                                </div>
+                                                </div>}
                                             </div>
                                         </Tooltip>)}
                                     </div>)}
