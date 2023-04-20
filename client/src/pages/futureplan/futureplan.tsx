@@ -8,7 +8,7 @@ import Button from '@material-ui/core/Button';
 import React, { useEffect, useMemo, useRef } from 'react';
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { FaSearch } from 'react-icons/fa';
+import {FaChevronDown, FaMinus, FaPlus, FaSearch} from 'react-icons/fa';
 import { ApiCourse, Meeting } from '../../types/course-requirements';
 import CourseService from '../../services/CourseService';
 import { Degree } from '../../types/degree';
@@ -57,6 +57,7 @@ export function FuturePlan() {
     const [degreePlan, setDegreePlan] = useState<DegreePlan | null>(null);
     const [error, setError] = useState('');
     const [section, setSection] = useState<Section[][][]>([]);
+    const [hiddenSections, setHiddenSections] = useState<Set<string>>(new Set());
 
     const [createNewPlan, setCreateNewPlan] = useState(false);
 
@@ -343,49 +344,64 @@ export function FuturePlan() {
                             if (!instructorFilter) return true;
                             const instructors = groups.flat(2).flatMap(s => s.meetings.flatMap(m => m.instructors));
                             return instructors.find(inst => inst._id === instructorFilter);
-                        }).map((group, i) => <div key={i} className="px-4 py-3 mb-3 bg-gray-300 bg-opacity-25">
-                            <div className="text-xl mb-1.5">Group {i + 1}</div>
-                            <div>
-                                {[...group].sort((a, b) => SCHEDULE_ORDER[a[0].scheduleType] - SCHEDULE_ORDER[b[0].scheduleType]).map((sections, i) => <div key={i} className="px-3 py-2 bg-gray-300 bg-opacity-25 mb-2 rounded-md">
-                                    <div className="text-lg mb-1"><Tooltip arrow title={SCHEDULE_TYPES[sections[0].scheduleType as keyof typeof SCHEDULE_TYPES]}>
-                                        <span>{sections[0].scheduleType}</span>
-                                    </Tooltip> Schedule Type</div>
-                                    {sections.map((section, i) => <Tooltip arrow placement="top" enterDelay={250}
-                                                                           title={<div className="pointer-events-none -mx-6 -mb-12 -mt-20 scale-90 scale-y-75">{previewSectionCalendar}</div>}
-                                                                           classes={{ tooltip: 'max-w-2xl overflow-hidden' }}>
-                                        <div key={i} className={`p-1 border-gray-400 border rounded mb-1 cursor-pointer
+                        }).map((group, i) => <div key={i} className="mb-2">
+                            <Accordion defaultExpanded={true}>
+                                <AccordionSummary expandIcon={<FaChevronDown />}>
+                                    <div className="text-xl">Group {i + 1}</div>
+                                </AccordionSummary>
+                                <AccordionDetails className="flex flex-col">
+                                    {[...group].sort((a, b) => SCHEDULE_ORDER[a[0].scheduleType] - SCHEDULE_ORDER[b[0].scheduleType]).map((sections, i) => <div key={i} className="px-3 py-2 bg-gray-300 bg-opacity-25 mb-2 rounded-md">
+                                        <div className="text-lg mb-1"><Tooltip arrow title={SCHEDULE_TYPES[sections[0].scheduleType as keyof typeof SCHEDULE_TYPES]}>
+                                            <span>{sections[0].scheduleType}</span>
+                                        </Tooltip> Schedule Type</div>
+                                        {sections.map((section, i) => <Tooltip arrow placement="top" enterDelay={250}
+                                                                               title={<div className="pointer-events-none -mx-6 -mb-12 -mt-20 scale-90 scale-y-75">{previewSectionCalendar}</div>}
+                                                                               classes={{ tooltip: 'max-w-2xl overflow-hidden' }}>
+                                            <div key={i} className={`p-1 border-gray-400 border rounded mb-1 cursor-pointer
                                             ${selectedSectionSet.has(section._id) ? 'bg-pink-400 bg-opacity-25' : ''}`}
-                                            onClick={() => {
-                                                if (selectedSectionSet.has(section._id))
-                                                    setSelectedSection(selectedSection!.filter(s => s._id !== section._id))
-                                                else
-                                                    setSelectedSection([...(selectedSection ?? []).filter(s => s.scheduleType !== section.scheduleType), section])
-                                            }} onMouseEnter={() => setHoveringSection(section)} onMouseLeave={() => setHoveringSection(null)}>
-                                            <div>{section.name} (CRN {section.crn}), {section.minCredits === section.maxCredits ?
-                                                `${section.minCredits} Credits` : `${section.minCredits}-${section.maxCredits} Credits`}</div>
-                                            <div className="ml-2 grid" style={{
-                                                gridTemplateColumns: 'minmax(0, .5fr) minmax(0, .5fr) minmax(0, 1fr) minmax(0, .75fr) minmax(0, 1fr)'
-                                            }}>
-                                                <div className="px-1 py-0.5 border border-gray-400 font-semibold">Time</div>
-                                                <div className="px-1 py-0.5 border border-gray-400 font-semibold">Days</div>
-                                                <div className="px-1 py-0.5 border border-gray-400 font-semibold">Location</div>
-                                                <div className="px-1 py-0.5 border border-gray-400 font-semibold">Date Range</div>
-                                                <div className="px-1 py-0.5 border border-gray-400 font-semibold">Instructors</div>
+                                                 onClick={() => {
+                                                     if (selectedSectionSet.has(section._id))
+                                                         setSelectedSection(selectedSection!.filter(s => s._id !== section._id))
+                                                     else
+                                                         setSelectedSection([...(selectedSection ?? []).filter(s => s.scheduleType !== section.scheduleType), section])
+                                                 }} onMouseEnter={() => setHoveringSection(section)} onMouseLeave={() => setHoveringSection(null)}>
+                                                <div className="flex items-center">{section.name} (CRN {section.crn}), {section.minCredits === section.maxCredits ?
+                                                    `${section.minCredits} Credits` : `${section.minCredits}-${section.maxCredits} Credits`}
 
-                                                {section.meetings.map((meeting, i) => <React.Fragment key={i}>
-                                                    <div className="px-1 py-0.5 border border-gray-400">{meeting.startTime && meeting.endTime ? `${meeting.startTime}-${meeting.endTime}` : 'TBA'}</div>
-                                                    <div className="px-1 py-0.5 border border-gray-400">{meeting.days?.length ? meeting.days.join(', ') : 'TBA'}</div>
-                                                    <div className="px-1 py-0.5 border border-gray-400">{meeting.location ?? 'TBA'}</div>
-                                                    <div className="px-1 py-0.5 border border-gray-400">{meeting.startDate && meeting.endDate ? `${meeting.startDate}-${meeting.endDate}` : 'TBA'}</div>
-                                                    <div className="px-1 py-0.5 border border-gray-400">{meeting.instructors.length ? meeting.instructors.map((ins, i) => <Link to={'/'}>
-                                                        {ins.firstname} {ins.lastname}
-                                                    </Link>) : 'TBA'}</div>
-                                                </React.Fragment>)}
+                                                    <div className="ml-auto" onClick={(ev) => {
+                                                        if (hiddenSections.has(section._id))
+                                                            setHiddenSections(new Set([...hiddenSections].filter(s => s !== section._id)))
+                                                        else
+                                                            setHiddenSections(new Set([...hiddenSections, section._id]));
+                                                        ev.stopPropagation();
+                                                    }}>
+                                                        {hiddenSections.has(section._id) ? <FaPlus /> : <FaMinus />}
+                                                    </div>
+                                                </div>
+                                                {!hiddenSections.has(section._id) && <div className="ml-2 grid" style={{
+                                                    gridTemplateColumns: 'minmax(0, .5fr) minmax(0, .5fr) minmax(0, 1fr) minmax(0, .75fr) minmax(0, 1fr)'
+                                                }}>
+                                                    <div className="px-1 py-0.5 border border-gray-400 font-semibold">Time</div>
+                                                    <div className="px-1 py-0.5 border border-gray-400 font-semibold">Days</div>
+                                                    <div className="px-1 py-0.5 border border-gray-400 font-semibold">Location</div>
+                                                    <div className="px-1 py-0.5 border border-gray-400 font-semibold">Date Range</div>
+                                                    <div className="px-1 py-0.5 border border-gray-400 font-semibold">Instructors</div>
+
+                                                    {section.meetings.map((meeting, i) => <React.Fragment key={i}>
+                                                        <div className="px-1 py-0.5 border border-gray-400">{meeting.startTime && meeting.endTime ? `${meeting.startTime}-${meeting.endTime}` : 'TBA'}</div>
+                                                        <div className="px-1 py-0.5 border border-gray-400">{meeting.days?.length ? meeting.days.join(', ') : 'TBA'}</div>
+                                                        <div className="px-1 py-0.5 border border-gray-400">{meeting.location ?? 'TBA'}</div>
+                                                        <div className="px-1 py-0.5 border border-gray-400">{meeting.startDate && meeting.endDate ? `${meeting.startDate}-${meeting.endDate}` : 'TBA'}</div>
+                                                        <div className="px-1 py-0.5 border border-gray-400">{meeting.instructors.length ? meeting.instructors.map((ins, i) => <Link to={'/'}>
+                                                            {ins.firstname} {ins.lastname}
+                                                        </Link>) : 'TBA'}</div>
+                                                    </React.Fragment>)}
+                                                </div>}
                                             </div>
-                                        </div>
-                                    </Tooltip>)}
-                                </div>)}
-                            </div>
+                                        </Tooltip>)}
+                                    </div>)}
+                                </AccordionDetails>
+                            </Accordion>
                         </div>)}
                     </div>
                 </div> : <div>No sections available</div>}
