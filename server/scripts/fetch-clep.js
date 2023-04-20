@@ -16,10 +16,35 @@ function getClepData() {
     allScores =[]
     
     $("#inner-page-content > div > div > div.col-lg-8.main-content > div > table > tbody > tr > td:nth-child(1)").each((index, element) => {
-        allClasses.push([$(element).text()]);
-      });
-      console.log(allClasses[0])
+        allClasses.push($(element).text());
+    });
+    $("#inner-page-content > div > div > div.col-lg-8.main-content > div > table > tbody > tr > td:nth-child(2)").each((index, element) => {
+        allCourses.push($(element).text());
+    });
+    $("#inner-page-content > div > div > div.col-lg-8.main-content > div > table > tbody > tr > td:nth-child(3)").each((index, element) => {
+        allHours.push($(element).text());
+    });
+    $("#inner-page-content > div > div > div.col-lg-8.main-content > div > table > tbody > tr > td:nth-child(4)").each((index, element) => {
+        allScores.push($(element).text());
+    });
+    
+    for (let i = 0; i < allCourses.length; i++) {
+        if (allCourses[i].includes("+")) {
+            let split = allCourses[i].split("+");
+            allCourses[i] = split;
+            console.log(allCourses[i])
+        } else if (allCourses[i].includes("and")) {
+            let split = allCourses[i].split("and");
+            allCourses[i] = split;
+            console.log(allCourses[i]) 
+            if (/^[A-Za-z0-9]*$/.test(split[0])) {
+
+            }
+        }
     }
+
+    }
+
     
     // find all elements with the tag name 'div' and class 'table-responsive'
     // const tables = $('td');
