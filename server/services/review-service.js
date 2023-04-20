@@ -8,7 +8,7 @@ async function saveReview(in_email, in_dateSubmitted, in_courseSubject, in_cours
     let instructor_ret = await Instructor.findOne({ firstname: instructor_fname, lastname: instructor_lname });
     let user = await User.findOne({ email: in_email}); //don't need this yet, but maybe in the future?
     let course_ret = await Course.findOne({ subject: in_courseSubject, courseId: in_courseID});
-    let review = await Rating.create({ dateSubmitted : in_dateSubmitted, instructor: instructor_ret, course: course_ret, quality: rating, review: comment,  wouldTakeAgain: in_wouldTakeAgain, grade: in_grade});
+    let review = await Rating.create({ dateSubmitted : in_dateSubmitted, instructor: instructor_ret, course: course_ret, quality: rating, review: comment,  wouldTakeAgain: in_wouldTakeAgain, grade: in_grade, from_rmp: false});
 }
 
 // //ret type: 2D array
