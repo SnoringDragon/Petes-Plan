@@ -32,14 +32,19 @@ function getClepData() {
         if (allCourses[i].includes("+")) {
             let split = allCourses[i].split("+");
             allCourses[i] = split;
-            console.log(allCourses[i])
         } else if (allCourses[i].includes("and")) {
-            let split = allCourses[i].split("and");
-            allCourses[i] = split;
-            console.log(allCourses[i]) 
-            if (/^[A-Za-z0-9]*$/.test(split[0])) {
-
+            
+            
+            if (/^([A-Z]+)\s+(\d+)((?:\s+and\s+\d+)+)/.test(allCourses[i])) {
+                var pattern = /[A-Z]+/;
+                match = pattern.exec(allCourses[i])
+                console.log("here:", match[0])
             }
+            let split = allCourses[i].split("and");
+            // console.log(allCourses[i])
+            split[1] = match[0] + split[1]
+            allCourses[i] = split;
+            console.log(allCourses[i])
         }
     }
 
