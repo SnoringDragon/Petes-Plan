@@ -1,4 +1,4 @@
-import { Button, Card, CardContent, CardHeader, FormControl, IconButton, InputLabel, MenuItem, Select, TextField } from "@material-ui/core";
+import { Card, CardContent, CardHeader, FormControl, IconButton, InputLabel, MenuItem, Select, TextField } from "@material-ui/core";
 import { Layout } from "../../components/layout/layout";
 import { CSSProperties, useEffect, useRef, useState } from "react";
 import SemesterService from "../../services/SemesterService";
@@ -15,7 +15,6 @@ export function SemesterCalendar() {
     // Constant config options
     const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
     const colors = ["rgb(227, 23, 10)", "rgb(169, 229, 187)", "rgb(252, 246, 177)", "rgb(247, 179, 43)", "rgb(56, 145, 166)", "rgb(154, 196, 248)", "rgb(171, 146, 191)", "rgb(175, 77, 152)", "rgb(89, 210, 254)", "rgb(56, 102, 65)", "rgb(134, 22, 87)"];
-    const operatingHours = ["7AM", "8AM", "9AM", "10AM", "11AM", "12PM", "1PM", "2PM", "3PM", "4PM", "5PM"];
 
     const [selectedSem, setSem] = useState<string>((): string => {
         const date = new Date();
