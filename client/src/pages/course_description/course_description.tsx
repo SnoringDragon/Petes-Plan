@@ -20,7 +20,8 @@ import {
     FormControl,
     InputLabel,
     MenuItem,
-    Select
+    Select,
+    TextField
 } from '@material-ui/core';
 import { Semester } from '../../types/semester';
 import SemesterService from '../../services/SemesterService';
@@ -38,6 +39,9 @@ export function Course_Description() {
     const [section, setSection] = useState<Section[][][] | null>(null);
     const [showSections, setShowSections] = useState(true);
     const [semesters, setSemesters] = useState<Semester[]>([]);
+
+    const [viewReviews, setViewReviews] = useState(false);
+    const [makeReviews, setMakeReviews] = useState(false);
 
     useEffect(() => {
         CourseHistoryService.getCourses()
@@ -95,7 +99,72 @@ export function Course_Description() {
         </>}
     </div></Layout>);
 
-    return (<Layout><div className="w-full h-full flex flex-col items-center">
+    return (<Layout>
+        <Dialog open={viewReviews} onClose={() => setViewReviews(false)}>
+            <DialogTitle>Reviews</DialogTitle>    
+            <DialogContent>
+                <Button
+                    variant="contained"
+                    size="large"
+                    color="primary"
+                    className="w-full h-6"
+                    onClick={() => {
+                        setMakeReviews(true);
+                    }}>
+                    Do you want to make a reviews? Click Here.
+                </Button>
+                <div>
+                    Reviews Go Here
+                </div>
+                {course.reviews?.map(review => <span>Professor: {review.professor}<br />
+                                                    User email: {review.email}<br />
+                                                    Date: {review.dateSubmitted}<br />
+                                                    Rating: {review.rating}<br />
+                                                    {review.comment}<br />
+                                                    Grade: {review.grade}<br />
+                                                    Is attendence mandatory? {review.attendanceReq}<br /></span>)}
+            </DialogContent>
+            <DialogActions>
+                <Button onClick={() => setViewReviews(false)}>Close</Button>
+            </DialogActions>
+        </Dialog>
+        <Dialog open={makeReviews} onClose={() => setMakeReviews(false)}>
+            <DialogTitle>Make a Review</DialogTitle>    
+            <DialogContent>
+                <TextField
+                    autoFocus
+                    margin="dense"
+                    label="Professor"
+                    fullWidth
+                    variant="standard"
+                />
+                <TextField
+                    autoFocus
+                    margin="dense"
+                    label="Rating"
+                    fullWidth
+                    variant="standard"
+                />
+                <TextField multiline={true}
+                    autoFocus
+                    margin="dense"
+                    label="Comment"
+                    fullWidth
+                    variant="standard"
+                />
+                <TextField
+                    autoFocus
+                    margin="dense"
+                    label="Grade"
+                    fullWidth
+                    variant="standard"
+                />
+            </DialogContent>
+            <DialogActions>
+                <Button onClick={() => setMakeReviews(false)}>Close</Button>
+            </DialogActions>
+        </Dialog>
+        <div className="w-full h-full flex flex-col items-center">
         <header className="text-center text-white text-3xl mt-4 w-full">
             <div className="float-left ml-2 text-2xl cursor-pointer" onClick={() => navigate(-1)}>
                 <FaArrowLeft />
@@ -190,6 +259,17 @@ export function Course_Description() {
 
             <div className="mt-5 underline">Reviews:</div>
             <Ratings courseID={course.courseID} subject={course.subject} filter={searchParams.get('filter')?.split(',') ?? []} />
+            <div></div>
+            <Button
+            variant="contained"
+            size="large"
+            color="primary"
+            className="w-full h-6"
+            onClick={() => {
+                setViewReviews(true);
+            }}>
+            Do you want to view the reviews? Click Here.
+        </Button>
         </div>
     </div></Layout>)
 }

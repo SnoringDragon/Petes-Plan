@@ -6,5 +6,5 @@ export type ProfessorCourse = {
     year: number,
     subject: string,
     professors: string,
-    time: string
+    time: string,
 }
