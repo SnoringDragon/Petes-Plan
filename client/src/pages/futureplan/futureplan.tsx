@@ -337,7 +337,15 @@ export function FuturePlan() {
                 <hr className="w-full mt-6 mb-3 bg-slate-900" />
 
                 {section.flat().length ? <div className="flex flex-col grow basis-0">
-                    <div className="text-lg italic mb-2">Choose a course group, and pick one section of each schedule type from each group</div>
+                    <div className="text-lg italic mb-2 flex items-center">
+                        Choose a course group, and pick one section of each schedule type from each group
+                        <Button className="ml-auto" onClick={() => {
+                            if (hiddenSections.size)
+                                setHiddenSections(new Set());
+                            else
+                                setHiddenSections(new Set(section.flat(2).map(s => s._id)));
+                        }}>{hiddenSections.size ? 'Show' : 'Hide'} All</Button>
+                    </div>
 
                     <div className="overflow-y-auto flex flex-col grow basis-0">
                         {section.filter(groups => {
