@@ -5,6 +5,8 @@ const Course = require('../models/courseModel');
 const Instructor = require('../models/instructorModel');
 const {Rating} = require("../models/ratingModel");
 const toTitleCase = require("../utils/title-case");
+const ReviewService = require("../services/review-service");
+const {authenticate} = require("../middleware/authenticate");
 
 module.exports = app => {
     const router = Router();
@@ -170,6 +172,15 @@ module.exports = app => {
         ]);
 
         res.json(ratings[0]);
+    });
+
+    router.post('/', async (req, res) => {
+        try {
+            await ReviewService.saveReview(req.body);
+            res.json({});
+        } catch {
+            return res.status(400).json({ message: 'Invalid arguments' });
+        }
     });
 
     app.use('/api/ratings', router);

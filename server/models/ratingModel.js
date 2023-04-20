@@ -26,7 +26,6 @@ const ratingSchema = new mongoose.Schema({
         type: [String],
         index: true
     },
-    dateSubmitted: String,
 
     wouldTakeAgain: Boolean,
     grade: String,
