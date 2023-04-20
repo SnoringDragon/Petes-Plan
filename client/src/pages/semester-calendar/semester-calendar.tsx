@@ -32,8 +32,11 @@ export function SemesterCalendar() {
     const [colWidth, setColWidth] = useState<CSSProperties>({ width: "14%" });
     const [coursesByDay, setCoursesByDay] = useState<JSX.Element[][]>([[], [], [], [], [], [], []]);
     const [selectedWeek, setSelectedWeek] = useState<Date>(); //TODO: Set to lowest date in courses
-    const [dateBounds, setDateBounds] = useState<(Date | undefined)[]>([undefined, undefined]); //TODO: Set to lowest and highest date in courses
+    const [dateBounds, setDateBounds] = useState<(Date | undefined)[]>([undefined, undefined]);
+    const [timeBounds, setTimeBounds] = useState<(Date | undefined)[]>([undefined, undefined]); //TODO: Set to lowest and highest time in courses
+    
     //TODO: Add week selection
+    //TODO: Resize calendar for high and low time bounds
 
     // Get a Date object from a time string
     function parseTime(time: string): Date {
@@ -71,19 +74,30 @@ export function SemesterCalendar() {
     useEffect(() => {
         if (degreePlans.length === 0) return;
         var courses: UserCourse[] = [];
+        var dateBounds: (Date | undefined)[] = [undefined, undefined];
+        var timeBounds: (Date | undefined)[] = [undefined, undefined];
         degreePlans[degreePlan].courses.forEach(course => {
             if (course.semester) {
                 if (course.semester === selectedSem && course.year === selectedYear) {
                     courses.push(course);
 
-                    // Update date bounds
+                    // Update date/time bounds
                     if (course.section) {
                         //TODO: Add support for courses with multiple sections
                         course.section.meetings.forEach((meeting: Meeting) => {
+                            // Update date bounds
                             var startDate: Date = parseDate(meeting.startDate);
                             var endDate: Date = parseDate(meeting.endDate);
-                            if (!dateBounds[0] || startDate < dateBounds[0]) setDateBounds([startDate, dateBounds[1]]);
-                            if (!dateBounds[1] || endDate > dateBounds[1]) setDateBounds([dateBounds[0], endDate]);
+                            if (!dateBounds[0] || startDate < dateBounds[0]) dateBounds[0] = startDate;
+                            if (!dateBounds[1] || endDate > dateBounds[1]) dateBounds[1] = endDate;
+
+                            // Update time bounds
+                            var startTime: Date = parseTime(meeting.startTime);
+                            startTime.setMinutes(-60);
+                            var endTime: Date = parseTime(meeting.endTime);
+                            endTime.setMinutes(60);
+                            if (!timeBounds[0] || startTime < timeBounds[0]) timeBounds[0] = startTime;
+                            if (!timeBounds[1] || endTime > timeBounds[1]) timeBounds[1] = endTime;
                         });
                     } else {
                         //TODO: Add support for courses with no section
@@ -99,6 +113,9 @@ export function SemesterCalendar() {
             setSelectedWeek(firstDay);
         }
 
+        // Update state
+        setDateBounds(dateBounds);
+        setTimeBounds(timeBounds);
         setCourses(courses);
     }, [semester, degreePlan, degreePlans]);
 
@@ -126,6 +143,8 @@ export function SemesterCalendar() {
                     const end = parseTime(meeting.endTime);
                     const duration = (end.getTime() - start.getTime()) / 1000 / 60;
                     const top = (start.getTime() - (new Date(0,0,0,7)).getTime()) / 1000 / 60;
+
+
 
                     // Iterate through days in meeting
                     meeting.days.forEach((day: string) => {
