@@ -31,12 +31,11 @@ export function SemesterCalendar() {
     const [courses, setCourses] = useState<UserCourse[]>([]);
     const [colWidth, setColWidth] = useState<CSSProperties>({ width: "14%" });
     const [coursesByDay, setCoursesByDay] = useState<JSX.Element[][]>([[], [], [], [], [], [], []]);
-    const [selectedWeek, setSelectedWeek] = useState<Date>(); //TODO: Set to lowest date in courses
+    const [selectedWeek, setSelectedWeek] = useState<Date>();
     const [dateBounds, setDateBounds] = useState<(Date | undefined)[]>([undefined, undefined]);
-    const [timeBounds, setTimeBounds] = useState<(Date | undefined)[]>([undefined, undefined]); //TODO: Set to lowest and highest time in courses
+    const [timeBounds, setTimeBounds] = useState<(Date | undefined)[]>([undefined, undefined]);
     
     //TODO: Add week selection
-    //TODO: Resize calendar for high and low time bounds
 
     // Get a Date object from a time string
     function parseTime(time: string): Date {
@@ -93,7 +92,8 @@ export function SemesterCalendar() {
 
                             // Update time bounds
                             var startTime: Date = parseTime(meeting.startTime);
-                            startTime.setMinutes(-60);
+                            startTime.setMinutes(startTime.getMinutes()-30);
+                            startTime.setMinutes(0);
                             var endTime: Date = parseTime(meeting.endTime);
                             endTime.setMinutes(60);
                             if (!timeBounds[0] || startTime < timeBounds[0]) timeBounds[0] = startTime;
@@ -128,6 +128,8 @@ export function SemesterCalendar() {
             return meeting.instructors[0].lastname + ", " + meeting.instructors[0].firstname;
         }
 
+        if (!timeBounds[0] || !timeBounds[1]) return; // Skip if no time bounds (no courses)
+
         // Iterate through added courses
         var coursesByDay: JSX.Element[][] = [[], [], [], [], [], [], []];
         courses.forEach((course: UserCourse, i: number) => {
@@ -142,9 +144,7 @@ export function SemesterCalendar() {
                     const start = parseTime(meeting.startTime);
                     const end = parseTime(meeting.endTime);
                     const duration = (end.getTime() - start.getTime()) / 1000 / 60;
-                    const top = (start.getTime() - (new Date(0,0,0,7)).getTime()) / 1000 / 60;
-
-
+                    const top = (start.getTime() - (timeBounds[0]?.getTime() ?? 0)) / 1000 / 60;
 
                     // Iterate through days in meeting
                     meeting.days.forEach((day: string) => {
@@ -188,7 +188,7 @@ export function SemesterCalendar() {
                 });
             }
 
-            // Add courses that have no selected section
+            //TODO: Add courses that have no selected section
         });
         setCoursesByDay(coursesByDay);
     }, [courses]);
@@ -270,6 +270,10 @@ export function SemesterCalendar() {
             );
         }
 
+        function weekModifier(): (undefined | JSX.Element) {
+            return (<></>);
+        }
+
         // Render semester selection
         return (
             <div className="flex items-center">
@@ -282,26 +286,35 @@ export function SemesterCalendar() {
                 <div className="mr-6">
                     {yearTextField()}
                 </div>
+                <div className="mr-6">
+                    {weekModifier()}
+                </div>
             </div>
         );
     }
 
     function renderCalendar(): JSX.Element {
-        // Generate column of time markers
-        const timeBlocks = operatingHours.map((hour, i) => (
-            <div className="blockStyle">
-                {hour}
-            </div>
-        ));
+        // Print error if not displayable
+        if (!semester) return (<div className="text-center">Semester not found</div>);
+        if (!coursesByDay || !selectedWeek || !timeBounds[0] || !timeBounds[1]) return (<div className="text-center">No courses selected for this semester</div>);
 
-        // Generate grid for each day
-        const calendarGrid = operatingHours.map((hour, i) => (
-            <div className="MajorGridStyle" style={{top: (60*i)+"px"}}>
-                <div className="MinorGridStyle" style={{top: "15px"}} />
-                <div className="MinorGridStyle" style={{top: "30px"}} />
-                <div className="MinorGridStyle" style={{top: "45px"}} />
-            </div>
-        ));
+        // Generate column of time markers and background grid
+        var timeBlocks: JSX.Element[] = []
+        var calendarGrid: JSX.Element[] = [];
+        for (var i: number = timeBounds[0].getHours(); i < timeBounds[1].getHours(); i++) {
+            timeBlocks.push(
+                <div className="blockStyle">
+                    {(i%12+1) + (i < 12 ? "AM" : "PM")}
+                </div>
+            );
+            calendarGrid.push(
+                <div className="MajorGridStyle" style={{top: (60*(i-timeBounds[0].getHours()))+"px"}}>
+                    <div className="MinorGridStyle" style={{top: "15px"}} />
+                    <div className="MinorGridStyle" style={{top: "30px"}} />
+                    <div className="MinorGridStyle" style={{top: "45px"}} />
+                </div>
+            );
+        }
 
         const columns = days.map((day, i) => (
             <div style={colWidth}>
