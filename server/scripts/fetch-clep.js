@@ -100,11 +100,11 @@ async function saveData(value, key, map) {
             courses: returnCourses(value[i][1])
         })
     }
-    console.log(credits)
-    let CLEP = await APTest.create({
+    await APTest.findOneAndUpdate({
         name: key,
-        type: "clep",
-        credits: credits
-    }); 
+        type: 'clep'
+    }, {
+        credits
+    }, { upsert: true });
 } 
-getClepData()
+module.exports = getClepData
