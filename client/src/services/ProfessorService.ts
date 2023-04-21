@@ -9,6 +9,16 @@ class ProfessorService extends Api {
     searchProfessor(query: string) {
         return this.get<ApiProfessor[]>(`/api/instructors/search?q=${encodeURIComponent(query)}`);
     }
+
+    addReview(reviews: { dateSubmitted: string,
+                        professor_id: string,
+                        course: string,
+                        attendanceReq: boolean,
+                        rating: number,
+                        comment: string,
+                        grade: string}) {
+    return this.post('/api/instructors/add', { reviews });
+    }
 }
 
 export default new ProfessorService();

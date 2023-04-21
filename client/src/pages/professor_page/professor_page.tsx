@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Layout } from '../../components/layout/layout';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { ApiProfessor } from '../../types/professor';
@@ -20,9 +20,25 @@ export function Professor_Page() {
     const [professor, setProfessor] = useState<ApiProfessor | null>(null);
     const [boilergrades, setBoilergrades] = useState<Boilergrade[]>([]);
 
-    const [viewReviews, setViewReviews] = useState(false);
     const [makeReviews, setMakeReviews] = useState(false);
 
+    const course = useRef({value:''});
+    const rating = useRef({value:''});
+    const comment = useRef({value:''});
+    const grade = useRef({value:''});
+    const difficulty = useRef({value:''});
+    const attendanceReq = useRef({value:''});
+
+    const [addReviews, setAddReviews] = useState<{
+        add: { email: string,
+            dateSubmitted: string,
+            professor: string,
+            course: string,
+            attendanceReq: boolean,
+            rating: number,
+            comment: string,
+            grade: string}[]
+    }>({ add: []});
 
     useEffect(() => {
         const id = searchParams.get('id') ?? '';
@@ -51,7 +67,77 @@ export function Professor_Page() {
         </>}
     </div></Layout>)
 
-    return (<Layout><div className="w-full h-full flex flex-col items-center">
+    const save = () => {
+        const promises = [];
+
+        if (addReviews.add.length)
+            promises.push(ProfessorService.addReview(addReviews.add);
+
+        Promise.all(promises)
+            .then(res => {
+                setAddReviews({ add: [] });
+            })
+            .catch(err => {
+                setError(err?.message ?? err);
+            })
+    };
+
+    return (<Layout>
+        <Dialog open={makeReviews} onClose={() => setMakeReviews(false)}>
+            <DialogTitle>Make a Review</DialogTitle>    
+            <DialogContent>
+                <TextField
+                    autoFocus
+                    margin="dense"
+                    label="Course"
+                    fullWidth
+                    variant="standard"
+                    inputRef={course}
+                />
+                <TextField
+                    autoFocus
+                    margin="dense"
+                    label="Rating"
+                    fullWidth
+                    variant="standard"
+                    inputRef={rating}
+                />
+                <TextField multiline={true}
+                    autoFocus
+                    margin="dense"
+                    label="Comment"
+                    fullWidth
+                    variant="standard"
+                    inputRef={comment}
+                />
+                <TextField
+                    autoFocus
+                    margin="dense"
+                    label="Grade"
+                    fullWidth
+                    variant="standard"
+                    innerRef={grade}
+                />
+            </DialogContent>
+            <DialogActions>
+                <Button onClick={() => setMakeReviews(false)}>Close</Button>
+                <Button onClick={() => {
+                    const modifications = {...courseModifications};
+                    modifications.add = [...modifications.add, {
+                        professor_id: string,
+                        course: course,
+                        attendanceReq: boolean,
+                        rating: rating,
+                        comment: comment,
+                        grade: grade,
+                        difficulty: difficulty
+                    }];
+                    setCourseModifications(modifications);
+                    setSem(false);
+                }}>Add</Button>
+            </DialogActions>
+        </Dialog>
+        <div className="w-full h-full flex flex-col items-center">
         <header className="text-center text-white text-3xl mt-4 w-full">
             <div className="float-left ml-2 text-2xl cursor-pointer" onClick={() => navigate(-1)}>
                 <FaArrowLeft />
@@ -87,9 +173,9 @@ export function Professor_Page() {
             color="primary"
             className="w-full h-6"
             onClick={() => {
-                setViewReviews(true);
+                setMakeReviews(true);
             }}>
-            Do you want to view the reviews? Click Here.
+            Do you want to leave a review? Click Here.
         </Button>
     </div></Layout>)
 }
