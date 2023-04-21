@@ -164,6 +164,29 @@ export function FuturePlan() {
         return true;
     }
 
+    const setValues = (semCourse: ApiCourse, semesters:{
+        _id: string;
+        semester: string;
+        year: number;
+        term: string;
+    }, now: number) => {
+        setCourseModifications({
+            ...courseModifications,
+            add: [...courseModifications.add, ...(selectedSection?.map((s, i) => {
+                return {
+                    _id: '' + (now + i),
+                    subject: semCourse.subject,
+                    courseID: semCourse.courseID,
+                    semester: semesters.semester,
+                    grade: 'A',
+                    year: semesters.year,
+                    section: s,
+                    courseData: {  ...semCourse, sections: section }
+                }
+            }).filter(x => x) ?? [])]
+        });
+    }
+
     const save = async () => {
         try {
             await DegreePlanService.removeFromDegreePlan(degreePlan!._id, degreeModifications.delete, courseModifications.delete)
@@ -527,21 +550,8 @@ export function FuturePlan() {
                         if (checkOverride(semCourse, semesters)) {
                             setWarning(true);
                             if (overidden) {
-                                setCourseModifications({
-                                    ...courseModifications,
-                                    add: [...courseModifications.add, ...(selectedSection?.map((s, i) => {
-                                        return {
-                                            _id: '' + (now + i),
-                                            subject: semCourse.subject,
-                                            courseID: semCourse.courseID,
-                                            semester: semesters.semester,
-                                            grade: 'A',
-                                            year: semesters.year,
-                                            section: s,
-                                            courseData: {  ...semCourse, sections: section }
-                                        }
-                                    }).filter(x => x) ?? [])]
-                                });
+                                setValues(semCourse, semesters, now);
+                                
                                 setOverride(false);
                                 console.log("reached");
                             }
