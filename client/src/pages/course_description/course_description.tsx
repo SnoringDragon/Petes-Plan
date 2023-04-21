@@ -120,32 +120,43 @@ export function Course_Description() {
                 <TextField
                     autoFocus
                     margin="dense"
-                    label="Professor"
+                    label="Search Professor"
                     fullWidth
                     variant="standard"
                     inputRef={professor}
                     onChange={(event) => {
-                        ProfessorService.searchProfessor(professor.current.value).then(setProfessorList)
+                        setSelectedProf('');
+                        ProfessorService.searchProfessor(professor.current.value)
+                            .then(res => {
+                                setProfessorList(res);
+                                if (res.length)
+                                    setSelectedProf(res[0]._id);
+                            })
                     }}
                 />
-                <Select value={selectedProf} onChange={ev => setSelectedProf(ev.target.value as any)}>
+                {professorList.length ? <Select className="w-full" value={selectedProf} onChange={ev => setSelectedProf(ev.target.value as any)}>
                     {professorList.map((list) => <MenuItem value={list._id}>{list.firstname} {list.lastname}</MenuItem>)}
-                </Select>
+                </Select> : 'No Professors Found'}
+
                 <TextField
                     autoFocus
                     margin="dense"
                     label="Rating 1-5"
                     fullWidth
                     variant="standard"
+                    type="number"
+                    InputProps={{ inputProps: { min: 1, max: 5, step: 0.25 } }}
                     inputRef={rating}
                 />
-                <TextField multiline={true}
+                <TextField
                     autoFocus
                     margin="dense"
-                    label="Comment"
+                    label="Difficulty 1-5"
                     fullWidth
                     variant="standard"
-                    inputRef={comment}
+                    type="number"
+                    InputProps={{ inputProps: { min: 1, max: 5, step: 0.25 } }}
+                    inputRef={difficulty}
                 />
                 <TextField
                     autoFocus
@@ -155,14 +166,16 @@ export function Course_Description() {
                     variant="standard"
                     inputRef={grade}
                 />
-                <TextField
+                <TextField multiline={true}
                     autoFocus
                     margin="dense"
-                    label="Difficult 1-5"
+                    label="Comment"
                     fullWidth
                     variant="standard"
-                    inputRef={difficulty}
+                    inputRef={comment}
                 />
+
+
                 <Checkbox
                     onChange={() => setTakeAgain(!takeAgain)}
                     checked={takeAgain}

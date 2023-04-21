@@ -63,29 +63,44 @@ export function Professor_Page() {
         <Dialog open={makeReviews} onClose={() => setMakeReviews(false)}>
             <DialogTitle>Make a Review</DialogTitle>    
             <DialogContent>
-                <TextField
-                    autoFocus
-                    margin="dense"
-                    label="Course Subject ex. CS"
-                    fullWidth
-                    variant="standard"
-                    inputRef={courseSubject}
-                />
-                <TextField
-                    autoFocus
-                    margin="dense"
-                    label="Course ID ex. 18000"
-                    fullWidth
-                    variant="standard"
-                    inputRef={courseID}
-                />
+                <div className="flex">
+                    <TextField
+                        autoFocus
+                        margin="dense"
+                        label="Course Subject ex. CS"
+                        fullWidth
+                        variant="standard"
+                        className="mr-2"
+                        inputRef={courseSubject}
+                    />
+                    <TextField
+                        autoFocus
+                        margin="dense"
+                        label="Course ID ex. 18000"
+                        fullWidth
+                        variant="standard"
+                        inputRef={courseID}
+                    />
+                </div>
                 <TextField
                     autoFocus
                     margin="dense"
                     label="Rating 1-5"
                     fullWidth
                     variant="standard"
+                    type="number"
+                    InputProps={{ inputProps: { min: 1, max: 5, step: 0.25 } }}
                     inputRef={rating}
+                />
+                <TextField
+                    autoFocus
+                    margin="dense"
+                    label="Difficulty 1-5"
+                    fullWidth
+                    variant="standard"
+                    type="number"
+                    InputProps={{ inputProps: { min: 1, max: 5, step: 0.25 } }}
+                    inputRef={difficulty}
                 />
                 <TextField multiline={true}
                     autoFocus
@@ -102,14 +117,6 @@ export function Professor_Page() {
                     fullWidth
                     variant="standard"
                     inputRef={grade}
-                />
-                <TextField
-                    autoFocus
-                    margin="dense"
-                    label="Difficult 1-5"
-                    fullWidth
-                    variant="standard"
-                    inputRef={difficulty}
                 />
                 <Checkbox
                     onChange={() => setTakeAgain(!takeAgain)}
