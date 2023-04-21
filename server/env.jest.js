@@ -2,10 +2,9 @@ jest.mock('./secret', () => {
     return Buffer.from('testkey');
 });
 
-const mongoose = require('mongoose');
-const models = require('./models');
-
 const request = require('supertest');
+const {connect, disconnect} = require("./utils.jest");
+const sleep = require('./utils/sleep');
 
 globalThis.request = request;
 globalThis.getApp = () => {
@@ -14,13 +13,16 @@ globalThis.getApp = () => {
 
 beforeAll(async () => {
     process.env.ADMIN_EMAIL = 'admin@purdue.edu';
-    await models('mongodb://127.0.0.1:11223/');
+    await connect();
+    await sleep(500);
 });
 
 beforeEach(async () => {
     process.env.ADMIN_EMAIL = 'admin@purdue.edu';
+    await sleep(500);
 });
 
 afterAll(async () => {
-    await mongoose.connection.close();
+    await disconnect();
+    await sleep(500);
 });
