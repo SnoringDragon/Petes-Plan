@@ -635,6 +635,8 @@ exports.getRecommendedCourses = async (req, res) => {
     /* Add course history to credits map */
     await user.populate('completedCourses.courseData');
     for (const course of user.completedCourses) {
+        if (!course.courseData) continue;
+
         if (!credits.has(course.courseData._id)) {
             credits.set(course.courseData._id, course);
         } else if (grades[course.grade] > grades[credits.get(course.courseData._id).grade]) {

@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 
 const APTest = require('../models/apTestModel');
+const Course = require('../models/courseModel');
 
 module.exports.listApTests = async (req, res) => {
     res.json(await APTest.find({}));
@@ -40,7 +41,7 @@ module.exports.modifyUserApTest = async (req, res) => {
         score: c.score
     }));
 
-    req.body.forEach(c => {
+    await Promise.all(req.body.map(async c => {
         const test = tests.find(t => t._id.toString() === c.test);
         if (!test) {
             return;
@@ -55,15 +56,24 @@ module.exports.modifyUserApTest = async (req, res) => {
         if (!test || !testCreditCourse)
             return;
         req.user.completedCourses = [...req.user.completedCourses,
-            ...testCreditCourse.courses.map(c => ({
-            courseID: c.courseID,
-            subject: c.subject,
-            grade: 'P',
-            year: new Date().getFullYear(),
-            semester: 'Fall',
-            source: test.type
-        }))];
-    });
+            ...await Promise.all(testCreditCourse.courses.map(async c => {
+                const course = await Course.findOne({ courseID: c.courseID,
+                    subject: c.subject });
+                const data = {
+                    courseID: c.courseID,
+                    subject: c.subject,
+                    grade: 'P',
+                    year: new Date().getFullYear(),
+                    semester: 'Fall',
+                    source: test.type,
+                };
+
+                if (course)
+                    data.courseData = course._id;
+
+                return data;
+            }))];
+    }));
 
     await req.user.save();
     res.json({});
