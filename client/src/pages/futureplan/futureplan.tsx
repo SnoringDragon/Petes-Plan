@@ -173,7 +173,7 @@ export function FuturePlan() {
 
     const getCourse = (id: string, sub: string) => {
         //let op = {id, sub};
-        CourseService.getCourse({courseID: id, subject: sub}).then(res => setMyCourse(res))
+        return CourseService.getCourse({courseID: id, subject: sub}).then(res => res)
         .catch(err => setError(err?.message ?? err)); 
     }
     const checkOverride = (c: ApiCourse, s: Semester) => !satisfied(c.requirements, s);
@@ -654,11 +654,15 @@ export function FuturePlan() {
                         {/* <Link to={`/course_description?subject=${rec.subject}&courseID=${rec.courseID}`} className="mr-auto">{rec.subject} {rec.courseID}</Link> */}
                         <Button color="inherit" onClick={() => {
                             getCourse(rec.courseID, rec.subject)
-                            setSemCourse(myCourse!);
-                            setSem(true);
-                            setSelectedSem(null);
-                            setInstructorFilter('');
-                            setSection([]);
+                                .then((res) => {
+                                    if (!res) return;
+                                    setSemCourse(res!);
+                                    setSem(true);
+                                    setSelectedSem(null);
+                                    setInstructorFilter('');
+                                    setSection([]);
+                                })
+
                             // setCourseModifications({
                             //     ...courseModifications,
                             //     add: [...courseModifications.add, {
