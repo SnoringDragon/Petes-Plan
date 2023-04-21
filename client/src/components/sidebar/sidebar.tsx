@@ -1,4 +1,14 @@
-import { FaHome, FaCheck, FaCalculator, FaLongArrowAltRight, FaSearch, FaHistory, FaAppleAlt, FaPencilAlt} from 'react-icons/fa';
+import {
+    FaHome,
+    FaCheck,
+    FaCalculator,
+    FaLongArrowAltRight,
+    FaSearch,
+    FaHistory,
+    FaAppleAlt,
+    FaPencilAlt,
+    FaCalendar
+} from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import { useState } from 'react';
 import logoUrl from '../../assets/purduepete-transparent.png';
@@ -31,6 +41,11 @@ export function Sidebar() {
             to: '/grade-calc',
             label: 'Grade Calculator',
             icon: FaCalculator
+        },
+        {
+            to: '/calendar',
+            label: 'Calendar',
+            icon: FaCalendar
         }
     ];
 
