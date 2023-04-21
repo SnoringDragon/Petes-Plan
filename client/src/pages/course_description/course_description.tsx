@@ -28,6 +28,7 @@ import { Semester } from '../../types/semester';
 import SemesterService from '../../services/SemesterService';
 import { Boilergrades } from '../../components/boilergrades/boilergrades';
 import RatingService from '../../services/RatingService';
+import ProfessorService from '../../services/ProfessorService';
 
 export function Course_Description() {
     const [searchParams] = useSearchParams();
@@ -163,13 +164,15 @@ export function Course_Description() {
             <DialogActions>
                 <Button onClick={() => setMakeReviews(false)}>Close</Button>
                 <Button onClick={() => {
+                    ProfessorService.searchProfessor({ professor.current.value })
                     RatingService.createReview({ instructor_id: professor.current.value, 
                         in_courseSubject: course.subject,
                         in_courseID: course.courseID,
                         rating: Number(rating.current.value),
                         comment: comment.current.value,
                         in_wouldTakeAgain: takeAgain,
-                        difficulty: Number(difficulty.current.value) })
+                        difficulty: Number(difficulty.current.value),
+                        grade: grade.current.value  })
                     setMakeReviews(false);
                 }}>Add</Button>
             </DialogActions>

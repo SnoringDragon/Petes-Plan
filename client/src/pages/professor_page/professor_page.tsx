@@ -30,7 +30,7 @@ export function Professor_Page() {
     const comment = useRef({value:''});
     const grade = useRef({value:''});
     const difficulty = useRef({value:''});
-    const attendanceReq = useRef({value:''});
+    const attendanceReq = useState(false);
 
     useEffect(() => {
         const id = searchParams.get('id') ?? '';
@@ -74,7 +74,7 @@ export function Professor_Page() {
                 <TextField
                     autoFocus
                     margin="dense"
-                    label="Course ID ex. 180"
+                    label="Course ID ex. 18000"
                     fullWidth
                     variant="standard"
                     inputRef={courseID}
@@ -101,7 +101,7 @@ export function Professor_Page() {
                     label="Grade"
                     fullWidth
                     variant="standard"
-                    innerRef={grade}
+                    inputRef={grade}
                 />
                 <TextField
                     autoFocus
@@ -109,7 +109,7 @@ export function Professor_Page() {
                     label="Difficult 1-5"
                     fullWidth
                     variant="standard"
-                    innerRef={difficulty}
+                    inputRef={difficulty}
                 />
                 <Checkbox
                     onChange={() => setTakeAgain(!takeAgain)}
@@ -121,13 +121,15 @@ export function Professor_Page() {
             <DialogActions>
                 <Button onClick={() => setMakeReviews(false)}>Close</Button>
                 <Button onClick={() => {
+                    console.log(difficulty)
                     RatingService.createReview({ instructor_id: professor._id, 
                         in_courseSubject: courseSubject.current.value,
                         in_courseID: courseID.current.value,
                         rating: Number(rating.current.value),
                         comment: comment.current.value,
                         in_wouldTakeAgain: takeAgain,
-                        difficulty: Number(difficulty.current.value) })
+                        difficulty: parseFloat(difficulty.current.value),
+                        in_grade: grade.current.value })
                     setMakeReviews(false);
                 }}>Add</Button>
             </DialogActions>
