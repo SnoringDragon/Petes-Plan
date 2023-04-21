@@ -279,18 +279,18 @@ export function Course_Description() {
             <Boilergrades course={course._id} />
 
             <div className="mt-5 underline">Reviews:</div>
-            <Ratings courseID={course.courseID} subject={course.subject} filter={searchParams.get('filter')?.split(',') ?? []} />
-            <div></div>
             <Button
-                variant="contained"
+                variant="outlined"
                 size="large"
-                color="primary"
-                className="w-full h-6"
+                color="secondary"
+                className="w-full h-6 mt-2 mb-4"
                 onClick={() => {
                     setMakeReviews(true);
                 }}>
                 Do you want to leave a review? Click Here.
             </Button>
+            <Ratings courseID={course.courseID} subject={course.subject} filter={searchParams.get('filter')?.split(',') ?? []} />
+            <div></div>
         </div>
     </div></Layout>)
 }

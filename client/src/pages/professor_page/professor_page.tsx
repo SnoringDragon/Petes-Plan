@@ -162,17 +162,18 @@ export function Professor_Page() {
 
         <Boilergrades instructor={professor._id} className="w-full mb-4"  />
 
-        <Ratings instructor={professor._id} filter={searchParams.get('filter')?.split(',') ?? []} />
-        <div></div>
         <Button
-            variant="contained"
+            variant="outlined"
             size="large"
-            color="primary"
-            className="w-full h-6"
+            color="secondary"
+            className="w-full h-6 mt-2 mb-4"
             onClick={() => {
                 setMakeReviews(true);
             }}>
             Do you want to leave a review? Click Here.
         </Button>
+
+        <Ratings instructor={professor._id} filter={searchParams.get('filter')?.split(',') ?? []} />
+        <div></div>
     </div></Layout>)
 }
