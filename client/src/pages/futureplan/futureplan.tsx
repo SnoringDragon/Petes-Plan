@@ -112,6 +112,10 @@ export function FuturePlan() {
         CourseService.searchCourse(searchRef.current.value)
             .then(res => setCourses(res));
     };
+
+    // const setSelectedGpaSemester = (g : string) =>{
+    //     //semesters.forEach()
+    // }
     
     const recc = () => {
         console.log(degreePlan?._id);
@@ -133,10 +137,11 @@ export function FuturePlan() {
 
     const checkOverride = (course: ApiCourse, sem:Semester) => {
         //for (let i = 0; i < course.)
-        const requ = course.requirements;
-        const list = flatten(requ);
+        
+        //const requ = course.requirements;
+        //const list = flatten(requ);
 
-        let met = 0;
+        //let met = 0;
         // let mystery = degreePlan;
         // mystery!.courses.forEach(var => {
         //     degreePlan!.courses.forEach(cour => {
@@ -145,6 +150,16 @@ export function FuturePlan() {
         //         }
         //     });
         // })
+
+        if (course.maxCredits < 3) {
+            return false;
+        }
+
+        if (sem.term.localeCompare("Spring") == 0) {
+            return false;
+        }
+
+        //setOverride
         
         return true;
     }
@@ -197,12 +212,12 @@ export function FuturePlan() {
     // })
 
     useEffect(() => {
-        const sem = semesters.find(({ _id }) => _id === semesterFilter);
+        const sem = semesters.find(({ _id }) => _id === setSelectedGpaSemester);
         if (sem)
         GPAService.getSemesterGPA({ semesterInput: sem?.semester , yearInput: sem?.year })
             .then(res => setSemesterGpa(res))
         else setSemesterGpa(null);
-    }, [semesterFilter]);
+    }, [setSelectedGpaSemester]);
 
     useEffect(() => {
         const subject = semCourse?.subject ?? '';
@@ -339,6 +354,7 @@ export function FuturePlan() {
                    //setSemCourse(course!);
                    setOverride(true);
                    setWarning(false);
+                   console.log("here");
                     //TODO Update Integration 
                 }}>Override</Button>
             </DialogActions>
@@ -527,6 +543,7 @@ export function FuturePlan() {
                                     }).filter(x => x) ?? [])]
                                 });
                                 setOverride(false);
+                                console.log("reached");
                             }
                         } else {
                             setCourseModifications({
@@ -676,15 +693,15 @@ export function FuturePlan() {
                         <div className="flex">
                             <div className="text-2xl mr-auto">Selected Courses</div>
                             <div><span>Semester filter:&nbsp;</span>
-                                <Select value={semesterFilter} onChange={ev => {setSemesterFilter(ev.target.value as string); setSelectedGpaSemester(ev.target.value as string)}}>
+                                <Select value={semesterFilter} onChange={ev => {console.log(ev.target.value as string); setSemesterFilter(ev.target.value as string); setSelectedGpaSemester(ev.target.value as string)}}>
                                     
                                     <MenuItem value={""}>None</MenuItem>
-                                    {semesters.map(sem => <MenuItem key={sem._id} value={sem._id}>
-                                    {sem.semester} {sem.year}
-                                    </MenuItem>)}
-                                    {[...new Set([degreePlan.courses, courseModifications.add]
+                                    {/* {semesters.map(sem => <MenuItem key={sem._id} value={sem._id}>
+                                    {sem.semester} {sem.year} */}
+                                    {/* </MenuItem>)} */}
+                                    {[...new Set([degreePlan.courses, userCourses, courseModifications.add]
                                         .flat().map(c => `${c.semester} ${c.year}`))].map((sem, i) => <MenuItem key={sem} value={sem}>
-                                        {sem}
+                                        {sem} 
                                     </MenuItem>)}
                                     
                                 </Select>
