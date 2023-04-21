@@ -554,20 +554,20 @@ export function FuturePlan() {
                     <div className="text-2xl my-2">GPA</div>
 
 
-                    <span className="mr-2">Semester:</span>
-                    <Select value={selectedGpaSemester} onChange={ev => setSelectedGpaSemester(ev.target.value as string)}>
+                    {/* <span className="mr-2">Semester:</span> */}
+                    {/* <Select value={selectedGpaSemester} onChange={ev => setSelectedGpaSemester(ev.target.value as string)}>
                         {semesters.map(sem => <MenuItem key={sem._id} value={sem._id}>
                             {sem.semester} {sem.year}
                         </MenuItem>)}
-                    </Select>
+                    </Select> */}
 
                     <div className="flex">
                         <span className="mr-4">
                             Cumulative GPA: {cumulativeGpa === null ? 'N/A' : cumulativeGpa.toFixed(2)}
                         </span>
-                        <span>
+                        {/* <span>
                             Semester GPA: {semesterGpa === null ? 'N/A' : semesterGpa.toFixed(2)}
-                        </span>
+                        </span> */}
                     </div>
 
                 </div>
@@ -665,21 +665,26 @@ export function FuturePlan() {
                 {degreePlan && <>
                     <div className="bg-white rounded px-4 pb-3 pt-4 text-black w-full mt-3">
                         <div className="flex">
-                            <div className="text-2xl mr-auto">Planned Courses</div>
+                            <div className="text-2xl mr-auto">Selected Courses</div>
                             <div><span>Semester filter:&nbsp;</span>
                                 <Select value={semesterFilter} onChange={ev => {setSemesterFilter(ev.target.value as string); setSelectedGpaSemester(ev.target.value as string)}}>
+                                    
                                     <MenuItem value={""}>None</MenuItem>
-                                    {[...new Set([degreePlan.courses, courseModifications.add]
+                                    {/* {semesters.map(sem => <MenuItem key={sem._id} value={sem._id}>
+                                    {sem.semester} {sem.year}
+                                    </MenuItem>)} */}
+                                    {[...new Set([degreePlan.courses, userCourses, courseModifications.add]
                                         .flat().map(c => `${c.semester} ${c.year}`))].map((sem, i) => <MenuItem key={sem} value={sem}>
                                         {sem}
                                     </MenuItem>)}
+                                    
                                 </Select>
                                 <span>
                                      Semester GPA: {semesterGpa === null ? 'N/A' : semesterGpa.toFixed(2)}
                                 </span>
                             </div>
                         </div>
-                        {Object.entries([degreePlan.courses, courseModifications.add]
+                        {Object.entries([degreePlan.courses, userCourses, courseModifications.add]
                             .flatMap(courses => {
                                 return courses.map(course => ({ course, isNew: courses !== degreePlan.courses }))
                             })
