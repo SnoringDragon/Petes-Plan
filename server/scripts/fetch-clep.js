@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const cheerio = require('cheerio');
 const APTest = require('../models/apTestModel');
+const fetch = import('node-fetch').then(r => r.default);
 let allExams = [];
 let allCourses = [];
 let allHours = [];
@@ -9,7 +10,7 @@ let allScores = [];
 //get Table of CLEP Credit
 //table.getElementsByTagName('table-responsive')
 async function getClepData() {    
-    await fetch('https://www.admissions.purdue.edu/transfercredit/clep.php?_ga=2.156040763.1830545689.1680885941-405777200.1660331919')
+    await (await fetch)('https://www.admissions.purdue.edu/transfercredit/clep.php?_ga=2.156040763.1830545689.1680885941-405777200.1660331919')
   .then(response => response.text())
   .then(content => {
     // parse the content using DOMParser
@@ -38,7 +39,7 @@ async function getClepData() {
             //if one includes, the other doesn't
             if (/^([A-Z]+)\s+(\d+)((?:\s+and\s+\d+)+)/.test(allCourses[i])) {
                 var pattern = /[A-Z]+/;
-                match = pattern.exec(allCourses[i])
+                let match = pattern.exec(allCourses[i])
                 for (let i = 0; i < split.length; i++) {
                     if (/^\s*([0-9]+)([A-Z]*)\s*/.test(split[i])) {
                         split[i] = match[0] + split[i]
@@ -57,7 +58,7 @@ async function getClepData() {
   );
   let uniqueCLEP = new Map();
   for (let i = 0; i < allExams.length; i++) {
-    temp = []
+    let temp = []
     if (uniqueCLEP.has(allExams[i])) {
         uniqueCLEP.get(allExams[i]).push([allScores[i], allCourses[i]])
     } else {
@@ -72,7 +73,7 @@ async function getClepData() {
 
 
 function returnCourses(value) {
-    courses = []
+    let courses = []
     if (typeof value === "string") {
         value = value.split(" ");
         courses.push({
@@ -81,7 +82,7 @@ function returnCourses(value) {
         })
     } else if (typeof value === "object") {
         for (let i = 0; i < value.length; i++) {
-            temp = value[0].split(" ");
+            let temp = value[0].split(" ");
             courses.push({
                 course_id: temp[1],
                 subject: temp[0]
@@ -92,7 +93,7 @@ function returnCourses(value) {
 }
 
 async function saveData(value, key, map) {
-    credits = []
+    let credits = []
     for (let i = 0; i < value.length; i++) {
         credits.push({
             score: value[i][0],
