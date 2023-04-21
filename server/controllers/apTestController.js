@@ -14,8 +14,8 @@ module.exports.modifyUserApTest = async (req, res) => {
     if (!Array.isArray(req.body))
         return res.status(400).json({ message: 'expected array as body' });
 
-    if (req.body.some(c => ![1,2,3,4,5].includes(c?.score)))
-        return res.status(400).json({ message: 'unexpected score' });
+    // if (req.body.some(c => ![1,2,3,4,5].includes(c?.score)))
+    //     return res.status(400).json({ message: 'unexpected score' });
 
     if (req.body.some(c => {
         try {

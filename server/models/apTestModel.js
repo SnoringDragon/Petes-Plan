@@ -4,7 +4,7 @@ const apTestSchema = new mongoose.Schema({
     name: { type: String, unique: true },
     credits: [{
         _id: false, // dont need id on sub schema
-        score: Number,
+        score: String,
         courses: [{
             _id: false, // dont need id on sub schema
             courseID: String,
