@@ -22,7 +22,7 @@ module.exports = async ({ deleteTests = true } = {}) => {
                 updateOne: {
                     // find by name or id if id is set
                     filter: (previousId ? { _id: previousId } : { name: credit.name }),
-                    update: { $set: { ...credit, _id: previousId } },
+                    update: { $set: { ...credit, _id: previousId, type: 'ap' } },
                     upsert: true
                 }
             }
