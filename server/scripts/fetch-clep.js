@@ -2,18 +2,21 @@ const mongoose = require('mongoose');
 const cheerio = require('cheerio');
 const APTest = require('../models/apTestModel');
 const fetch = import('node-fetch').then(r => r.default);
-let allExams = [];
-let allCourses = [];
-let allHours = [];
-let allScores = [];
 
 //get Table of CLEP Credit
 //table.getElementsByTagName('table-responsive')
-async function getClepData() {    
+async function getClepData() {
+
+    let allExams = [];
+    let allCourses = [];
+    let allHours = [];
+    let allScores = [];
+
+
     await (await fetch)('https://www.admissions.purdue.edu/transfercredit/clep.php?_ga=2.156040763.1830545689.1680885941-405777200.1660331919')
   .then(response => response.text())
   .then(content => {
-    // parse the content using DOMParser
+      // parse the content using DOMParser
     //cheerio
     var $ = cheerio.load(content)
     $("#inner-page-content > div > div > div.col-lg-8.main-content > div > table > tbody > tr > td:nth-child(1)").each((index, element) => {
@@ -75,14 +78,14 @@ async function getClepData() {
 function returnCourses(value) {
     let courses = []
     if (typeof value === "string") {
-        value = value.split(" ");
+        value = value.replace(/\*/g, '').split(" ");
         courses.push({
             courseID: value[1],
             subject: value[0]
         })
     } else if (typeof value === "object") {
         for (let i = 0; i < value.length; i++) {
-            let temp = value[0].split(" ");
+            let temp = value[i].replace(/\*/g, '').split(" ");
             courses.push({
                 courseID: temp[1],
                 subject: temp[0]
