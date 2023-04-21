@@ -81,7 +81,7 @@ export function AP_Class() {
                             </div>
                             {test.credits.map((credit, i) => {
                                 const isSelected = userApTests.find(other => other.score === credit.score &&
-                                    other.test._id === test._id);
+                                    other.test?._id === test._id);
 
                                 return (<div className={`flex flex-col border-r border-gray-300 cursor-pointer transition ${isSelected ? 'bg-slate-200' : ''}`} key={i}
                                              onClick={() => setSelected(test, credit.score)}>
