@@ -8,7 +8,8 @@ import { Ratings } from '../../components/ratings/ratings';
 import { Boilergrades } from '../../components/boilergrades/boilergrades';
 import { Boilergrade } from '../../types/boilergrades';
 import BoilerGradesService from '../../services/BoilerGradesService';
-import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField } from '@material-ui/core';
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, Checkbox } from '@material-ui/core';
+import RatingService from '../../services/RatingService';
 
 export function Professor_Page() {
     const [searchParams] = useSearchParams();
@@ -21,24 +22,15 @@ export function Professor_Page() {
     const [boilergrades, setBoilergrades] = useState<Boilergrade[]>([]);
 
     const [makeReviews, setMakeReviews] = useState(false);
+    const [takeAgain, setTakeAgain] = useState(false);
 
-    const course = useRef({value:''});
+    const courseID = useRef({value:''});
+    const courseSubject = useRef({value:''});
     const rating = useRef({value:''});
     const comment = useRef({value:''});
     const grade = useRef({value:''});
     const difficulty = useRef({value:''});
     const attendanceReq = useRef({value:''});
-
-    const [addReviews, setAddReviews] = useState<{
-        add: { email: string,
-            dateSubmitted: string,
-            professor: string,
-            course: string,
-            attendanceReq: boolean,
-            rating: number,
-            comment: string,
-            grade: string}[]
-    }>({ add: []});
 
     useEffect(() => {
         const id = searchParams.get('id') ?? '';
@@ -67,21 +59,6 @@ export function Professor_Page() {
         </>}
     </div></Layout>)
 
-    const save = () => {
-        const promises = [];
-
-        if (addReviews.add.length)
-            promises.push(ProfessorService.addReview(addReviews.add);
-
-        Promise.all(promises)
-            .then(res => {
-                setAddReviews({ add: [] });
-            })
-            .catch(err => {
-                setError(err?.message ?? err);
-            })
-    };
-
     return (<Layout>
         <Dialog open={makeReviews} onClose={() => setMakeReviews(false)}>
             <DialogTitle>Make a Review</DialogTitle>    
@@ -89,15 +66,23 @@ export function Professor_Page() {
                 <TextField
                     autoFocus
                     margin="dense"
-                    label="Course"
+                    label="Course Subject ex. CS"
                     fullWidth
                     variant="standard"
-                    inputRef={course}
+                    inputRef={courseSubject}
                 />
                 <TextField
                     autoFocus
                     margin="dense"
-                    label="Rating"
+                    label="Course ID ex. 180"
+                    fullWidth
+                    variant="standard"
+                    inputRef={courseID}
+                />
+                <TextField
+                    autoFocus
+                    margin="dense"
+                    label="Rating 1-5"
                     fullWidth
                     variant="standard"
                     inputRef={rating}
@@ -118,22 +103,32 @@ export function Professor_Page() {
                     variant="standard"
                     innerRef={grade}
                 />
+                <TextField
+                    autoFocus
+                    margin="dense"
+                    label="Difficult 1-5"
+                    fullWidth
+                    variant="standard"
+                    innerRef={difficulty}
+                />
+                <Checkbox
+                    onChange={() => setTakeAgain(!takeAgain)}
+                    checked={takeAgain}
+                />
+                <text>Remember me</text>
+                <p></p>
             </DialogContent>
             <DialogActions>
                 <Button onClick={() => setMakeReviews(false)}>Close</Button>
                 <Button onClick={() => {
-                    const modifications = {...courseModifications};
-                    modifications.add = [...modifications.add, {
-                        professor_id: string,
-                        course: course,
-                        attendanceReq: boolean,
-                        rating: rating,
-                        comment: comment,
-                        grade: grade,
-                        difficulty: difficulty
-                    }];
-                    setCourseModifications(modifications);
-                    setSem(false);
+                    RatingService.createReview({ instructor_id: professor._id, 
+                        in_courseSubject: courseSubject.current.value,
+                        in_courseID: courseID.current.value,
+                        rating: Number(rating.current.value),
+                        comment: comment.current.value,
+                        in_wouldTakeAgain: takeAgain,
+                        difficulty: Number(difficulty.current.value) })
+                    setMakeReviews(false);
                 }}>Add</Button>
             </DialogActions>
         </Dialog>
