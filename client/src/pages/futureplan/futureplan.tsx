@@ -130,39 +130,43 @@ export function FuturePlan() {
         }*/
     }
 
-    const flatten = (reqs : any) => {
-        if (reqs.type === 'group') return reqs.children.map(flatten).flat(Infinity);
-        else if (reqs.type === 'course') return reqs
-    }
+    const satisfied = (req: Requirement, semester: Semester): Boolean => {
+        let gradeValues: { [key: string]: number } = {
+            'D-': 1, 'D': 2, 'D+': 3, 'C-': 4, 'C': 5, 'C+': 6, 'B-': 7, 'B': 8, 'B+': 9, 'A-': 10, 'A': 11, 'A+': 12
+        };
 
-    const checkOverride = (course: ApiCourse, sem:Semester) => {
-        //for (let i = 0; i < course.)
-        
-        //const requ = course.requirements;
-        //const list = flatten(requ);
+        if (!req) return true;
+        if (req.type === 'or')
+            return req.children.some(c => satisfied(c, semester));
+        if (req.type === 'and')
+            return req.children.every(c => satisfied(c, semester));
+        if (req.type === 'pick_n')
+            return req.children.filter(c => satisfied(c, semester)).length >= req.n;
+        if (req.type === 'course') {
+            const userCourse = userCourses.filter(c => c.courseID === req.courseID &&
+                c.subject === req.subject);
+            const minGrade = req.minGrade ?? 'C-';
+            if (userCourse.some(course => course.grade === minGrade ||
+                course.grade === 'P' ||
+                gradeValues[course.grade] >= gradeValues[minGrade]))
+                return true;
 
-        //let met = 0;
-        // let mystery = degreePlan;
-        // mystery!.courses.forEach(var => {
-        //     degreePlan!.courses.forEach(cour => {
-        //         if (cour.year > var.year || (cour.year == var.year && (cour.semester.localeCompare(var.semester) > 1))) {
-        //             if (cour)
-        //         }
-        //     });
-        // })
+            const semIndicies = ['Spring', 'Summer', 'Fall', 'Winter']
+            const futureCourses = degreePlan?.courses.filter(c => {
+                if (c.year > semester.year) return true;
+                if (c.year < semester.year) return false;
+                const courseSemesterIndex = semIndicies.indexOf(c.semester);
+                const thisSemIndex = semIndicies.indexOf(semester.semester);
 
-        if (course.maxCredits < 3) {
-            return false;
+                return courseSemesterIndex > thisSemIndex;
+            });
+
+            return futureCourses?.some(c => c.courseID === req.courseID && c.subject === req.subject) ?? false;
         }
-
-        if (sem.term.localeCompare("Spring") == 0) {
-            return false;
-        }
-
-        //setOverride
-        
         return true;
     }
+
+    const checkOverride = (c: ApiCourse, s: Semester) => !satisfied(c.requirements, s);
 
     const setValues = (semCourse: ApiCourse, semesters:{
         _id: string;
@@ -235,7 +239,7 @@ export function FuturePlan() {
     // })
 
     useEffect(() => {
-        const sem = semesters.find(({ _id }) => _id === setSelectedGpaSemester);
+        const sem = semesters.find(({ _id }) => _id === selectedGpaSemester);
         if (sem)
         GPAService.getSemesterGPA({ semesterInput: sem?.semester , yearInput: sem?.year })
             .then(res => setSemesterGpa(res))
@@ -753,7 +757,7 @@ export function FuturePlan() {
                             <div className="flex flex-col">
                                 <CourseLink courseID={course.courseID} subject={course.subject} useColor={false} />
 
-                                <div>{course.section?.name} ({course.section?.sectionID})</div>
+                                {course.section && <div>{course.section?.name} ({course.section?.sectionID})</div>}
                                 <div>Instructors: {(() => {
                                     const instructors = course.section?.meetings.flat().flatMap(m => m.instructors) ?? [];
 
