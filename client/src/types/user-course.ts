@@ -8,5 +8,6 @@ export type UserCourse = {
     year: number,
     subject: string,
     section?: Section,
-    courseData: ApiCourse & { sections: Section[][][] }
+    courseData: ApiCourse & { sections: Section[][][] },
+    overrideStatus?: string
 }

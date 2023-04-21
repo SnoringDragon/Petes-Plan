@@ -10,7 +10,8 @@ const userCourseSchema = new mongoose.Schema({
     section: { type: mongoose.Schema.Types.ObjectId, ref: 'Section' },
     meetingTime: Number,
     courseData: { type: mongoose.Schema.Types.ObjectId, ref: 'Course' },
-    source: String
+    source: String,
+    overrideStatus: String
 })
 
 exports.schema = userCourseSchema;
