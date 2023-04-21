@@ -97,6 +97,8 @@ export function FuturePlan() {
     const [userCourses, setUserCourses] = useState<UserCourse[]>([]);
     const [sems, setSems] = useState<Semester[]>([]);
 
+    const [majorGpas, setMajorGpas] = useState<{[key: string]: number | null}>({});
+
 
     const [courseModifications, setCourseModifications] = useState<{
         add: UserCourse[],
@@ -241,6 +243,14 @@ export function FuturePlan() {
 
         SemesterService.getSemesters().then(res => setSems(res));
     }, []);
+
+    useEffect(() => {
+        if (!degreePlan) return;
+        degreePlan.degrees.map(async d => {
+            const gpa = await GPAService.getMajorGPA({ major: d._id });
+            setMajorGpas(g => ({...g, [d._id]: gpa}));
+        })
+    }, [degreePlan]);
 
     // useEffect(() => {
     //     DegreePlanService.getRecommendations(degreePlan!._id).then(res =>{console.log(res); setReccomended(res.recommendations)});
@@ -884,7 +894,10 @@ export function FuturePlan() {
                     <div className="bg-white rounded px-4 pb-3 pt-4 text-black w-full mt-3">
                         <div className="text-2xl">Planned Degrees</div>
                         {degreePlan.degrees.map((degree, i) => (<div key={i} className="flex items-center py-2 border-b border-gray-300">
-                            <Link to={`/major_requirements?id=${degree._id}`} className="mr-auto">{degree.type[0].toUpperCase()}{degree.type.slice(1)} in {degree.name}</Link>
+                            <Link to={`/major_requirements?id=${degree._id}`} className="mr-2">
+                                {degree.type[0].toUpperCase()}{degree.type.slice(1)} in {degree.name}
+                            </Link>
+                            <span className="mr-auto">GPA: {majorGpas[degree._id] ?? 'N/A'}</span>
                             <Button variant="contained" color="secondary" onClick={() => {
                                 setDegreePlan({
                                     ...degreePlan,
