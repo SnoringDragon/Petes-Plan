@@ -257,12 +257,12 @@ export function FuturePlan() {
     // })
 
     useEffect(() => {
-        const sem = semesters.find(({ _id }) => _id === semesterFilter);
+        const sem = semesters.find(s => `${s.semester} ${s.year}` === semesterFilter);
         if (sem)
         GPAService.getSemesterGPA({ semesterInput: sem?.semester , yearInput: sem?.year })
             .then(res => setSemesterGpa(res))
         else setSemesterGpa(null);
-    }, [setSelectedGpaSemester]);
+    }, [semesterFilter]);
 
     useEffect(() => {
         const subject = semCourse?.subject ?? '';
