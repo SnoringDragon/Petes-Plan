@@ -58,7 +58,7 @@ export function GradeCalc() {
 
         if (category.capped) numerator = Math.min(numerator, denominator);
 
-        return denominator === 0 ? 0 : numerator / denominator;
+        return denominator === 0 ? 1 : numerator / denominator;
     };
 
     const calculateGrade = (course: Grade) => {
