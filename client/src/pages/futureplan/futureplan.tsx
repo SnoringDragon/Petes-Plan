@@ -87,7 +87,7 @@ export function FuturePlan() {
     const [degreeSearch, setDegreeSearch] = useState('');
     
     const [recs, setRecs] = useState<{uniqueID: string, courseID: string, subject: string}[] | null>(null);
-    const [reccomended, setReccomended] = useState<{uniqueID: string, courseID: string, subject: string}[] | null>(null);
+    const [reccomended, setReccomended] = useState<{_id: string, courseID: string, subject: string}[] | null>(null);
 
     const [showWarning, setWarning] = useState(false);
     const [overrideCo, setOverrideCo] = useState<{courseID: string, subject: string}[] | null>(null);
@@ -115,7 +115,7 @@ export function FuturePlan() {
     
     const recc = () => {
         console.log(degreePlan?._id);
-        DegreePlanService.getRecommendations(degreePlan!._id).then(res =>{console.log(res); setReccomended(res.reqs)});
+        DegreePlanService.getRecommendations(degreePlan!._id).then(res =>{console.log(res); setReccomended(res.recommendations)});
         console.log(reccomended);
         /*try {
             console.log("reached");
@@ -178,6 +178,8 @@ export function FuturePlan() {
             if (res.degreePlans.length)
                 setDegreePlan(res.degreePlans[0]);
         });
+        //
+        
         // DegreePlanService.getRecommendations(degreePlan!._id).then(res =>{setRecs(res.recs)});
         SemesterService.getSemesters().then(res => setSemesters(res));
         GPAService.getCumulativeGPA().then(res => setCumulativeGpa(res));
@@ -190,13 +192,17 @@ export function FuturePlan() {
         SemesterService.getSemesters().then(res => setSems(res));
     }, []);
 
+    // useEffect(() => {
+    //     DegreePlanService.getRecommendations(degreePlan!._id).then(res =>{console.log(res); setReccomended(res.recommendations)});
+    // })
+
     useEffect(() => {
-        const sem = semesters.find(({ _id }) => _id === selectedGpaSemester);
+        const sem = semesters.find(({ _id }) => _id === semesterFilter);
         if (sem)
         GPAService.getSemesterGPA({ semesterInput: sem?.semester , yearInput: sem?.year })
             .then(res => setSemesterGpa(res))
         else setSemesterGpa(null);
-    }, [selectedGpaSemester]);
+    }, [semesterFilter]);
 
     useEffect(() => {
         const subject = semCourse?.subject ?? '';
@@ -585,16 +591,11 @@ export function FuturePlan() {
 
                 <Button variant="contained" color="secondary" onClick={recc}>Generate Reccomendations</Button>
                 
-                {recs?.map((rec, i) => (<div
+                {reccomended?.map((rec, i) => (<div
                         className="w-full py-3 px-4 border-y flex items-center" key={i}>
                         <CourseLink className="mr-auto" courseID={rec.courseID} subject={rec.subject} useColor={false} />
                         {/* <Link to={`/course_description?subject=${rec.subject}&courseID=${rec.courseID}`} className="mr-auto">{rec.subject} {rec.courseID}</Link> */}
-                        <Button color="inherit" onClick={() => {
-                            // setSemCourse(rec);
-                            // setSem(true);
-                            // setInstructorFilter('');
-                            // setSection([]);
-                        }}>Add</Button>
+                        
                     </div>))}
                 </div>
 
@@ -678,10 +679,10 @@ export function FuturePlan() {
                                 <Select value={semesterFilter} onChange={ev => {setSemesterFilter(ev.target.value as string); setSelectedGpaSemester(ev.target.value as string)}}>
                                     
                                     <MenuItem value={""}>None</MenuItem>
-                                    {/* {semesters.map(sem => <MenuItem key={sem._id} value={sem._id}>
+                                    {semesters.map(sem => <MenuItem key={sem._id} value={sem._id}>
                                     {sem.semester} {sem.year}
-                                    </MenuItem>)} */}
-                                    {[...new Set([degreePlan.courses, userCourses, courseModifications.add]
+                                    </MenuItem>)}
+                                    {[...new Set([degreePlan.courses, courseModifications.add]
                                         .flat().map(c => `${c.semester} ${c.year}`))].map((sem, i) => <MenuItem key={sem} value={sem}>
                                         {sem}
                                     </MenuItem>)}

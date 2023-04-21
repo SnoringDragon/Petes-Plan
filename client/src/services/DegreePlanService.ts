@@ -35,7 +35,7 @@ class DegreePlanService extends Api {
     }
 
     getRecommendations(plan: string) {
-        return this.get<{reqs: {uniqueID: string, courseID: string, subject: string}[]}>(`/api/degreePlan/${plan}/courseRecommendations`);
+        return this.get<{recommendations: {_id: string, courseID: string, subject: string}[]}>(`/api/degreePlan/${plan}/courseRecommendations`);
     }
 
     cachedGetPlans = makePromiseCache(this.getPlans.bind(this));
