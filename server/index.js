@@ -10,12 +10,6 @@ async function main() {
 
     await require('./tasks')();
 
-    if (process.argv.includes('--update-ap'))
-        require('./scripts/fetch-ap')().catch(console.error);
-    
-    if (process.argv.includes('--populate-test'))
-        require('./scripts/populate-test')().catch(console.error);
-
     const app = require('./app')();
 
     /* Start the server */

@@ -4,6 +4,8 @@ const fetchCourses = require('./scripts/fetch-courses');
 const fetchRateMyProf = require('./scripts/fetch-ratemyprofessor');
 const fetchDegrees = require('./scripts/fetch-degrees');
 const fetchBoilergrades = require('./scripts/fetch-boilergrades');
+const fetchAp = require('./scripts/fetch-ap');
+const fetchClep = require('./scripts/fetch-clep');
 
 let tasks = null;
 
@@ -39,7 +41,22 @@ module.exports = () => {
             defaultSchedule: '0 5 1 1,7-8,12 *'
         });
 
-        tasks = [purdueCatalogTask, rateMyProfTask, fetchDegreeTask, boilergradesTask];
+        const apTask = await ScheduledTask.create({
+            taskfunc: fetchAp,
+            name: 'Update AP Tests',
+            args: {},
+            defaultSchedule: '0 5 1 1 *'
+        });
+
+        const clepTask = await ScheduledTask.create({
+            taskfunc: fetchClep,
+            name: 'Update CLEP Tests',
+            args: {},
+            defaultSchedule: '0 5 1 1 *'
+        });
+
+
+        tasks = [purdueCatalogTask, rateMyProfTask, fetchDegreeTask, boilergradesTask, apTask, clepTask];
 
         await Promise.all(tasks.map(async task => {
             if (task.status === 'running') {
@@ -66,5 +83,11 @@ module.exports = () => {
 
         if (process.argv.includes('--update-boilergrades'))
             boilergradesTask.run({}, force);
+
+        if (process.argv.includes('--update-ap'))
+            apTask.run({}, force);
+
+        if (process.argv.includes('--update-clep'))
+            clepTask.run({}, force);
     })();
 };
