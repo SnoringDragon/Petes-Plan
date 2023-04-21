@@ -60,7 +60,7 @@ async function getClepData() {
   for (let i = 0; i < allExams.length; i++) {
     let temp = []
     if (uniqueCLEP.has(allExams[i])) {
-        uniqueCLEP.get(allExams[i]).push([allScores[i], allCourses[i]])
+        uniqueCLEP.set(allExams[i], [...uniqueCLEP.get(allExams[i]), [allScores[i], allCourses[i]]])
     } else {
         temp.push([allScores[i], allCourses[i]])
         uniqueCLEP.set(allExams[i], temp);
@@ -77,14 +77,14 @@ function returnCourses(value) {
     if (typeof value === "string") {
         value = value.split(" ");
         courses.push({
-            course_id: value[1],
+            courseID: value[1],
             subject: value[0]
         })
     } else if (typeof value === "object") {
         for (let i = 0; i < value.length; i++) {
             let temp = value[0].split(" ");
             courses.push({
-                course_id: temp[1],
+                courseID: temp[1],
                 subject: temp[0]
             })
         }
