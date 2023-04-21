@@ -71,6 +71,7 @@ export function FuturePlan() {
     const [overidden, setOverride] = useState(false);
     const [overClass, setOverClass] = useState<{courseID: string, subject: string}[] | null>(null);
     const [semCourse, setSemCourse] = useState<ApiCourse>();
+    const [myCourse, setMyCourse] = useState<ApiCourse | null>(null);
     const [selectedSem, setSelectedSem] = useState<string | null>(null);
     const [selectedSection, setSelectedSection] = useState<Section[] | null>(null);
     const [modifyCourse, setModifyCourse] = useState<UserCourse | null>(null);
@@ -164,6 +165,12 @@ export function FuturePlan() {
         return true;
     }
 
+    const getCourse = (id: string, sub: string) => {
+        //let op = {id, sub};
+        CourseService.getCourse({courseID: id, subject: sub}).then(res => setMyCourse(res))
+        .catch(err => setError(err?.message ?? err));
+    }
+
     const setValues = (semCourse: ApiCourse, semesters:{
         _id: string;
         semester: string;
@@ -235,7 +242,7 @@ export function FuturePlan() {
     // })
 
     useEffect(() => {
-        const sem = semesters.find(({ _id }) => _id === setSelectedGpaSemester);
+        const sem = semesters.find(({ _id }) => _id === semesterFilter);
         if (sem)
         GPAService.getSemesterGPA({ semesterInput: sem?.semester , yearInput: sem?.year })
             .then(res => setSemesterGpa(res))
@@ -622,7 +629,24 @@ export function FuturePlan() {
                         className="w-full py-3 px-4 border-y flex items-center" key={i}>
                         <CourseLink className="mr-auto" courseID={rec.courseID} subject={rec.subject} useColor={false} />
                         {/* <Link to={`/course_description?subject=${rec.subject}&courseID=${rec.courseID}`} className="mr-auto">{rec.subject} {rec.courseID}</Link> */}
-                        
+                        <Button color="inherit" onClick={() => {
+                            getCourse(rec.courseID, rec.subject)
+                            setSemCourse(myCourse!);
+                            setSem(true);
+                            setSelectedSem(null);
+                            setInstructorFilter('');
+                            setSection([]);
+                            // setCourseModifications({
+                            //     ...courseModifications,
+                            //     add: [...courseModifications.add, {
+                            //         subject: course.subject,
+                            //         courseID: course.courseID,
+                            //         semester: 'Spring',
+                            //         grade: 'A',
+                            //         year: 2022
+                            //     }]
+                            // });
+                        }}>Add</Button>
                     </div>))}
                 </div>
 
