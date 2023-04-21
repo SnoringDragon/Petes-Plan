@@ -255,7 +255,7 @@ export function Course_Description() {
                 {section?.length === 0 && <span>No sections scheduled for this semester.</span>}
             </div>
 
-            <div className={`flex w-full justify-center ${showSections ? '' : 'hidden'}`}>
+            <div className={`flex w-full justify-center overflow-y-auto ${showSections ? '' : 'hidden'}`} style={{ maxHeight: "36rem" }}>
             <div className="flex w-full flex-row flex-wrap gap-4 items-start justify-center">
             {section?.map((section, i) =>
                 <div key={i} className="bg-opacity-25 bg-gray-500 p-2 mb-2 rounded-md">{section.map(
