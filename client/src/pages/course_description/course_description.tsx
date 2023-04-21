@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Layout } from '../../components/layout/layout';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { ApiCourse } from '../../types/course-requirements';
@@ -12,6 +12,7 @@ import { Ratings } from '../../components/ratings/ratings';
 import { Link } from 'react-router-dom';
 import {
     Button,
+    Checkbox,
     Dialog,
     DialogActions,
     DialogContent,
@@ -26,6 +27,7 @@ import {
 import { Semester } from '../../types/semester';
 import SemesterService from '../../services/SemesterService';
 import { Boilergrades } from '../../components/boilergrades/boilergrades';
+import RatingService from '../../services/RatingService';
 
 export function Course_Description() {
     const [searchParams] = useSearchParams();
@@ -40,8 +42,15 @@ export function Course_Description() {
     const [showSections, setShowSections] = useState(true);
     const [semesters, setSemesters] = useState<Semester[]>([]);
 
-    const [viewReviews, setViewReviews] = useState(false);
     const [makeReviews, setMakeReviews] = useState(false);
+    const [takeAgain, setTakeAgain] = useState(false);
+
+    const professor = useRef({value:''});
+    const rating = useRef({value:''});
+    const comment = useRef({value:''});
+    const grade = useRef({value:''});
+    const difficulty = useRef({value:''});
+    const attendanceReq = useRef({value:''});
 
     useEffect(() => {
         CourseHistoryService.getCourses()
@@ -101,34 +110,6 @@ export function Course_Description() {
 
     console.log(course)
     return (<Layout>
-        <Dialog open={viewReviews} onClose={() => setViewReviews(false)}>
-            <DialogTitle>Reviews</DialogTitle>    
-            <DialogContent>
-                <Button
-                    variant="contained"
-                    size="large"
-                    color="primary"
-                    className="w-full h-6"
-                    onClick={() => {
-                        setMakeReviews(true);
-                    }}>
-                    Do you want to make a reviews? Click Here.
-                </Button>
-                <div>
-                    Reviews Go Here
-                </div>
-                {course.reviews?.map(review => <span>Professor: {review.professor}<br />
-                                                    User email: {review.email}<br />
-                                                    Date: {review.dateSubmitted}<br />
-                                                    Rating: {review.rating}<br />
-                                                    {review.comment}<br />
-                                                    Grade: {review.grade}<br />
-                                                    Is attendence mandatory? {review.attendanceReq}<br /></span>)}
-            </DialogContent>
-            <DialogActions>
-                <Button onClick={() => setViewReviews(false)}>Close</Button>
-            </DialogActions>
-        </Dialog>
         <Dialog open={makeReviews} onClose={() => setMakeReviews(false)}>
             <DialogTitle>Make a Review</DialogTitle>    
             <DialogContent>
@@ -138,13 +119,15 @@ export function Course_Description() {
                     label="Professor"
                     fullWidth
                     variant="standard"
+                    inputRef={professor}
                 />
                 <TextField
                     autoFocus
                     margin="dense"
-                    label="Rating"
+                    label="Rating 1-5"
                     fullWidth
                     variant="standard"
+                    inputRef={rating}
                 />
                 <TextField multiline={true}
                     autoFocus
@@ -152,6 +135,7 @@ export function Course_Description() {
                     label="Comment"
                     fullWidth
                     variant="standard"
+                    inputRef={comment}
                 />
                 <TextField
                     autoFocus
@@ -159,10 +143,35 @@ export function Course_Description() {
                     label="Grade"
                     fullWidth
                     variant="standard"
+                    innerRef={grade}
                 />
+                <TextField
+                    autoFocus
+                    margin="dense"
+                    label="Difficult 1-5"
+                    fullWidth
+                    variant="standard"
+                    innerRef={difficulty}
+                />
+                <Checkbox
+                    onChange={() => setTakeAgain(!takeAgain)}
+                    checked={takeAgain}
+                />
+                <text>Would you take the course again?</text>
+                <p></p>
             </DialogContent>
             <DialogActions>
                 <Button onClick={() => setMakeReviews(false)}>Close</Button>
+                <Button onClick={() => {
+                    RatingService.createReview({ instructor_id: professor.current.value, 
+                        in_courseSubject: course.subject,
+                        in_courseID: course.courseID,
+                        rating: Number(rating.current.value),
+                        comment: comment.current.value,
+                        in_wouldTakeAgain: takeAgain,
+                        difficulty: Number(difficulty.current.value) })
+                    setMakeReviews(false);
+                }}>Add</Button>
             </DialogActions>
         </Dialog>
         <div className="w-full h-full flex flex-col items-center">
@@ -262,15 +271,15 @@ export function Course_Description() {
             <Ratings courseID={course.courseID} subject={course.subject} filter={searchParams.get('filter')?.split(',') ?? []} />
             <div></div>
             <Button
-            variant="contained"
-            size="large"
-            color="primary"
-            className="w-full h-6"
-            onClick={() => {
-                setViewReviews(true);
-            }}>
-            Do you want to view the reviews? Click Here.
-        </Button>
+                variant="contained"
+                size="large"
+                color="primary"
+                className="w-full h-6"
+                onClick={() => {
+                    setMakeReviews(true);
+                }}>
+                Do you want to leave a review? Click Here.
+            </Button>
         </div>
     </div></Layout>)
 }

@@ -115,7 +115,7 @@ export function Professor_Page() {
                     onChange={() => setTakeAgain(!takeAgain)}
                     checked={takeAgain}
                 />
-                <text>Remember me</text>
+                <text>Would you take a course with this professor again?</text>
                 <p></p>
             </DialogContent>
             <DialogActions>
