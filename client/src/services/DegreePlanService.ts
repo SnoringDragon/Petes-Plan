@@ -1,6 +1,7 @@
 import { Api } from './Api';
 import { UserCourse } from '../types/user-course';
 import { DegreePlan } from '../types/degree-plan';
+import { makePromiseCache } from '../utils/promise-cache';
 
 class DegreePlanService extends Api {
     getPlans() {
@@ -36,6 +37,8 @@ class DegreePlanService extends Api {
     getRecommendations(plan: string) {
         return this.get<{recs: {uniqueID: string, courseID: string, subject: string}[]}>(`/api/degreePlan/${plan}/courseRecommendations`);
     }
+
+    cachedGetPlans = makePromiseCache(this.getPlans.bind(this));
 }
 
 export default new DegreePlanService();

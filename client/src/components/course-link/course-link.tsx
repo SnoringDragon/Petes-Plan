@@ -10,8 +10,6 @@ import { ApiCourse } from '../../types/course-requirements';
 import { CircularProgress, Tooltip } from '@material-ui/core';
 import { Prerequisites } from '../prerequisites/prerequisites';
 
-const getPlans = makePromiseCache(DegreePlanService.getPlans.bind(DegreePlanService));
-const getUserCourses = makePromiseCache(CourseHistoryService.getCourses.bind(CourseHistoryService));
 
 let gradeValues: { [key: string]: number } = {
     'D-': 1, 'D': 2, 'D+': 3, 'C-': 4, 'C': 5, 'C+': 6, 'B-': 7, 'B': 8, 'B+': 9, 'A-': 10, 'A': 11, 'A+': 12
@@ -33,8 +31,8 @@ export function CourseLink(props: { courseID: string, subject: string, filter?: 
 
     useEffect(() => {
         if (!('useColor' in props) || props.useColor) {
-            getPlans().then(res => setDegreePlans(res.degreePlans));
-            getUserCourses().then(res => setUserCourses(res.courses));
+            DegreePlanService.cachedGetPlans().then(res => setDegreePlans(res.degreePlans));
+            CourseHistoryService.cachedGetCourses().then(res => setUserCourses(res.courses));
         }
     }, [props.useColor]);
 

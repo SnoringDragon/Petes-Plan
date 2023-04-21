@@ -1,1976 +1,5370 @@
 export default [
     {
-        "id": 12314,
-        "subject": "CS",
-        "subject_desc": "CS-Computer Sciences",
-        "course_num": 18000,
-        "title": "Prob Slvg & O-O Progrmng-Honor",
-        "academic_period": 201710,
-        "academic_period_desc": "Fall 2016",
-        "section": "BLK",
-        "crn": 10687,
-        "instructor": "Dunsmore, Hubert E.",
-        "a": "100.0%",
-        "a_minus": null,
-        "a_plus": null,
-        "au": null,
-        "b": null,
-        "b_minus": null,
-        "b_plus": null,
-        "c": null,
-        "c_minus": null,
-        "c_plus": null,
-        "d": null,
-        "d_minus": null,
-        "d_plus": null,
-        "e": null,
-        "f": null,
-        "fn": null,
-        "i": null,
-        "i_f": null,
-        "n": null,
-        "ns": null,
-        "p": null,
-        "p_i": null,
-        "s": null,
-        "s_i": null,
-        "u": null,
-        "w": null,
-        "w_f": null,
-        "w_n": null,
-        "w_u": null,
-        "blank": null
+        "_id": "643f590b7fdcd39e74ce4819",
+        "instructor": {
+            "_id": "6423b2e93651b3f2c4ab2d26",
+            "email": "grr@purdue.edu",
+            "firstname": "Gustavo",
+            "lastname": "Rodriguez-Rivera",
+            "rateMyProfIds": [
+                "132641"
+            ],
+            "__v": 1
+        },
+        "section": {
+            "_id": "6423b2e93651b3f2c4ab2ed4",
+            "crn": 52938,
+            "semester": "640af19cc14c81559cf58ff7",
+            "course": "6423b2e93651b3f2c4ab2bad",
+            "isHybrid": false,
+            "linkID": "A1",
+            "maxCredits": 4,
+            "meetings": [
+                {
+                    "startDate": "1/08/2018",
+                    "endDate": "4/28/2018",
+                    "days": [
+                        "M",
+                        "W",
+                        "F"
+                    ],
+                    "startTime": "12:30 PM",
+                    "endTime": "1:20 PM",
+                    "location": "Mathematical Sciences Building 175",
+                    "instructors": [
+                        "6423b2e93651b3f2c4ab2d26"
+                    ]
+                }
+            ],
+            "minCredits": 4,
+            "name": "Systems Programming",
+            "requires": "A2",
+            "sectionID": "LE1"
+        },
+        "course": "6423b2e93651b3f2c4ab2bad",
+        "gpa": [
+            [
+                0,
+                0.03560528992878942
+            ],
+            [
+                0.7,
+                0
+            ],
+            [
+                1,
+                0.03560528992878942
+            ],
+            [
+                1.3,
+                0
+            ],
+            [
+                1.7,
+                0.03560528992878942
+            ],
+            [
+                2,
+                0.04781281790437436
+            ],
+            [
+                2.3,
+                0.08850457782299083
+            ],
+            [
+                2.7,
+                0.08240081383519837
+            ],
+            [
+                3,
+                0.16581892166836215
+            ],
+            [
+                3.3,
+                0.10681586978636826
+            ],
+            [
+                3.7,
+                0.12410986775178025
+            ],
+            [
+                4,
+                0.27772126144455755
+            ]
+        ],
+        "grades": [
+            [
+                "A+",
+                0.128
+            ],
+            [
+                "A",
+                0.145
+            ],
+            [
+                "A-",
+                0.12199999999999997
+            ],
+            [
+                "B+",
+                0.10499999999999998
+            ],
+            [
+                "B",
+                0.16299999999999998
+            ],
+            [
+                "B-",
+                0.08099999999999999
+            ],
+            [
+                "C+",
+                0.08699999999999998
+            ],
+            [
+                "C",
+                0.04699999999999999
+            ],
+            [
+                "C-",
+                0.034999999999999996
+            ],
+            [
+                "D+",
+                0
+            ],
+            [
+                "D",
+                0.034999999999999996
+            ],
+            [
+                "D-",
+                0
+            ],
+            [
+                "F",
+                0.034999999999999996
+            ],
+            [
+                "E",
+                0
+            ],
+            [
+                "IF",
+                0
+            ],
+            [
+                "I",
+                0
+            ],
+            [
+                "P",
+                0
+            ],
+            [
+                "N",
+                0
+            ],
+            [
+                "PI",
+                0
+            ],
+            [
+                "S",
+                0
+            ],
+            [
+                "U",
+                0
+            ],
+            [
+                "SI",
+                0
+            ],
+            [
+                "W",
+                0.016999999999999998
+            ],
+            [
+                "WF",
+                0
+            ],
+            [
+                "WN",
+                0
+            ],
+            [
+                "WU",
+                0
+            ],
+            [
+                "AU",
+                0
+            ],
+            [
+                "NS",
+                0
+            ]
+        ],
+        "semester": {
+            "_id": "640af19cc14c81559cf58ff7",
+            "semester": "Spring",
+            "year": 2018,
+            "__v": 0,
+            "term": "201820"
+        }
     },
     {
-        "id": 12315,
-        "subject": "CS",
-        "subject_desc": "CS-Computer Sciences",
-        "course_num": 18000,
-        "title": "Prob Slvng & O-O Progrm-Honor",
-        "academic_period": 201820,
-        "academic_period_desc": "Spring 2018",
-        "section": "LE1",
-        "crn": 19979,
-        "instructor": "Dunsmore, Hubert E.",
-        "a": null,
-        "a_minus": null,
-        "a_plus": null,
-        "au": null,
-        "b": null,
-        "b_minus": null,
-        "b_plus": "100.0%",
-        "c": null,
-        "c_minus": null,
-        "c_plus": null,
-        "d": null,
-        "d_minus": null,
-        "d_plus": null,
-        "e": null,
-        "f": null,
-        "fn": null,
-        "i": null,
-        "i_f": null,
-        "n": null,
-        "ns": null,
-        "p": null,
-        "p_i": null,
-        "s": null,
-        "s_i": null,
-        "u": null,
-        "w": null,
-        "w_f": null,
-        "w_n": null,
-        "w_u": null,
-        "blank": null
+        "_id": "643f590b7fdcd39e74ce481a",
+        "instructor": {
+            "_id": "6423b2e93651b3f2c4ab2d34",
+            "email": "turkstra@purdue.edu",
+            "firstname": "Jeffrey A",
+            "lastname": "Turkstra",
+            "rateMyProfIds": [
+                "2231495"
+            ],
+            "__v": 1
+        },
+        "section": {
+            "_id": "6423b2e93651b3f2c4ab2ed5",
+            "crn": 10968,
+            "semester": "640af19cc14c81559cf58ff7",
+            "course": "6423b2e93651b3f2c4ab2bad",
+            "isHybrid": false,
+            "linkID": "A3",
+            "maxCredits": 4,
+            "meetings": [
+                {
+                    "startDate": "1/08/2018",
+                    "endDate": "4/28/2018",
+                    "days": [
+                        "M",
+                        "W",
+                        "F"
+                    ],
+                    "startTime": "4:30 PM",
+                    "endTime": "5:20 PM",
+                    "location": "Mathematical Sciences Building 175",
+                    "instructors": [
+                        "6423b2e93651b3f2c4ab2d34"
+                    ]
+                }
+            ],
+            "minCredits": 4,
+            "name": "Systems Programming",
+            "requires": "A4",
+            "sectionID": "LE2"
+        },
+        "course": "6423b2e93651b3f2c4ab2bad",
+        "gpa": [
+            [
+                0,
+                0.09282700421940929
+            ],
+            [
+                0.7,
+                0
+            ],
+            [
+                1,
+                0.07383966244725738
+            ],
+            [
+                1.3,
+                0
+            ],
+            [
+                1.7,
+                0.09282700421940929
+            ],
+            [
+                2,
+                0.08333333333333334
+            ],
+            [
+                2.3,
+                0.13924050632911392
+            ],
+            [
+                2.7,
+                0.08333333333333334
+            ],
+            [
+                3,
+                0.14767932489451477
+            ],
+            [
+                3.3,
+                0.08333333333333334
+            ],
+            [
+                3.7,
+                0.08333333333333334
+            ],
+            [
+                4,
+                0.12025316455696203
+            ]
+        ],
+        "grades": [
+            [
+                "A+",
+                0.04395604395604396
+            ],
+            [
+                "A",
+                0.06993006993006994
+            ],
+            [
+                "A-",
+                0.07892107892107893
+            ],
+            [
+                "B+",
+                0.07892107892107893
+            ],
+            [
+                "B",
+                0.13986013986013987
+            ],
+            [
+                "B-",
+                0.07892107892107893
+            ],
+            [
+                "C+",
+                0.13186813186813187
+            ],
+            [
+                "C",
+                0.07892107892107893
+            ],
+            [
+                "C-",
+                0.08791208791208792
+            ],
+            [
+                "D+",
+                0
+            ],
+            [
+                "D",
+                0.06993006993006994
+            ],
+            [
+                "D-",
+                0
+            ],
+            [
+                "F",
+                0.08791208791208792
+            ],
+            [
+                "E",
+                0
+            ],
+            [
+                "IF",
+                0
+            ],
+            [
+                "I",
+                0
+            ],
+            [
+                "P",
+                0
+            ],
+            [
+                "N",
+                0
+            ],
+            [
+                "PI",
+                0
+            ],
+            [
+                "S",
+                0
+            ],
+            [
+                "U",
+                0
+            ],
+            [
+                "SI",
+                0
+            ],
+            [
+                "W",
+                0.017982017982017984
+            ],
+            [
+                "WF",
+                0.03496503496503497
+            ],
+            [
+                "WN",
+                0
+            ],
+            [
+                "WU",
+                0
+            ],
+            [
+                "AU",
+                0
+            ],
+            [
+                "NS",
+                0
+            ]
+        ],
+        "semester": {
+            "_id": "640af19cc14c81559cf58ff7",
+            "semester": "Spring",
+            "year": 2018,
+            "__v": 0,
+            "term": "201820"
+        }
     },
     {
-        "id": 12316,
-        "subject": "CS",
-        "subject_desc": "CS-Computer Sciences",
-        "course_num": 18000,
-        "title": "Prob Slvng & O-O Progrmg-Honor",
-        "academic_period": 201820,
-        "academic_period_desc": "Spring 2018",
-        "section": "LE1",
-        "crn": 19979,
-        "instructor": "Dunsmore, Hubert E.",
-        "a": "100.0%",
-        "a_minus": null,
-        "a_plus": null,
-        "au": null,
-        "b": null,
-        "b_minus": null,
-        "b_plus": null,
-        "c": null,
-        "c_minus": null,
-        "c_plus": null,
-        "d": null,
-        "d_minus": null,
-        "d_plus": null,
-        "e": null,
-        "f": null,
-        "fn": null,
-        "i": null,
-        "i_f": null,
-        "n": null,
-        "ns": null,
-        "p": null,
-        "p_i": null,
-        "s": null,
-        "s_i": null,
-        "u": null,
-        "w": null,
-        "w_f": null,
-        "w_n": null,
-        "w_u": null,
-        "blank": null
+        "_id": "643f590b7fdcd39e74ce481b",
+        "instructor": {
+            "_id": "6423b2e93651b3f2c4ab2d34",
+            "email": "turkstra@purdue.edu",
+            "firstname": "Jeffrey A",
+            "lastname": "Turkstra",
+            "rateMyProfIds": [
+                "2231495"
+            ],
+            "__v": 1
+        },
+        "section": {
+            "_id": "6423b37b3651b3f2c4ab77bd",
+            "crn": 25752,
+            "semester": "640af19bc14c81559cf58ff5",
+            "course": "6423b2e93651b3f2c4ab2bad",
+            "isHybrid": false,
+            "linkID": "A3",
+            "maxCredits": 4,
+            "meetings": [
+                {
+                    "startDate": "6/11/2018",
+                    "endDate": "7/31/2018",
+                    "days": [
+                        "M",
+                        "T",
+                        "W",
+                        "R",
+                        "F"
+                    ],
+                    "startTime": "11:00 AM",
+                    "endTime": "12:00 PM",
+                    "location": "Felix Haas Hall G066",
+                    "instructors": [
+                        "6423b2e93651b3f2c4ab2d34"
+                    ]
+                }
+            ],
+            "minCredits": 4,
+            "name": "Systems Programming",
+            "requires": "A4",
+            "sectionID": "LE1"
+        },
+        "course": "6423b2e93651b3f2c4ab2bad",
+        "gpa": [
+            [
+                0,
+                0.18782249742002066
+            ],
+            [
+                0.7,
+                0
+            ],
+            [
+                1,
+                0.09391124871001033
+            ],
+            [
+                1.3,
+                0.06295149638802891
+            ],
+            [
+                1.7,
+                0.06295149638802891
+            ],
+            [
+                2,
+                0.03095975232198143
+            ],
+            [
+                2.3,
+                0.03095975232198143
+            ],
+            [
+                2.7,
+                0.03095975232198143
+            ],
+            [
+                3,
+                0.03095975232198143
+            ],
+            [
+                3.3,
+                0.12487100103199177
+            ],
+            [
+                3.7,
+                0.2187822497420021
+            ],
+            [
+                4,
+                0.12487100103199177
+            ]
+        ],
+        "grades": [
+            [
+                "A+",
+                0.030030030030030033
+            ],
+            [
+                "A",
+                0.09109109109109109
+            ],
+            [
+                "A-",
+                0.21221221221221223
+            ],
+            [
+                "B+",
+                0.12112112112112113
+            ],
+            [
+                "B",
+                0.030030030030030033
+            ],
+            [
+                "B-",
+                0.030030030030030033
+            ],
+            [
+                "C+",
+                0.030030030030030033
+            ],
+            [
+                "C",
+                0.030030030030030033
+            ],
+            [
+                "C-",
+                0.061061061061061066
+            ],
+            [
+                "D+",
+                0.061061061061061066
+            ],
+            [
+                "D",
+                0.09109109109109109
+            ],
+            [
+                "D-",
+                0
+            ],
+            [
+                "F",
+                0.18218218218218218
+            ],
+            [
+                "E",
+                0
+            ],
+            [
+                "IF",
+                0
+            ],
+            [
+                "I",
+                0
+            ],
+            [
+                "P",
+                0
+            ],
+            [
+                "N",
+                0
+            ],
+            [
+                "PI",
+                0
+            ],
+            [
+                "S",
+                0
+            ],
+            [
+                "U",
+                0
+            ],
+            [
+                "SI",
+                0
+            ],
+            [
+                "W",
+                0
+            ],
+            [
+                "WF",
+                0
+            ],
+            [
+                "WN",
+                0
+            ],
+            [
+                "WU",
+                0
+            ],
+            [
+                "AU",
+                0.030030030030030033
+            ],
+            [
+                "NS",
+                0
+            ]
+        ],
+        "semester": {
+            "_id": "640af19bc14c81559cf58ff5",
+            "semester": "Summer",
+            "year": 2018,
+            "__v": 0,
+            "term": "201830"
+        }
     },
     {
-        "id": 12317,
-        "subject": "CS",
-        "subject_desc": "CS-Computer Sciences",
-        "course_num": 18000,
-        "title": "Prob Solving & O-O Prog-Honors",
-        "academic_period": 201720,
-        "academic_period_desc": "Spring 2017",
-        "section": "LE1",
-        "crn": 19979,
-        "instructor": "Dunsmore, Hubert E.",
-        "a": "100.0%",
-        "a_minus": null,
-        "a_plus": null,
-        "au": null,
-        "b": null,
-        "b_minus": null,
-        "b_plus": null,
-        "c": null,
-        "c_minus": null,
-        "c_plus": null,
-        "d": null,
-        "d_minus": null,
-        "d_plus": null,
-        "e": null,
-        "f": null,
-        "fn": null,
-        "i": null,
-        "i_f": null,
-        "n": null,
-        "ns": null,
-        "p": null,
-        "p_i": null,
-        "s": null,
-        "s_i": null,
-        "u": null,
-        "w": null,
-        "w_f": null,
-        "w_n": null,
-        "w_u": null,
-        "blank": null
+        "_id": "643f590b7fdcd39e74ce481c",
+        "instructor": {
+            "_id": "6423b2e93651b3f2c4ab2d26",
+            "email": "grr@purdue.edu",
+            "firstname": "Gustavo",
+            "lastname": "Rodriguez-Rivera",
+            "rateMyProfIds": [
+                "132641"
+            ],
+            "__v": 1
+        },
+        "section": {
+            "_id": "6423b4163651b3f2c4abb6bd",
+            "crn": 64662,
+            "semester": "640af19ac14c81559cf58ff3",
+            "course": "6423b2e93651b3f2c4ab2bad",
+            "isHybrid": false,
+            "linkID": "A1",
+            "maxCredits": 4,
+            "meetings": [
+                {
+                    "startDate": "8/20/2018",
+                    "endDate": "12/08/2018",
+                    "days": [
+                        "M",
+                        "W",
+                        "F"
+                    ],
+                    "startTime": "11:30 AM",
+                    "endTime": "12:20 PM",
+                    "location": "Forney Hall of Chemical Engr G140",
+                    "instructors": [
+                        "6423b2e93651b3f2c4ab2d26"
+                    ]
+                }
+            ],
+            "minCredits": 4,
+            "name": "Systems Programming",
+            "requires": "A4",
+            "sectionID": "LE1"
+        },
+        "course": "6423b2e93651b3f2c4ab2bad",
+        "gpa": [
+            [
+                0,
+                0.05295950155763239
+            ],
+            [
+                0.7,
+                0
+            ],
+            [
+                1,
+                0.014537902388369675
+            ],
+            [
+                1.3,
+                0
+            ],
+            [
+                1.7,
+                0.02284527518172378
+            ],
+            [
+                2,
+                0.06749740394600207
+            ],
+            [
+                2.3,
+                0.02284527518172378
+            ],
+            [
+                2.7,
+                0.12045690550363446
+            ],
+            [
+                3,
+                0.2554517133956386
+            ],
+            [
+                3.3,
+                0.13499480789200413
+            ],
+            [
+                3.7,
+                0.12045690550363446
+            ],
+            [
+                4,
+                0.18795430944963654
+            ]
+        ],
+        "grades": [
+            [
+                "A+",
+                0.08708708708708708
+            ],
+            [
+                "A",
+                0.09409409409409411
+            ],
+            [
+                "A-",
+                0.11611611611611612
+            ],
+            [
+                "B+",
+                0.13013013013013014
+            ],
+            [
+                "B",
+                0.24624624624624628
+            ],
+            [
+                "B-",
+                0.11611611611611612
+            ],
+            [
+                "C+",
+                0.022022022022022025
+            ],
+            [
+                "C",
+                0.06506506506506507
+            ],
+            [
+                "C-",
+                0.022022022022022025
+            ],
+            [
+                "D+",
+                0
+            ],
+            [
+                "D",
+                0.014014014014014014
+            ],
+            [
+                "D-",
+                0
+            ],
+            [
+                "F",
+                0.05105105105105105
+            ],
+            [
+                "E",
+                0
+            ],
+            [
+                "IF",
+                0
+            ],
+            [
+                "I",
+                0
+            ],
+            [
+                "P",
+                0
+            ],
+            [
+                "N",
+                0
+            ],
+            [
+                "PI",
+                0
+            ],
+            [
+                "S",
+                0
+            ],
+            [
+                "U",
+                0
+            ],
+            [
+                "SI",
+                0
+            ],
+            [
+                "W",
+                0.03603603603603604
+            ],
+            [
+                "WF",
+                0
+            ],
+            [
+                "WN",
+                0
+            ],
+            [
+                "WU",
+                0
+            ],
+            [
+                "AU",
+                0
+            ],
+            [
+                "NS",
+                0
+            ]
+        ],
+        "semester": {
+            "_id": "640af19ac14c81559cf58ff3",
+            "semester": "Fall",
+            "year": 2018,
+            "__v": 0,
+            "term": "201910"
+        }
     },
     {
-        "id": 12318,
-        "subject": "CS",
-        "subject_desc": "CS-Computer Sciences",
-        "course_num": 18000,
-        "title": "Prob Solving & O-O Prog-Honors",
-        "academic_period": 202020,
-        "academic_period_desc": "Spring 2020",
-        "section": "LE2",
-        "crn": 11064,
-        "instructor": "Dunsmore, Hubert E.",
-        "a": "50.0%",
-        "a_minus": null,
-        "a_plus": "50.0%",
-        "au": null,
-        "b": null,
-        "b_minus": null,
-        "b_plus": null,
-        "c": null,
-        "c_minus": null,
-        "c_plus": null,
-        "d": null,
-        "d_minus": null,
-        "d_plus": null,
-        "e": null,
-        "f": null,
-        "fn": null,
-        "i": null,
-        "i_f": null,
-        "n": null,
-        "ns": null,
-        "p": null,
-        "p_i": null,
-        "s": null,
-        "s_i": null,
-        "u": null,
-        "w": null,
-        "w_f": null,
-        "w_n": null,
-        "w_u": null,
-        "blank": null
+        "_id": "643f590b7fdcd39e74ce481d",
+        "instructor": {
+            "_id": "6423b2e93651b3f2c4ab2d26",
+            "email": "grr@purdue.edu",
+            "firstname": "Gustavo",
+            "lastname": "Rodriguez-Rivera",
+            "rateMyProfIds": [
+                "132641"
+            ],
+            "__v": 1
+        },
+        "section": {
+            "_id": "6423b4163651b3f2c4abb6be",
+            "crn": 15218,
+            "semester": "640af19ac14c81559cf58ff3",
+            "course": "6423b2e93651b3f2c4ab2bad",
+            "isHybrid": false,
+            "linkID": "A2",
+            "maxCredits": 4,
+            "meetings": [
+                {
+                    "startDate": "8/20/2018",
+                    "endDate": "12/08/2018",
+                    "days": [
+                        "M",
+                        "W",
+                        "F"
+                    ],
+                    "startTime": "9:30 AM",
+                    "endTime": "10:20 AM",
+                    "location": "Lilly Hall of Life Sciences G126",
+                    "instructors": [
+                        "6423b2e93651b3f2c4ab2d26"
+                    ]
+                }
+            ],
+            "minCredits": 4,
+            "name": "Systems Programming",
+            "requires": "A3",
+            "sectionID": "LE2"
+        },
+        "course": "6423b2e93651b3f2c4ab2bad",
+        "gpa": [
+            [
+                0,
+                0.09583333333333333
+            ],
+            [
+                0.7,
+                0
+            ],
+            [
+                1,
+                0.042708333333333334
+            ],
+            [
+                1.3,
+                0
+            ],
+            [
+                1.7,
+                0.042708333333333334
+            ],
+            [
+                2,
+                0.042708333333333334
+            ],
+            [
+                2.3,
+                0.03229166666666667
+            ],
+            [
+                2.7,
+                0.09583333333333333
+            ],
+            [
+                3,
+                0.16979166666666667
+            ],
+            [
+                3.3,
+                0.08541666666666667
+            ],
+            [
+                3.7,
+                0.15937500000000002
+            ],
+            [
+                4,
+                0.23333333333333334
+            ]
+        ],
+        "grades": [
+            [
+                "A+",
+                0.1528471528471529
+            ],
+            [
+                "A",
+                0.07092907092907094
+            ],
+            [
+                "A-",
+                0.1528471528471529
+            ],
+            [
+                "B+",
+                0.08191808191808193
+            ],
+            [
+                "B",
+                0.16283716283716287
+            ],
+            [
+                "B-",
+                0.09190809190809192
+            ],
+            [
+                "C+",
+                0.030969030969030975
+            ],
+            [
+                "C",
+                0.04095904095904097
+            ],
+            [
+                "C-",
+                0.04095904095904097
+            ],
+            [
+                "D+",
+                0
+            ],
+            [
+                "D",
+                0.04095904095904097
+            ],
+            [
+                "D-",
+                0
+            ],
+            [
+                "F",
+                0.09190809190809192
+            ],
+            [
+                "E",
+                0
+            ],
+            [
+                "IF",
+                0
+            ],
+            [
+                "I",
+                0.009990009990009992
+            ],
+            [
+                "P",
+                0
+            ],
+            [
+                "N",
+                0
+            ],
+            [
+                "PI",
+                0
+            ],
+            [
+                "S",
+                0
+            ],
+            [
+                "U",
+                0
+            ],
+            [
+                "SI",
+                0
+            ],
+            [
+                "W",
+                0.030969030969030975
+            ],
+            [
+                "WF",
+                0
+            ],
+            [
+                "WN",
+                0
+            ],
+            [
+                "WU",
+                0
+            ],
+            [
+                "AU",
+                0
+            ],
+            [
+                "NS",
+                0
+            ]
+        ],
+        "semester": {
+            "_id": "640af19ac14c81559cf58ff3",
+            "semester": "Fall",
+            "year": 2018,
+            "__v": 0,
+            "term": "201910"
+        }
     },
     {
-        "id": 12319,
-        "subject": "CS",
-        "subject_desc": "CS-Computer Sciences",
-        "course_num": 18000,
-        "title": "Prob Solving & O-O Programming",
-        "academic_period": 201630,
-        "academic_period_desc": "Summer 2016",
-        "section": "LE1",
-        "crn": 22937,
-        "instructor": "Dunsmore, Hubert E.",
-        "a": "37.8%",
-        "a_minus": "2.2%",
-        "a_plus": null,
-        "au": null,
-        "b": "31.1%",
-        "b_minus": "8.9%",
-        "b_plus": null,
-        "c": "4.4%",
-        "c_minus": "2.2%",
-        "c_plus": null,
-        "d": "2.2%",
-        "d_minus": null,
-        "d_plus": null,
-        "e": null,
-        "f": "4.4%",
-        "fn": null,
-        "i": null,
-        "i_f": null,
-        "n": null,
-        "ns": null,
-        "p": null,
-        "p_i": null,
-        "s": null,
-        "s_i": null,
-        "u": null,
-        "w": "6.7%",
-        "w_f": null,
-        "w_n": null,
-        "w_u": null,
-        "blank": null
+        "_id": "643f590b7fdcd39e74ce481e",
+        "instructor": {
+            "_id": "6423b2e93651b3f2c4ab2d26",
+            "email": "grr@purdue.edu",
+            "firstname": "Gustavo",
+            "lastname": "Rodriguez-Rivera",
+            "rateMyProfIds": [
+                "132641"
+            ],
+            "__v": 1
+        },
+        "section": {
+            "_id": "6423b4c03651b3f2c4ac0e81",
+            "crn": 52938,
+            "semester": "640af199c14c81559cf58ff0",
+            "course": "6423b2e93651b3f2c4ab2bad",
+            "isHybrid": false,
+            "linkID": "A1",
+            "maxCredits": 4,
+            "meetings": [
+                {
+                    "startDate": "1/07/2019",
+                    "endDate": "4/27/2019",
+                    "days": [
+                        "M",
+                        "W",
+                        "F"
+                    ],
+                    "startTime": "10:30 AM",
+                    "endTime": "11:20 AM",
+                    "location": "Electrical Engineering Bldg 170",
+                    "instructors": [
+                        "6423b2e93651b3f2c4ab2d26"
+                    ]
+                }
+            ],
+            "minCredits": 4,
+            "name": "Systems Programming",
+            "requires": "A2",
+            "sectionID": "LE1"
+        },
+        "course": "6423b2e93651b3f2c4ab2bad",
+        "gpa": [
+            [
+                0,
+                0.03323262839879154
+            ],
+            [
+                0.7,
+                0
+            ],
+            [
+                1,
+                0.013091641490433032
+            ],
+            [
+                1.3,
+                0
+            ],
+            [
+                1.7,
+                0.0070493454179254775
+            ],
+            [
+                2,
+                0.11379657603222558
+            ],
+            [
+                2.3,
+                0.10775427995971802
+            ],
+            [
+                2.7,
+                0.11379657603222558
+            ],
+            [
+                3,
+                0.14098690835850958
+            ],
+            [
+                3.3,
+                0.14803625377643503
+            ],
+            [
+                3.7,
+                0.09365558912386708
+            ],
+            [
+                4,
+                0.22860020140986906
+            ]
+        ],
+        "grades": [
+            [
+                "A+",
+                0.08
+            ],
+            [
+                "A",
+                0.147
+            ],
+            [
+                "A-",
+                0.09300000000000001
+            ],
+            [
+                "B+",
+                0.147
+            ],
+            [
+                "B",
+                0.14
+            ],
+            [
+                "B-",
+                0.113
+            ],
+            [
+                "C+",
+                0.107
+            ],
+            [
+                "C",
+                0.113
+            ],
+            [
+                "C-",
+                0.006999999999999999
+            ],
+            [
+                "D+",
+                0
+            ],
+            [
+                "D",
+                0.013000000000000001
+            ],
+            [
+                "D-",
+                0
+            ],
+            [
+                "F",
+                0.033
+            ],
+            [
+                "E",
+                0
+            ],
+            [
+                "IF",
+                0
+            ],
+            [
+                "I",
+                0
+            ],
+            [
+                "P",
+                0
+            ],
+            [
+                "N",
+                0
+            ],
+            [
+                "PI",
+                0
+            ],
+            [
+                "S",
+                0
+            ],
+            [
+                "U",
+                0
+            ],
+            [
+                "SI",
+                0
+            ],
+            [
+                "W",
+                0.006999999999999999
+            ],
+            [
+                "WF",
+                0
+            ],
+            [
+                "WN",
+                0
+            ],
+            [
+                "WU",
+                0
+            ],
+            [
+                "AU",
+                0
+            ],
+            [
+                "NS",
+                0
+            ]
+        ],
+        "semester": {
+            "_id": "640af199c14c81559cf58ff0",
+            "semester": "Spring",
+            "year": 2019,
+            "__v": 0,
+            "term": "201920"
+        }
     },
     {
-        "id": 12320,
-        "subject": "CS",
-        "subject_desc": "CS-Computer Sciences",
-        "course_num": 18000,
-        "title": "Prob Solving & O-O Programming",
-        "academic_period": 201710,
-        "academic_period_desc": "Fall 2016",
-        "section": "BLK",
-        "crn": 10687,
-        "instructor": "Dunsmore, Hubert E.",
-        "a": "65.6%",
-        "a_minus": "5.4%",
-        "a_plus": "0.4%",
-        "au": null,
-        "b": "12.9%",
-        "b_minus": "1.3%",
-        "b_plus": "2.2%",
-        "c": "5.4%",
-        "c_minus": "0.4%",
-        "c_plus": "0.4%",
-        "d": "1.8%",
-        "d_minus": "0.9%",
-        "d_plus": "0.9%",
-        "e": null,
-        "f": "2.2%",
-        "fn": null,
-        "i": null,
-        "i_f": null,
-        "n": null,
-        "ns": null,
-        "p": null,
-        "p_i": null,
-        "s": null,
-        "s_i": null,
-        "u": null,
-        "w": null,
-        "w_f": null,
-        "w_n": null,
-        "w_u": null,
-        "blank": null
+        "_id": "643f590b7fdcd39e74ce481f",
+        "instructor": {
+            "_id": "6423b2e93651b3f2c4ab2d26",
+            "email": "grr@purdue.edu",
+            "firstname": "Gustavo",
+            "lastname": "Rodriguez-Rivera",
+            "rateMyProfIds": [
+                "132641"
+            ],
+            "__v": 1
+        },
+        "section": {
+            "_id": "6423b4c03651b3f2c4ac0e82",
+            "crn": 10968,
+            "semester": "640af199c14c81559cf58ff0",
+            "course": "6423b2e93651b3f2c4ab2bad",
+            "isHybrid": false,
+            "linkID": "A3",
+            "maxCredits": 4,
+            "meetings": [
+                {
+                    "startDate": "1/07/2019",
+                    "endDate": "4/27/2019",
+                    "days": [
+                        "M",
+                        "W",
+                        "F"
+                    ],
+                    "startTime": "12:30 PM",
+                    "endTime": "1:20 PM",
+                    "location": "Electrical Engineering Bldg 170",
+                    "instructors": [
+                        "6423b2e93651b3f2c4ab2d26"
+                    ]
+                }
+            ],
+            "minCredits": 4,
+            "name": "Systems Programming",
+            "requires": "A5",
+            "sectionID": "LE2"
+        },
+        "course": "6423b2e93651b3f2c4ab2bad",
+        "gpa": [
+            [
+                0,
+                0.033400809716599186
+            ],
+            [
+                0.7,
+                0
+            ],
+            [
+                1,
+                0.013157894736842105
+            ],
+            [
+                1.3,
+                0
+            ],
+            [
+                1.7,
+                0.020242914979757082
+            ],
+            [
+                2,
+                0.04655870445344129
+            ],
+            [
+                2.3,
+                0.09311740890688258
+            ],
+            [
+                2.7,
+                0.0597165991902834
+            ],
+            [
+                3,
+                0.1194331983805668
+            ],
+            [
+                3.3,
+                0.16497975708502025
+            ],
+            [
+                3.7,
+                0.21153846153846154
+            ],
+            [
+                4,
+                0.23785425101214575
+            ]
+        ],
+        "grades": [
+            [
+                "A+",
+                0.05894105894105895
+            ],
+            [
+                "A",
+                0.17582417582417584
+            ],
+            [
+                "A-",
+                0.2087912087912088
+            ],
+            [
+                "B+",
+                0.16283716283716285
+            ],
+            [
+                "B",
+                0.1178821178821179
+            ],
+            [
+                "B-",
+                0.05894105894105895
+            ],
+            [
+                "C+",
+                0.0919080919080919
+            ],
+            [
+                "C",
+                0.04595404595404595
+            ],
+            [
+                "C-",
+                0.01998001998001998
+            ],
+            [
+                "D+",
+                0
+            ],
+            [
+                "D",
+                0.012987012987012988
+            ],
+            [
+                "D-",
+                0
+            ],
+            [
+                "F",
+                0.03296703296703297
+            ],
+            [
+                "E",
+                0
+            ],
+            [
+                "IF",
+                0
+            ],
+            [
+                "I",
+                0
+            ],
+            [
+                "P",
+                0
+            ],
+            [
+                "N",
+                0
+            ],
+            [
+                "PI",
+                0
+            ],
+            [
+                "S",
+                0
+            ],
+            [
+                "U",
+                0
+            ],
+            [
+                "SI",
+                0
+            ],
+            [
+                "W",
+                0.012987012987012988
+            ],
+            [
+                "WF",
+                0
+            ],
+            [
+                "WN",
+                0
+            ],
+            [
+                "WU",
+                0
+            ],
+            [
+                "AU",
+                0
+            ],
+            [
+                "NS",
+                0
+            ]
+        ],
+        "semester": {
+            "_id": "640af199c14c81559cf58ff0",
+            "semester": "Spring",
+            "year": 2019,
+            "__v": 0,
+            "term": "201920"
+        }
     },
     {
-        "id": 12321,
-        "subject": "CS",
-        "subject_desc": "CS-Computer Sciences",
-        "course_num": 18000,
-        "title": "Prob Solving & O-O Programming",
-        "academic_period": 201710,
-        "academic_period_desc": "Fall 2016",
-        "section": "GLD",
-        "crn": 34295,
-        "instructor": "Prabhakar, Sunil K.",
-        "a": "34.5%",
-        "a_minus": "7.7%",
-        "a_plus": null,
-        "au": null,
-        "b": "21.1%",
-        "b_minus": "6.7%",
-        "b_plus": "5.2%",
-        "c": "11.3%",
-        "c_minus": "1.0%",
-        "c_plus": "0.5%",
-        "d": "4.6%",
-        "d_minus": "1.0%",
-        "d_plus": null,
-        "e": null,
-        "f": "5.7%",
-        "fn": null,
-        "i": null,
-        "i_f": null,
-        "n": null,
-        "ns": null,
-        "p": null,
-        "p_i": null,
-        "s": null,
-        "s_i": null,
-        "u": null,
-        "w": "0.5%",
-        "w_f": null,
-        "w_n": null,
-        "w_u": null,
-        "blank": null
+        "_id": "643f590b7fdcd39e74ce4820",
+        "instructor": {
+            "_id": "6423b2e93651b3f2c4ab2d26",
+            "email": "grr@purdue.edu",
+            "firstname": "Gustavo",
+            "lastname": "Rodriguez-Rivera",
+            "rateMyProfIds": [
+                "132641"
+            ],
+            "__v": 1
+        },
+        "section": {
+            "_id": "6423b55d3651b3f2c4ac55ab",
+            "crn": 25752,
+            "semester": "640af199c14c81559cf58fee",
+            "course": "6423b2e93651b3f2c4ab2bad",
+            "isHybrid": false,
+            "linkID": "A3",
+            "maxCredits": 4,
+            "meetings": [
+                {
+                    "startDate": "6/10/2019",
+                    "endDate": "7/30/2019",
+                    "days": [
+                        "M",
+                        "T",
+                        "W",
+                        "R",
+                        "F"
+                    ],
+                    "startTime": "11:00 AM",
+                    "endTime": "12:00 PM",
+                    "location": "Lawson Computer Science Bldg B151",
+                    "instructors": [
+                        "6423b2e93651b3f2c4ab2d26"
+                    ]
+                }
+            ],
+            "minCredits": 4,
+            "name": "Systems Programming",
+            "requires": "A4",
+            "sectionID": "LE1"
+        },
+        "course": "6423b2e93651b3f2c4ab2bad",
+        "gpa": [
+            [
+                0,
+                0.07165109034267912
+            ],
+            [
+                0.7,
+                0.03530633437175493
+            ],
+            [
+                1,
+                0.14330218068535824
+            ],
+            [
+                1.3,
+                0.03530633437175493
+            ],
+            [
+                1.7,
+                0
+            ],
+            [
+                2,
+                0
+            ],
+            [
+                2.3,
+                0.03530633437175493
+            ],
+            [
+                2.7,
+                0.10695742471443405
+            ],
+            [
+                3,
+                0.10695742471443405
+            ],
+            [
+                3.3,
+                0
+            ],
+            [
+                3.7,
+                0.21495327102803735
+            ],
+            [
+                4,
+                0.25025960539979225
+            ]
+        ],
+        "grades": [
+            [
+                "A+",
+                0.03410230692076228
+            ],
+            [
+                "A",
+                0.2076228686058174
+            ],
+            [
+                "A-",
+                0.2076228686058174
+            ],
+            [
+                "B+",
+                0
+            ],
+            [
+                "B",
+                0.1033099297893681
+            ],
+            [
+                "B-",
+                0.1033099297893681
+            ],
+            [
+                "C+",
+                0.03410230692076228
+            ],
+            [
+                "C",
+                0
+            ],
+            [
+                "C-",
+                0
+            ],
+            [
+                "D+",
+                0.03410230692076228
+            ],
+            [
+                "D",
+                0.13841524573721162
+            ],
+            [
+                "D-",
+                0.03410230692076228
+            ],
+            [
+                "F",
+                0.06920762286860581
+            ],
+            [
+                "E",
+                0
+            ],
+            [
+                "IF",
+                0
+            ],
+            [
+                "I",
+                0
+            ],
+            [
+                "P",
+                0
+            ],
+            [
+                "N",
+                0
+            ],
+            [
+                "PI",
+                0
+            ],
+            [
+                "S",
+                0
+            ],
+            [
+                "U",
+                0
+            ],
+            [
+                "SI",
+                0
+            ],
+            [
+                "W",
+                0
+            ],
+            [
+                "WF",
+                0
+            ],
+            [
+                "WN",
+                0
+            ],
+            [
+                "WU",
+                0
+            ],
+            [
+                "AU",
+                0.03410230692076228
+            ],
+            [
+                "NS",
+                0
+            ]
+        ],
+        "semester": {
+            "_id": "640af199c14c81559cf58fee",
+            "semester": "Summer",
+            "year": 2019,
+            "__v": 0,
+            "term": "201930"
+        }
     },
     {
-        "id": 12322,
-        "subject": "CS",
-        "subject_desc": "CS-Computer Sciences",
-        "course_num": 18000,
-        "title": "Prob Solving & O-O Programming",
-        "academic_period": 201720,
-        "academic_period_desc": "Spring 2017",
-        "section": "LE1",
-        "crn": 19979,
-        "instructor": "Dunsmore, Hubert E.",
-        "a": "27.5%",
-        "a_minus": "10.4%",
-        "a_plus": null,
-        "au": null,
-        "b": "23.5%",
-        "b_minus": "6.9%",
-        "b_plus": "4.0%",
-        "c": "7.4%",
-        "c_minus": "0.7%",
-        "c_plus": "1.7%",
-        "d": "4.5%",
-        "d_minus": "0.5%",
-        "d_plus": "0.7%",
-        "e": null,
-        "f": "6.2%",
-        "fn": null,
-        "i": null,
-        "i_f": null,
-        "n": null,
-        "ns": null,
-        "p": "0.7%",
-        "p_i": null,
-        "s": null,
-        "s_i": null,
-        "u": null,
-        "w": "5.2%",
-        "w_f": null,
-        "w_n": null,
-        "w_u": null,
-        "blank": null
+        "_id": "643f590b7fdcd39e74ce4821",
+        "instructor": {
+            "_id": "6423b2e93651b3f2c4ab2d34",
+            "email": "turkstra@purdue.edu",
+            "firstname": "Jeffrey A",
+            "lastname": "Turkstra",
+            "rateMyProfIds": [
+                "2231495"
+            ],
+            "__v": 1
+        },
+        "section": {
+            "_id": "6423b5f23651b3f2c4ac9593",
+            "crn": 64662,
+            "semester": "640af198c14c81559cf58fec",
+            "course": "6423b2e93651b3f2c4ab2bad",
+            "isHybrid": false,
+            "linkID": "A1",
+            "maxCredits": 4,
+            "meetings": [
+                {
+                    "startDate": "8/19/2019",
+                    "endDate": "12/07/2019",
+                    "days": [
+                        "M",
+                        "W",
+                        "F"
+                    ],
+                    "startTime": "3:30 PM",
+                    "endTime": "4:20 PM",
+                    "location": "Wetherill Lab of Chemistry 320",
+                    "instructors": [
+                        "6423b2e93651b3f2c4ab2d34"
+                    ]
+                }
+            ],
+            "minCredits": 4,
+            "name": "Systems Programming",
+            "requires": "A4",
+            "sectionID": "LE1"
+        },
+        "course": "6423b2e93651b3f2c4ab2bad",
+        "gpa": [
+            [
+                0,
+                0.11156601842374617
+            ],
+            [
+                0.7,
+                0.044012282497441144
+            ],
+            [
+                1,
+                0.06653019447287614
+            ],
+            [
+                1.3,
+                0
+            ],
+            [
+                1.7,
+                0
+            ],
+            [
+                2,
+                0.22210849539406347
+            ],
+            [
+                2.3,
+                0.022517911975435005
+            ],
+            [
+                2.7,
+                0.022517911975435005
+            ],
+            [
+                3,
+                0.1555783009211873
+            ],
+            [
+                3.3,
+                0.044012282497441144
+            ],
+            [
+                3.7,
+                0.08904810644831115
+            ],
+            [
+                4,
+                0.22210849539406347
+            ]
+        ],
+        "grades": [
+            [
+                "A+",
+                0.04304304304304304
+            ],
+            [
+                "A",
+                0.17417417417417416
+            ],
+            [
+                "A-",
+                0.08708708708708708
+            ],
+            [
+                "B+",
+                0.04304304304304304
+            ],
+            [
+                "B",
+                0.15215215215215214
+            ],
+            [
+                "B-",
+                0.022022022022022022
+            ],
+            [
+                "C+",
+                0.022022022022022022
+            ],
+            [
+                "C",
+                0.2172172172172172
+            ],
+            [
+                "C-",
+                0
+            ],
+            [
+                "D+",
+                0
+            ],
+            [
+                "D",
+                0.06506506506506506
+            ],
+            [
+                "D-",
+                0.04304304304304304
+            ],
+            [
+                "F",
+                0.1091091091091091
+            ],
+            [
+                "E",
+                0
+            ],
+            [
+                "IF",
+                0
+            ],
+            [
+                "I",
+                0
+            ],
+            [
+                "P",
+                0
+            ],
+            [
+                "N",
+                0
+            ],
+            [
+                "PI",
+                0
+            ],
+            [
+                "S",
+                0
+            ],
+            [
+                "U",
+                0
+            ],
+            [
+                "SI",
+                0
+            ],
+            [
+                "W",
+                0
+            ],
+            [
+                "WF",
+                0.022022022022022022
+            ],
+            [
+                "WN",
+                0
+            ],
+            [
+                "WU",
+                0
+            ],
+            [
+                "AU",
+                0
+            ],
+            [
+                "NS",
+                0
+            ]
+        ],
+        "semester": {
+            "_id": "640af198c14c81559cf58fec",
+            "semester": "Fall",
+            "year": 2019,
+            "__v": 0,
+            "term": "202010"
+        }
     },
     {
-        "id": 12323,
-        "subject": "CS",
-        "subject_desc": "CS-Computer Sciences",
-        "course_num": 18000,
-        "title": "Prob Solving & O-O Programming",
-        "academic_period": 201730,
-        "academic_period_desc": "Summer 2017",
-        "section": "LE1",
-        "crn": 22937,
-        "instructor": "Dunsmore, Hubert E.",
-        "a": "18.9%",
-        "a_minus": "7.5%",
-        "a_plus": null,
-        "au": null,
-        "b": "22.6%",
-        "b_minus": "5.7%",
-        "b_plus": "1.9%",
-        "c": "20.8%",
-        "c_minus": null,
-        "c_plus": "3.8%",
-        "d": "7.5%",
-        "d_minus": null,
-        "d_plus": null,
-        "e": null,
-        "f": "5.7%",
-        "fn": null,
-        "i": null,
-        "i_f": null,
-        "n": null,
-        "ns": null,
-        "p": null,
-        "p_i": null,
-        "s": null,
-        "s_i": null,
-        "u": null,
-        "w": "5.7%",
-        "w_f": null,
-        "w_n": null,
-        "w_u": null,
-        "blank": null
+        "_id": "643f590b7fdcd39e74ce4822",
+        "instructor": {
+            "_id": "6423b2e93651b3f2c4ab2d34",
+            "email": "turkstra@purdue.edu",
+            "firstname": "Jeffrey A",
+            "lastname": "Turkstra",
+            "rateMyProfIds": [
+                "2231495"
+            ],
+            "__v": 1
+        },
+        "section": {
+            "_id": "6423b5f23651b3f2c4ac9594",
+            "crn": 15218,
+            "semester": "640af198c14c81559cf58fec",
+            "course": "6423b2e93651b3f2c4ab2bad",
+            "isHybrid": false,
+            "linkID": "A2",
+            "maxCredits": 4,
+            "meetings": [
+                {
+                    "startDate": "8/19/2019",
+                    "endDate": "12/07/2019",
+                    "days": [
+                        "M",
+                        "W",
+                        "F"
+                    ],
+                    "startTime": "1:30 PM",
+                    "endTime": "2:20 PM",
+                    "location": "Neil Armstrong Hall of Engr 1010",
+                    "instructors": [
+                        "6423b2e93651b3f2c4ab2d34"
+                    ]
+                }
+            ],
+            "minCredits": 4,
+            "name": "Systems Programming",
+            "requires": "A3",
+            "sectionID": "LE2"
+        },
+        "course": "6423b2e93651b3f2c4ab2bad",
+        "gpa": [
+            [
+                0,
+                0.08932461873638342
+            ],
+            [
+                0.7,
+                0.04466230936819171
+            ],
+            [
+                1,
+                0.05991285403050108
+            ],
+            [
+                1.3,
+                0
+            ],
+            [
+                1.7,
+                0
+            ],
+            [
+                2,
+                0.2538126361655773
+            ],
+            [
+                2.3,
+                0.04466230936819171
+            ],
+            [
+                2.7,
+                0.015250544662309365
+            ],
+            [
+                3,
+                0.19389978213507622
+            ],
+            [
+                3.3,
+                0.04466230936819171
+            ],
+            [
+                3.7,
+                0.029411764705882353
+            ],
+            [
+                4,
+                0.22440087145969498
+            ]
+        ],
+        "grades": [
+            [
+                "A+",
+                0.014
+            ],
+            [
+                "A",
+                0.19200000000000003
+            ],
+            [
+                "A-",
+                0.027000000000000007
+            ],
+            [
+                "B+",
+                0.041
+            ],
+            [
+                "B",
+                0.17800000000000002
+            ],
+            [
+                "B-",
+                0.014
+            ],
+            [
+                "C+",
+                0.041
+            ],
+            [
+                "C",
+                0.23300000000000004
+            ],
+            [
+                "C-",
+                0
+            ],
+            [
+                "D+",
+                0
+            ],
+            [
+                "D",
+                0.05500000000000001
+            ],
+            [
+                "D-",
+                0.041
+            ],
+            [
+                "F",
+                0.082
+            ],
+            [
+                "E",
+                0
+            ],
+            [
+                "IF",
+                0
+            ],
+            [
+                "I",
+                0
+            ],
+            [
+                "P",
+                0
+            ],
+            [
+                "N",
+                0
+            ],
+            [
+                "PI",
+                0
+            ],
+            [
+                "S",
+                0
+            ],
+            [
+                "U",
+                0
+            ],
+            [
+                "SI",
+                0
+            ],
+            [
+                "W",
+                0.068
+            ],
+            [
+                "WF",
+                0.014
+            ],
+            [
+                "WN",
+                0
+            ],
+            [
+                "WU",
+                0
+            ],
+            [
+                "AU",
+                0
+            ],
+            [
+                "NS",
+                0
+            ]
+        ],
+        "semester": {
+            "_id": "640af198c14c81559cf58fec",
+            "semester": "Fall",
+            "year": 2019,
+            "__v": 0,
+            "term": "202010"
+        }
     },
     {
-        "id": 12324,
-        "subject": "CS",
-        "subject_desc": "CS-Computer Sciences",
-        "course_num": 18000,
-        "title": "Prob Solving & O-O Programming",
-        "academic_period": 201810,
-        "academic_period_desc": "Fall 2017",
-        "section": "BLK",
-        "crn": 10687,
-        "instructor": "Turkstra, Jeffrey A.",
-        "a": "55.7%",
-        "a_minus": "8.6%",
-        "a_plus": "0.5%",
-        "au": null,
-        "b": "16.2%",
-        "b_minus": "0.5%",
-        "b_plus": "5.4%",
-        "c": "2.2%",
-        "c_minus": "3.2%",
-        "c_plus": "0.5%",
-        "d": "1.1%",
-        "d_minus": null,
-        "d_plus": "0.5%",
-        "e": null,
-        "f": "3.8%",
-        "fn": null,
-        "i": null,
-        "i_f": null,
-        "n": null,
-        "ns": null,
-        "p": null,
-        "p_i": null,
-        "s": null,
-        "s_i": null,
-        "u": null,
-        "w": "1.6%",
-        "w_f": null,
-        "w_n": null,
-        "w_u": null,
-        "blank": null
+        "_id": "643f590b7fdcd39e74ce4823",
+        "instructor": {
+            "_id": "6423b2e93651b3f2c4ab2d26",
+            "email": "grr@purdue.edu",
+            "firstname": "Gustavo",
+            "lastname": "Rodriguez-Rivera",
+            "rateMyProfIds": [
+                "132641"
+            ],
+            "__v": 1
+        },
+        "section": {
+            "_id": "6423b69b3651b3f2c4acee86",
+            "crn": 52938,
+            "semester": "640af197c14c81559cf58fe9",
+            "course": "6423b2e93651b3f2c4ab2bad",
+            "isHybrid": false,
+            "linkID": "A1",
+            "maxCredits": 4,
+            "meetings": [
+                {
+                    "startDate": "1/13/2020",
+                    "endDate": "5/02/2020",
+                    "days": [
+                        "M",
+                        "W",
+                        "F"
+                    ],
+                    "startTime": "8:30 AM",
+                    "endTime": "9:20 AM",
+                    "location": "Matthews Hall 210",
+                    "instructors": [
+                        "6423b2e93651b3f2c4ab2d26"
+                    ]
+                }
+            ],
+            "minCredits": 4,
+            "name": "Systems Programming",
+            "requires": "A2",
+            "sectionID": "LE1"
+        },
+        "course": "6423b2e93651b3f2c4ab2bad",
+        "gpa": [
+            [
+                0,
+                0
+            ],
+            [
+                0.7,
+                0.012915129151291515
+            ],
+            [
+                1,
+                0.02398523985239853
+            ],
+            [
+                1.3,
+                0
+            ],
+            [
+                1.7,
+                0
+            ],
+            [
+                2,
+                0.036900369003690044
+            ],
+            [
+                2.3,
+                0.02398523985239853
+            ],
+            [
+                2.7,
+                0.02398523985239853
+            ],
+            [
+                3,
+                0.06088560885608857
+            ],
+            [
+                3.3,
+                0.1457564575645757
+            ],
+            [
+                3.7,
+                0.21955719557195577
+            ],
+            [
+                4,
+                0.452029520295203
+            ]
+        ],
+        "grades": [
+            [
+                "A+",
+                0.060120240480961935
+            ],
+            [
+                "A",
+                0.18537074148296595
+            ],
+            [
+                "A-",
+                0.11923847695390784
+            ],
+            [
+                "B+",
+                0.07915831663326656
+            ],
+            [
+                "B",
+                0.03306613226452906
+            ],
+            [
+                "B-",
+                0.01302605210420842
+            ],
+            [
+                "C+",
+                0.01302605210420842
+            ],
+            [
+                "C",
+                0.020040080160320644
+            ],
+            [
+                "C-",
+                0
+            ],
+            [
+                "D+",
+                0
+            ],
+            [
+                "D",
+                0.01302605210420842
+            ],
+            [
+                "D-",
+                0.007014028056112225
+            ],
+            [
+                "F",
+                0
+            ],
+            [
+                "E",
+                0
+            ],
+            [
+                "IF",
+                0
+            ],
+            [
+                "I",
+                0.01302605210420842
+            ],
+            [
+                "P",
+                0.3777555110220442
+            ],
+            [
+                "N",
+                0.04609218436873748
+            ],
+            [
+                "PI",
+                0
+            ],
+            [
+                "S",
+                0
+            ],
+            [
+                "U",
+                0
+            ],
+            [
+                "SI",
+                0
+            ],
+            [
+                "W",
+                0.020040080160320644
+            ],
+            [
+                "WF",
+                0
+            ],
+            [
+                "WN",
+                0
+            ],
+            [
+                "WU",
+                0
+            ],
+            [
+                "AU",
+                0
+            ],
+            [
+                "NS",
+                0
+            ]
+        ],
+        "semester": {
+            "_id": "640af197c14c81559cf58fe9",
+            "semester": "Spring",
+            "year": 2020,
+            "__v": 0,
+            "term": "202020"
+        }
     },
     {
-        "id": 12325,
-        "subject": "CS",
-        "subject_desc": "CS-Computer Sciences",
-        "course_num": 18000,
-        "title": "Prob Solving & O-O Programming",
-        "academic_period": 201810,
-        "academic_period_desc": "Fall 2017",
-        "section": "GLD",
-        "crn": 10955,
-        "instructor": "Dunsmore, Hubert E.",
-        "a": "35.9%",
-        "a_minus": "8.8%",
-        "a_plus": null,
-        "au": null,
-        "b": "16.0%",
-        "b_minus": "3.9%",
-        "b_plus": "7.2%",
-        "c": "7.7%",
-        "c_minus": null,
-        "c_plus": "1.7%",
-        "d": "2.8%",
-        "d_minus": "1.7%",
-        "d_plus": "0.6%",
-        "e": null,
-        "f": "9.9%",
-        "fn": null,
-        "i": null,
-        "i_f": null,
-        "n": null,
-        "ns": null,
-        "p": null,
-        "p_i": null,
-        "s": null,
-        "s_i": null,
-        "u": null,
-        "w": "3.9%",
-        "w_f": null,
-        "w_n": null,
-        "w_u": null,
-        "blank": null
+        "_id": "643f590b7fdcd39e74ce4824",
+        "instructor": {
+            "_id": "6423b2e93651b3f2c4ab2d26",
+            "email": "grr@purdue.edu",
+            "firstname": "Gustavo",
+            "lastname": "Rodriguez-Rivera",
+            "rateMyProfIds": [
+                "132641"
+            ],
+            "__v": 1
+        },
+        "section": {
+            "_id": "6423b69b3651b3f2c4acee87",
+            "crn": 10968,
+            "semester": "640af197c14c81559cf58fe9",
+            "course": "6423b2e93651b3f2c4ab2bad",
+            "isHybrid": false,
+            "linkID": "A3",
+            "maxCredits": 4,
+            "meetings": [
+                {
+                    "startDate": "1/13/2020",
+                    "endDate": "5/02/2020",
+                    "days": [
+                        "M",
+                        "W",
+                        "F"
+                    ],
+                    "startTime": "3:30 PM",
+                    "endTime": "4:20 PM",
+                    "location": "Smith Hall 108",
+                    "instructors": [
+                        "6423b2e93651b3f2c4ab2d26"
+                    ]
+                }
+            ],
+            "minCredits": 4,
+            "name": "Systems Programming",
+            "requires": "A5",
+            "sectionID": "LE2"
+        },
+        "course": "6423b2e93651b3f2c4ab2bad",
+        "gpa": [
+            [
+                0,
+                0.010489510489510488
+            ],
+            [
+                0.7,
+                0.010489510489510488
+            ],
+            [
+                1,
+                0.010489510489510488
+            ],
+            [
+                1.3,
+                0
+            ],
+            [
+                1.7,
+                0
+            ],
+            [
+                2,
+                0.010489510489510488
+            ],
+            [
+                2.3,
+                0
+            ],
+            [
+                2.7,
+                0.04195804195804195
+            ],
+            [
+                3,
+                0.031468531468531465
+            ],
+            [
+                3.3,
+                0.0839160839160839
+            ],
+            [
+                3.7,
+                0.229020979020979
+            ],
+            [
+                4,
+                0.5716783216783217
+            ]
+        ],
+        "grades": [
+            [
+                "A+",
+                0.1008991008991009
+            ],
+            [
+                "A",
+                0.2257742257742258
+            ],
+            [
+                "A-",
+                0.13086913086913088
+            ],
+            [
+                "B+",
+                0.04795204795204795
+            ],
+            [
+                "B",
+                0.017982017982017984
+            ],
+            [
+                "B-",
+                0.023976023976023976
+            ],
+            [
+                "C+",
+                0
+            ],
+            [
+                "C",
+                0.005994005994005994
+            ],
+            [
+                "C-",
+                0
+            ],
+            [
+                "D+",
+                0
+            ],
+            [
+                "D",
+                0.005994005994005994
+            ],
+            [
+                "D-",
+                0.005994005994005994
+            ],
+            [
+                "F",
+                0.005994005994005994
+            ],
+            [
+                "E",
+                0
+            ],
+            [
+                "IF",
+                0
+            ],
+            [
+                "I",
+                0
+            ],
+            [
+                "P",
+                0.35664335664335667
+            ],
+            [
+                "N",
+                0.03596403596403597
+            ],
+            [
+                "PI",
+                0.005994005994005994
+            ],
+            [
+                "S",
+                0
+            ],
+            [
+                "U",
+                0
+            ],
+            [
+                "SI",
+                0
+            ],
+            [
+                "W",
+                0.029970029970029972
+            ],
+            [
+                "WF",
+                0
+            ],
+            [
+                "WN",
+                0
+            ],
+            [
+                "WU",
+                0
+            ],
+            [
+                "AU",
+                0
+            ],
+            [
+                "NS",
+                0
+            ]
+        ],
+        "semester": {
+            "_id": "640af197c14c81559cf58fe9",
+            "semester": "Spring",
+            "year": 2020,
+            "__v": 0,
+            "term": "202020"
+        }
     },
     {
-        "id": 12326,
-        "subject": "CS",
-        "subject_desc": "CS-Computer Sciences",
-        "course_num": 18000,
-        "title": "Prob Solving & O-O Programming",
-        "academic_period": 201820,
-        "academic_period_desc": "Spring 2018",
-        "section": "LE1",
-        "crn": 19979,
-        "instructor": "Dunsmore, Hubert E.",
-        "a": "34.9%",
-        "a_minus": "7.8%",
-        "a_plus": "0.4%",
-        "au": null,
-        "b": "17.8%",
-        "b_minus": "2.7%",
-        "b_plus": "2.2%",
-        "c": "8.9%",
-        "c_minus": "0.9%",
-        "c_plus": "2.0%",
-        "d": "3.1%",
-        "d_minus": "0.4%",
-        "d_plus": "0.2%",
-        "e": null,
-        "f": "8.9%",
-        "fn": null,
-        "i": "0.2%",
-        "i_f": null,
-        "n": "0.2%",
-        "ns": null,
-        "p": null,
-        "p_i": null,
-        "s": null,
-        "s_i": null,
-        "u": null,
-        "w": "9.3%",
-        "w_f": null,
-        "w_n": null,
-        "w_u": null,
-        "blank": null
+        "_id": "643f590b7fdcd39e74ce4825",
+        "instructor": {
+            "_id": "6423b2e93651b3f2c4ab2d26",
+            "email": "grr@purdue.edu",
+            "firstname": "Gustavo",
+            "lastname": "Rodriguez-Rivera",
+            "rateMyProfIds": [
+                "132641"
+            ],
+            "__v": 1
+        },
+        "section": {
+            "_id": "6423b7373651b3f2c4ad3780",
+            "crn": 25752,
+            "semester": "640af196c14c81559cf58fe7",
+            "course": "6423b2e93651b3f2c4ab2bad",
+            "isHybrid": false,
+            "linkID": "A3",
+            "maxCredits": 4,
+            "meetings": [
+                {
+                    "startDate": "6/15/2020",
+                    "endDate": "8/04/2020",
+                    "days": [
+                        "M",
+                        "T",
+                        "W",
+                        "R",
+                        "F"
+                    ],
+                    "startTime": "11:00 AM",
+                    "endTime": "12:00 PM",
+                    "location": "On-site ONLINE",
+                    "instructors": [
+                        "6423b2e93651b3f2c4ab2d26"
+                    ]
+                }
+            ],
+            "minCredits": 4,
+            "name": "Systems Programming",
+            "requires": "A4",
+            "sectionID": "LE1"
+        },
+        "course": "6423b2e93651b3f2c4ab2bad",
+        "gpa": [
+            [
+                0,
+                0.10510204081632656
+            ],
+            [
+                0.7,
+                0.017346938775510207
+            ],
+            [
+                1,
+                0.017346938775510207
+            ],
+            [
+                1.3,
+                0.034693877551020415
+            ],
+            [
+                1.7,
+                0.034693877551020415
+            ],
+            [
+                2,
+                0.19387755102040818
+            ],
+            [
+                2.3,
+                0.10510204081632656
+            ],
+            [
+                2.7,
+                0.08775510204081634
+            ],
+            [
+                3,
+                0.10510204081632656
+            ],
+            [
+                3.3,
+                0.05306122448979592
+            ],
+            [
+                3.7,
+                0.017346938775510207
+            ],
+            [
+                4,
+                0.2285714285714286
+            ]
+        ],
+        "grades": [
+            [
+                "A+",
+                0.08625877632898693
+            ],
+            [
+                "A",
+                0.1384152457372116
+            ],
+            [
+                "A-",
+                0.01705115346038114
+            ],
+            [
+                "B+",
+                0.05215646940822466
+            ],
+            [
+                "B",
+                0.10330992978936808
+            ],
+            [
+                "B-",
+                0.08625877632898693
+            ],
+            [
+                "C+",
+                0.10330992978936808
+            ],
+            [
+                "C",
+                0.19057171514543625
+            ],
+            [
+                "C-",
+                0.03410230692076228
+            ],
+            [
+                "D+",
+                0.03410230692076228
+            ],
+            [
+                "D",
+                0.01705115346038114
+            ],
+            [
+                "D-",
+                0.01705115346038114
+            ],
+            [
+                "F",
+                0.10330992978936808
+            ],
+            [
+                "E",
+                0
+            ],
+            [
+                "IF",
+                0
+            ],
+            [
+                "I",
+                0
+            ],
+            [
+                "P",
+                0
+            ],
+            [
+                "N",
+                0
+            ],
+            [
+                "PI",
+                0
+            ],
+            [
+                "S",
+                0
+            ],
+            [
+                "U",
+                0
+            ],
+            [
+                "SI",
+                0
+            ],
+            [
+                "W",
+                0.01705115346038114
+            ],
+            [
+                "WF",
+                0
+            ],
+            [
+                "WN",
+                0
+            ],
+            [
+                "WU",
+                0
+            ],
+            [
+                "AU",
+                0
+            ],
+            [
+                "NS",
+                0
+            ]
+        ],
+        "semester": {
+            "_id": "640af196c14c81559cf58fe7",
+            "semester": "Summer",
+            "year": 2020,
+            "__v": 0,
+            "term": "202030"
+        }
     },
     {
-        "id": 12327,
-        "subject": "CS",
-        "subject_desc": "CS-Computer Sciences",
-        "course_num": 18000,
-        "title": "Prob Solving & O-O Programming",
-        "academic_period": 201830,
-        "academic_period_desc": "Summer 2018",
-        "section": "LE1",
-        "crn": 22937,
-        "instructor": "Dunsmore, Hubert E.",
-        "a": "27.7%",
-        "a_minus": "9.2%",
-        "a_plus": null,
-        "au": null,
-        "b": "18.5%",
-        "b_minus": "4.6%",
-        "b_plus": "3.1%",
-        "c": "9.2%",
-        "c_minus": "1.5%",
-        "c_plus": "1.5%",
-        "d": "9.2%",
-        "d_minus": "1.5%",
-        "d_plus": null,
-        "e": null,
-        "f": "7.7%",
-        "fn": null,
-        "i": null,
-        "i_f": null,
-        "n": "1.5%",
-        "ns": null,
-        "p": "1.5%",
-        "p_i": null,
-        "s": null,
-        "s_i": null,
-        "u": null,
-        "w": "3.1%",
-        "w_f": null,
-        "w_n": null,
-        "w_u": null,
-        "blank": null
+        "_id": "643f590b7fdcd39e74ce4826",
+        "instructor": {
+            "_id": "6423b2e93651b3f2c4ab2d26",
+            "email": "grr@purdue.edu",
+            "firstname": "Gustavo",
+            "lastname": "Rodriguez-Rivera",
+            "rateMyProfIds": [
+                "132641"
+            ],
+            "__v": 1
+        },
+        "section": {
+            "_id": "6423b7d83651b3f2c4ad7a8d",
+            "crn": 26044,
+            "semester": "640af195c14c81559cf58fe4",
+            "course": "6423b2e93651b3f2c4ab2bad",
+            "isHybrid": false,
+            "maxCredits": 4,
+            "meetings": [
+                {
+                    "startDate": "8/24/2020",
+                    "endDate": "12/05/2020",
+                    "days": null,
+                    "startTime": null,
+                    "endTime": null,
+                    "location": "TBA",
+                    "instructors": [
+                        "6423b2e93651b3f2c4ab2d26"
+                    ]
+                }
+            ],
+            "minCredits": 4,
+            "name": "Systems Programming",
+            "sectionID": "001"
+        },
+        "course": "6423b2e93651b3f2c4ab2bad",
+        "gpa": [
+            [
+                0,
+                0
+            ],
+            [
+                0.7,
+                0
+            ],
+            [
+                1,
+                0
+            ],
+            [
+                1.3,
+                0
+            ],
+            [
+                1.7,
+                0.02465166130760986
+            ],
+            [
+                2,
+                0.09753483386923902
+            ],
+            [
+                2.3,
+                0
+            ],
+            [
+                2.7,
+                0.07288317256162916
+            ],
+            [
+                3,
+                0.02465166130760986
+            ],
+            [
+                3.3,
+                0.02465166130760986
+            ],
+            [
+                3.7,
+                0.2433011789924973
+            ],
+            [
+                4,
+                0.5123258306538049
+            ]
+        ],
+        "grades": [
+            [
+                "A+",
+                0.11388611388611392
+            ],
+            [
+                "A",
+                0.3636363636363637
+            ],
+            [
+                "A-",
+                0.2267732267732268
+            ],
+            [
+                "B+",
+                0.02297702297702298
+            ],
+            [
+                "B",
+                0.02297702297702298
+            ],
+            [
+                "B-",
+                0.06793206793206795
+            ],
+            [
+                "C+",
+                0
+            ],
+            [
+                "C",
+                0.09090909090909093
+            ],
+            [
+                "C-",
+                0.02297702297702298
+            ],
+            [
+                "D+",
+                0
+            ],
+            [
+                "D",
+                0
+            ],
+            [
+                "D-",
+                0
+            ],
+            [
+                "F",
+                0
+            ],
+            [
+                "E",
+                0
+            ],
+            [
+                "IF",
+                0
+            ],
+            [
+                "I",
+                0
+            ],
+            [
+                "P",
+                0
+            ],
+            [
+                "N",
+                0
+            ],
+            [
+                "PI",
+                0
+            ],
+            [
+                "S",
+                0
+            ],
+            [
+                "U",
+                0
+            ],
+            [
+                "SI",
+                0
+            ],
+            [
+                "W",
+                0.06793206793206795
+            ],
+            [
+                "WF",
+                0
+            ],
+            [
+                "WN",
+                0
+            ],
+            [
+                "WU",
+                0
+            ],
+            [
+                "AU",
+                0
+            ],
+            [
+                "NS",
+                0
+            ]
+        ],
+        "semester": {
+            "_id": "640af195c14c81559cf58fe4",
+            "semester": "Fall",
+            "year": 2020,
+            "__v": 0,
+            "term": "202110"
+        }
     },
     {
-        "id": 12328,
-        "subject": "CS",
-        "subject_desc": "CS-Computer Sciences",
-        "course_num": 18000,
-        "title": "Prob Solving & O-O Programming",
-        "academic_period": 201910,
-        "academic_period_desc": "Fall 2018",
-        "section": "BLK",
-        "crn": 10687,
-        "instructor": "Turkstra, Jeffrey A.",
-        "a": "63.6%",
-        "a_minus": "5.1%",
-        "a_plus": "1.9%",
-        "au": null,
-        "b": "13.6%",
-        "b_minus": "2.3%",
-        "b_plus": "1.4%",
-        "c": "2.8%",
-        "c_minus": "1.9%",
-        "c_plus": "1.4%",
-        "d": "2.3%",
-        "d_minus": null,
-        "d_plus": null,
-        "e": null,
-        "f": "2.3%",
-        "fn": null,
-        "i": "0.5%",
-        "i_f": null,
-        "n": null,
-        "ns": null,
-        "p": null,
-        "p_i": null,
-        "s": null,
-        "s_i": null,
-        "u": null,
-        "w": "0.9%",
-        "w_f": null,
-        "w_n": null,
-        "w_u": null,
-        "blank": null
+        "_id": "643f590b7fdcd39e74ce4827",
+        "instructor": {
+            "_id": "6423b2e93651b3f2c4ab2d26",
+            "email": "grr@purdue.edu",
+            "firstname": "Gustavo",
+            "lastname": "Rodriguez-Rivera",
+            "rateMyProfIds": [
+                "132641"
+            ],
+            "__v": 1
+        },
+        "section": {
+            "_id": "6423b7d83651b3f2c4ad7a96",
+            "crn": 64662,
+            "semester": "640af195c14c81559cf58fe4",
+            "course": "6423b2e93651b3f2c4ab2bad",
+            "isHybrid": false,
+            "linkID": "A1",
+            "maxCredits": 4,
+            "meetings": [
+                {
+                    "startDate": "8/24/2020",
+                    "endDate": "12/05/2020",
+                    "days": null,
+                    "startTime": null,
+                    "endTime": null,
+                    "location": "On-site ONLINE",
+                    "instructors": [
+                        "6423b2e93651b3f2c4ab2d26"
+                    ]
+                }
+            ],
+            "minCredits": 4,
+            "name": "Systems Programming",
+            "requires": "A4",
+            "sectionID": "LE1"
+        },
+        "course": "6423b2e93651b3f2c4ab2bad",
+        "gpa": [
+            [
+                0,
+                0.054143646408839785
+            ],
+            [
+                0.7,
+                0.054143646408839785
+            ],
+            [
+                1,
+                0.054143646408839785
+            ],
+            [
+                1.3,
+                0.054143646408839785
+            ],
+            [
+                1.7,
+                0.026519337016574586
+            ],
+            [
+                2,
+                0.08066298342541436
+            ],
+            [
+                2.3,
+                0.10828729281767957
+            ],
+            [
+                2.7,
+                0.08066298342541436
+            ],
+            [
+                3,
+                0.10828729281767957
+            ],
+            [
+                3.3,
+                0.054143646408839785
+            ],
+            [
+                3.7,
+                0.10828729281767957
+            ],
+            [
+                4,
+                0.21657458563535914
+            ]
+        ],
+        "grades": [
+            [
+                "A+",
+                0.09770687936191426
+            ],
+            [
+                "A",
+                0.09770687936191426
+            ],
+            [
+                "A-",
+                0.09770687936191426
+            ],
+            [
+                "B+",
+                0.04885343968095713
+            ],
+            [
+                "B",
+                0.09770687936191426
+            ],
+            [
+                "B-",
+                0.07278165503489531
+            ],
+            [
+                "C+",
+                0.09770687936191426
+            ],
+            [
+                "C",
+                0.07278165503489531
+            ],
+            [
+                "C-",
+                0.023928215353938184
+            ],
+            [
+                "D+",
+                0.04885343968095713
+            ],
+            [
+                "D",
+                0.04885343968095713
+            ],
+            [
+                "D-",
+                0.04885343968095713
+            ],
+            [
+                "F",
+                0.04885343968095713
+            ],
+            [
+                "E",
+                0
+            ],
+            [
+                "IF",
+                0
+            ],
+            [
+                "I",
+                0
+            ],
+            [
+                "P",
+                0
+            ],
+            [
+                "N",
+                0
+            ],
+            [
+                "PI",
+                0
+            ],
+            [
+                "S",
+                0
+            ],
+            [
+                "U",
+                0
+            ],
+            [
+                "SI",
+                0
+            ],
+            [
+                "W",
+                0.09770687936191426
+            ],
+            [
+                "WF",
+                0
+            ],
+            [
+                "WN",
+                0
+            ],
+            [
+                "WU",
+                0
+            ],
+            [
+                "AU",
+                0
+            ],
+            [
+                "NS",
+                0
+            ]
+        ],
+        "semester": {
+            "_id": "640af195c14c81559cf58fe4",
+            "semester": "Fall",
+            "year": 2020,
+            "__v": 0,
+            "term": "202110"
+        }
     },
     {
-        "id": 12329,
-        "subject": "CS",
-        "subject_desc": "CS-Computer Sciences",
-        "course_num": 18000,
-        "title": "Prob Solving & O-O Programming",
-        "academic_period": 201910,
-        "academic_period_desc": "Fall 2018",
-        "section": "GLD",
-        "crn": 10955,
-        "instructor": "Dunsmore, Hubert E.",
-        "a": "31.8%",
-        "a_minus": "7.1%",
-        "a_plus": null,
-        "au": null,
-        "b": "20.9%",
-        "b_minus": "2.8%",
-        "b_plus": "2.8%",
-        "c": "8.1%",
-        "c_minus": "1.9%",
-        "c_plus": "0.9%",
-        "d": "4.7%",
-        "d_minus": "0.5%",
-        "d_plus": "0.5%",
-        "e": null,
-        "f": "8.5%",
-        "fn": null,
-        "i": null,
-        "i_f": null,
-        "n": null,
-        "ns": null,
-        "p": null,
-        "p_i": null,
-        "s": null,
-        "s_i": null,
-        "u": null,
-        "w": "9.5%",
-        "w_f": null,
-        "w_n": null,
-        "w_u": null,
-        "blank": null
+        "_id": "643f590b7fdcd39e74ce4828",
+        "instructor": {
+            "_id": "6423b2e93651b3f2c4ab2d26",
+            "email": "grr@purdue.edu",
+            "firstname": "Gustavo",
+            "lastname": "Rodriguez-Rivera",
+            "rateMyProfIds": [
+                "132641"
+            ],
+            "__v": 1
+        },
+        "section": {
+            "_id": "6423b7d83651b3f2c4ad7a97",
+            "crn": 15218,
+            "semester": "640af195c14c81559cf58fe4",
+            "course": "6423b2e93651b3f2c4ab2bad",
+            "isHybrid": false,
+            "linkID": "A2",
+            "maxCredits": 4,
+            "meetings": [
+                {
+                    "startDate": "8/24/2020",
+                    "endDate": "12/05/2020",
+                    "days": null,
+                    "startTime": null,
+                    "endTime": null,
+                    "location": "TBA",
+                    "instructors": [
+                        "6423b2e93651b3f2c4ab2d26"
+                    ]
+                }
+            ],
+            "minCredits": 4,
+            "name": "Systems Programming",
+            "requires": "A3",
+            "sectionID": "LE2"
+        },
+        "course": "6423b2e93651b3f2c4ab2bad",
+        "gpa": [
+            [
+                0,
+                0.052858683926645104
+            ],
+            [
+                0.7,
+                0
+            ],
+            [
+                1,
+                0.025889967637540458
+            ],
+            [
+                1.3,
+                0.052858683926645104
+            ],
+            [
+                1.7,
+                0
+            ],
+            [
+                2,
+                0.052858683926645104
+            ],
+            [
+                2.3,
+                0.052858683926645104
+            ],
+            [
+                2.7,
+                0.07874865156418556
+            ],
+            [
+                3,
+                0.15749730312837112
+            ],
+            [
+                3.3,
+                0.13160733549083065
+            ],
+            [
+                3.7,
+                0.07874865156418556
+            ],
+            [
+                4,
+                0.3160733549083064
+            ]
+        ],
+        "grades": [
+            [
+                "A+",
+                0.12199999999999996
+            ],
+            [
+                "A",
+                0.17099999999999996
+            ],
+            [
+                "A-",
+                0.07299999999999998
+            ],
+            [
+                "B+",
+                0.12199999999999996
+            ],
+            [
+                "B",
+                0.14599999999999996
+            ],
+            [
+                "B-",
+                0.07299999999999998
+            ],
+            [
+                "C+",
+                0.04899999999999999
+            ],
+            [
+                "C",
+                0.04899999999999999
+            ],
+            [
+                "C-",
+                0
+            ],
+            [
+                "D+",
+                0.04899999999999999
+            ],
+            [
+                "D",
+                0.023999999999999994
+            ],
+            [
+                "D-",
+                0
+            ],
+            [
+                "F",
+                0.04899999999999999
+            ],
+            [
+                "E",
+                0
+            ],
+            [
+                "IF",
+                0
+            ],
+            [
+                "I",
+                0
+            ],
+            [
+                "P",
+                0
+            ],
+            [
+                "N",
+                0
+            ],
+            [
+                "PI",
+                0
+            ],
+            [
+                "S",
+                0
+            ],
+            [
+                "U",
+                0
+            ],
+            [
+                "SI",
+                0
+            ],
+            [
+                "W",
+                0.07299999999999998
+            ],
+            [
+                "WF",
+                0
+            ],
+            [
+                "WN",
+                0
+            ],
+            [
+                "WU",
+                0
+            ],
+            [
+                "AU",
+                0
+            ],
+            [
+                "NS",
+                0
+            ]
+        ],
+        "semester": {
+            "_id": "640af195c14c81559cf58fe4",
+            "semester": "Fall",
+            "year": 2020,
+            "__v": 0,
+            "term": "202110"
+        }
     },
     {
-        "id": 12330,
-        "subject": "CS",
-        "subject_desc": "CS-Computer Sciences",
-        "course_num": 18000,
-        "title": "Prob Solving & O-O Programming",
-        "academic_period": 201920,
-        "academic_period_desc": "Spring 2019",
-        "section": "LE1",
-        "crn": 19979,
-        "instructor": "Dunsmore, Hubert E.",
-        "a": "34.4%",
-        "a_minus": "7.8%",
-        "a_plus": null,
-        "au": null,
-        "b": "19.3%",
-        "b_minus": "6.4%",
-        "b_plus": "1.8%",
-        "c": "10.6%",
-        "c_minus": "0.9%",
-        "c_plus": "1.4%",
-        "d": "2.8%",
-        "d_minus": "0.5%",
-        "d_plus": "0.9%",
-        "e": null,
-        "f": "6.4%",
-        "fn": null,
-        "i": null,
-        "i_f": null,
-        "n": null,
-        "ns": null,
-        "p": "0.5%",
-        "p_i": null,
-        "s": null,
-        "s_i": null,
-        "u": null,
-        "w": "6.4%",
-        "w_f": null,
-        "w_n": null,
-        "w_u": null,
-        "blank": null
+        "_id": "643f590b7fdcd39e74ce4829",
+        "instructor": {
+            "_id": "6423b2e93651b3f2c4ab2d26",
+            "email": "grr@purdue.edu",
+            "firstname": "Gustavo",
+            "lastname": "Rodriguez-Rivera",
+            "rateMyProfIds": [
+                "132641"
+            ],
+            "__v": 1
+        },
+        "section": {
+            "_id": "6423b89a3651b3f2c4addcb5",
+            "crn": 29140,
+            "semester": "640af194c14c81559cf58fe2",
+            "course": "6423b2e93651b3f2c4ab2bad",
+            "isHybrid": false,
+            "linkID": "A7",
+            "maxCredits": 4,
+            "meetings": [
+                {
+                    "startDate": "1/19/2021",
+                    "endDate": "5/01/2021",
+                    "days": [
+                        "M",
+                        "W",
+                        "F"
+                    ],
+                    "startTime": "11:30 AM",
+                    "endTime": "12:20 PM",
+                    "location": "Synchronous Online Learning ONLINE",
+                    "instructors": [
+                        "6423b2e93651b3f2c4ab2d26"
+                    ]
+                }
+            ],
+            "minCredits": 4,
+            "name": "Systems Programming",
+            "requires": "A2",
+            "sectionID": "LE1"
+        },
+        "course": "6423b2e93651b3f2c4ab2bad",
+        "gpa": [
+            [
+                0,
+                0.08723404255319148
+            ],
+            [
+                0.7,
+                0
+            ],
+            [
+                1,
+                0.04787234042553192
+            ],
+            [
+                1.3,
+                0
+            ],
+            [
+                1.7,
+                0
+            ],
+            [
+                2,
+                0.02340425531914894
+            ],
+            [
+                2.3,
+                0.06382978723404256
+            ],
+            [
+                2.7,
+                0.06382978723404256
+            ],
+            [
+                3,
+                0.07127659574468086
+            ],
+            [
+                3.3,
+                0.10319148936170212
+            ],
+            [
+                3.7,
+                0.15851063829787235
+            ],
+            [
+                4,
+                0.38085106382978723
+            ]
+        ],
+        "grades": [
+            [
+                "A+",
+                0.11911911911911911
+            ],
+            [
+                "A",
+                0.2392392392392392
+            ],
+            [
+                "A-",
+                0.14914914914914915
+            ],
+            [
+                "B+",
+                0.09709709709709709
+            ],
+            [
+                "B",
+                0.06706706706706707
+            ],
+            [
+                "B-",
+                0.06006006006006006
+            ],
+            [
+                "C+",
+                0.06006006006006006
+            ],
+            [
+                "C",
+                0.022022022022022022
+            ],
+            [
+                "C-",
+                0
+            ],
+            [
+                "D+",
+                0
+            ],
+            [
+                "D",
+                0.04504504504504504
+            ],
+            [
+                "D-",
+                0
+            ],
+            [
+                "F",
+                0.08208208208208206
+            ],
+            [
+                "E",
+                0
+            ],
+            [
+                "IF",
+                0
+            ],
+            [
+                "I",
+                0
+            ],
+            [
+                "P",
+                0
+            ],
+            [
+                "N",
+                0.007007007007007006
+            ],
+            [
+                "PI",
+                0
+            ],
+            [
+                "S",
+                0
+            ],
+            [
+                "U",
+                0
+            ],
+            [
+                "SI",
+                0
+            ],
+            [
+                "W",
+                0.05205205205205205
+            ],
+            [
+                "WF",
+                0
+            ],
+            [
+                "WN",
+                0
+            ],
+            [
+                "WU",
+                0
+            ],
+            [
+                "AU",
+                0
+            ],
+            [
+                "NS",
+                0
+            ]
+        ],
+        "semester": {
+            "_id": "640af194c14c81559cf58fe2",
+            "semester": "Spring",
+            "year": 2021,
+            "__v": 0,
+            "term": "202120"
+        }
     },
     {
-        "id": 12331,
-        "subject": "CS",
-        "subject_desc": "CS-Computer Sciences",
-        "course_num": 18000,
-        "title": "Prob Solving & O-O Programming",
-        "academic_period": 201920,
-        "academic_period_desc": "Spring 2019",
-        "section": "LE2",
-        "crn": 11064,
-        "instructor": "Bergstrom, Anthony D.",
-        "a": "29.0%",
-        "a_minus": "10.1%",
-        "a_plus": null,
-        "au": null,
-        "b": "15.0%",
-        "b_minus": "2.9%",
-        "b_plus": "3.4%",
-        "c": "11.6%",
-        "c_minus": "2.9%",
-        "c_plus": "3.9%",
-        "d": "4.8%",
-        "d_minus": "2.4%",
-        "d_plus": "1.4%",
-        "e": null,
-        "f": "8.7%",
-        "fn": null,
-        "i": null,
-        "i_f": null,
-        "n": null,
-        "ns": null,
-        "p": "0.5%",
-        "p_i": null,
-        "s": null,
-        "s_i": null,
-        "u": null,
-        "w": "3.4%",
-        "w_f": null,
-        "w_n": null,
-        "w_u": null,
-        "blank": null
+        "_id": "643f590b7fdcd39e74ce482a",
+        "instructor": {
+            "_id": "6423b2e93651b3f2c4ab2d26",
+            "email": "grr@purdue.edu",
+            "firstname": "Gustavo",
+            "lastname": "Rodriguez-Rivera",
+            "rateMyProfIds": [
+                "132641"
+            ],
+            "__v": 1
+        },
+        "section": {
+            "_id": "6423b89a3651b3f2c4addcb6",
+            "crn": 29141,
+            "semester": "640af194c14c81559cf58fe2",
+            "course": "6423b2e93651b3f2c4ab2bad",
+            "isHybrid": false,
+            "linkID": "A8",
+            "maxCredits": 4,
+            "meetings": [
+                {
+                    "startDate": "1/19/2021",
+                    "endDate": "5/01/2021",
+                    "days": [
+                        "M",
+                        "W",
+                        "F"
+                    ],
+                    "startTime": "12:30 PM",
+                    "endTime": "1:20 PM",
+                    "location": "Synchronous Online Learning ONLINE",
+                    "instructors": [
+                        "6423b2e93651b3f2c4ab2d26"
+                    ]
+                }
+            ],
+            "minCredits": 4,
+            "name": "Systems Programming",
+            "requires": "A1",
+            "sectionID": "LE2"
+        },
+        "course": "6423b2e93651b3f2c4ab2bad",
+        "gpa": [
+            [
+                0,
+                0.042355371900826444
+            ],
+            [
+                0.7,
+                0
+            ],
+            [
+                1,
+                0.05888429752066116
+            ],
+            [
+                1.3,
+                0
+            ],
+            [
+                1.7,
+                0
+            ],
+            [
+                2,
+                0.01652892561983471
+            ],
+            [
+                2.3,
+                0.05888429752066116
+            ],
+            [
+                2.7,
+                0.050619834710743807
+            ],
+            [
+                3,
+                0.10950413223140495
+            ],
+            [
+                3.3,
+                0.08367768595041322
+            ],
+            [
+                3.7,
+                0.18491735537190082
+            ],
+            [
+                4,
+                0.39462809917355374
+            ]
+        ],
+        "grades": [
+            [
+                "A+",
+                0.106
+            ],
+            [
+                "A",
+                0.276
+            ],
+            [
+                "A-",
+                0.179
+            ],
+            [
+                "B+",
+                0.081
+            ],
+            [
+                "B",
+                0.106
+            ],
+            [
+                "B-",
+                0.049
+            ],
+            [
+                "C+",
+                0.057
+            ],
+            [
+                "C",
+                0.016
+            ],
+            [
+                "C-",
+                0
+            ],
+            [
+                "D+",
+                0
+            ],
+            [
+                "D",
+                0.057
+            ],
+            [
+                "D-",
+                0
+            ],
+            [
+                "F",
+                0.040999999999999995
+            ],
+            [
+                "E",
+                0
+            ],
+            [
+                "IF",
+                0
+            ],
+            [
+                "I",
+                0.008
+            ],
+            [
+                "P",
+                0
+            ],
+            [
+                "N",
+                0
+            ],
+            [
+                "PI",
+                0
+            ],
+            [
+                "S",
+                0
+            ],
+            [
+                "U",
+                0
+            ],
+            [
+                "SI",
+                0
+            ],
+            [
+                "W",
+                0.024
+            ],
+            [
+                "WF",
+                0
+            ],
+            [
+                "WN",
+                0
+            ],
+            [
+                "WU",
+                0
+            ],
+            [
+                "AU",
+                0
+            ],
+            [
+                "NS",
+                0
+            ]
+        ],
+        "semester": {
+            "_id": "640af194c14c81559cf58fe2",
+            "semester": "Spring",
+            "year": 2021,
+            "__v": 0,
+            "term": "202120"
+        }
     },
     {
-        "id": 12332,
-        "subject": "CS",
-        "subject_desc": "CS-Computer Sciences",
-        "course_num": 18000,
-        "title": "Prob Solving & O-O Programming",
-        "academic_period": 201930,
-        "academic_period_desc": "Summer 2019",
-        "section": "LE1",
-        "crn": 22937,
-        "instructor": "Dunsmore, Hubert E.",
-        "a": "32.1%",
-        "a_minus": "9.5%",
-        "a_plus": null,
-        "au": null,
-        "b": "15.5%",
-        "b_minus": "4.8%",
-        "b_plus": "4.8%",
-        "c": "6.0%",
-        "c_minus": null,
-        "c_plus": "1.2%",
-        "d": "2.4%",
-        "d_minus": null,
-        "d_plus": null,
-        "e": null,
-        "f": "11.9%",
-        "fn": null,
-        "i": null,
-        "i_f": null,
-        "n": null,
-        "ns": null,
-        "p": null,
-        "p_i": null,
-        "s": null,
-        "s_i": null,
-        "u": null,
-        "w": "11.9%",
-        "w_f": null,
-        "w_n": null,
-        "w_u": null,
-        "blank": null
+        "_id": "643f590b7fdcd39e74ce482b",
+        "instructor": {
+            "_id": "6423b2e93651b3f2c4ab2d26",
+            "email": "grr@purdue.edu",
+            "firstname": "Gustavo",
+            "lastname": "Rodriguez-Rivera",
+            "rateMyProfIds": [
+                "132641"
+            ],
+            "__v": 1
+        },
+        "section": {
+            "_id": "6423b89a3651b3f2c4addcb7",
+            "crn": 26237,
+            "semester": "640af194c14c81559cf58fe2",
+            "course": "6423b2e93651b3f2c4ab2bad",
+            "isHybrid": false,
+            "linkID": "A5",
+            "maxCredits": 4,
+            "meetings": [
+                {
+                    "startDate": "1/19/2021",
+                    "endDate": "5/01/2021",
+                    "days": null,
+                    "startTime": null,
+                    "endTime": null,
+                    "location": "Asynchronous Online Learning ONLINE",
+                    "instructors": [
+                        "6423b2e93651b3f2c4ab2d26"
+                    ]
+                }
+            ],
+            "minCredits": 4,
+            "name": "Systems Programming",
+            "requires": "A6",
+            "sectionID": "OL1"
+        },
+        "course": "6423b2e93651b3f2c4ab2bad",
+        "gpa": [
+            [
+                0,
+                0.024564994882292728
+            ],
+            [
+                0.7,
+                0
+            ],
+            [
+                1,
+                0.012282497441146364
+            ],
+            [
+                1.3,
+                0
+            ],
+            [
+                1.7,
+                0.012282497441146364
+            ],
+            [
+                2,
+                0
+            ],
+            [
+                2.3,
+                0.03582395087001023
+            ],
+            [
+                2.7,
+                0.06038894575230296
+            ],
+            [
+                3,
+                0.07267144319344931
+            ],
+            [
+                3.3,
+                0.12077789150460592
+            ],
+            [
+                3.7,
+                0.13203684749232342
+            ],
+            [
+                4,
+                0.5291709314227225
+            ]
+        ],
+        "grades": [
+            [
+                "A+",
+                0.14085914085914084
+            ],
+            [
+                "A",
+                0.3756243756243756
+            ],
+            [
+                "A-",
+                0.12887112887112886
+            ],
+            [
+                "B+",
+                0.11788211788211787
+            ],
+            [
+                "B",
+                0.07092907092907091
+            ],
+            [
+                "B-",
+                0.05894105894105894
+            ],
+            [
+                "C+",
+                0.03496503496503496
+            ],
+            [
+                "C",
+                0
+            ],
+            [
+                "C-",
+                0.011988011988011986
+            ],
+            [
+                "D+",
+                0
+            ],
+            [
+                "D",
+                0.011988011988011986
+            ],
+            [
+                "D-",
+                0
+            ],
+            [
+                "F",
+                0.023976023976023973
+            ],
+            [
+                "E",
+                0
+            ],
+            [
+                "IF",
+                0
+            ],
+            [
+                "I",
+                0
+            ],
+            [
+                "P",
+                0
+            ],
+            [
+                "N",
+                0
+            ],
+            [
+                "PI",
+                0
+            ],
+            [
+                "S",
+                0
+            ],
+            [
+                "U",
+                0
+            ],
+            [
+                "SI",
+                0
+            ],
+            [
+                "W",
+                0.023976023976023973
+            ],
+            [
+                "WF",
+                0
+            ],
+            [
+                "WN",
+                0
+            ],
+            [
+                "WU",
+                0
+            ],
+            [
+                "AU",
+                0
+            ],
+            [
+                "NS",
+                0
+            ]
+        ],
+        "semester": {
+            "_id": "640af194c14c81559cf58fe2",
+            "semester": "Spring",
+            "year": 2021,
+            "__v": 0,
+            "term": "202120"
+        }
     },
     {
-        "id": 12333,
-        "subject": "CS",
-        "subject_desc": "CS-Computer Sciences",
-        "course_num": 18000,
-        "title": "Prob Solving & O-O Programming",
-        "academic_period": 202010,
-        "academic_period_desc": "Fall 2019",
-        "section": "BLK",
-        "crn": 10687,
-        "instructor": "Bergstrom, Anthony D.",
-        "a": "64.8%",
-        "a_minus": "10.0%",
-        "a_plus": "0.7%",
-        "au": null,
-        "b": "10.3%",
-        "b_minus": "1.8%",
-        "b_plus": "3.6%",
-        "c": "2.1%",
-        "c_minus": "0.7%",
-        "c_plus": "0.7%",
-        "d": "0.7%",
-        "d_minus": null,
-        "d_plus": "0.7%",
-        "e": null,
-        "f": "2.1%",
-        "fn": null,
-        "i": null,
-        "i_f": null,
-        "n": null,
-        "ns": null,
-        "p": null,
-        "p_i": null,
-        "s": null,
-        "s_i": null,
-        "u": null,
-        "w": "1.8%",
-        "w_f": null,
-        "w_n": null,
-        "w_u": null,
-        "blank": null
+        "_id": "643f590b7fdcd39e74ce482c",
+        "instructor": {
+            "_id": "6423b2e93651b3f2c4ab2d26",
+            "email": "grr@purdue.edu",
+            "firstname": "Gustavo",
+            "lastname": "Rodriguez-Rivera",
+            "rateMyProfIds": [
+                "132641"
+            ],
+            "__v": 1
+        },
+        "section": {
+            "_id": "6423b95a3651b3f2c4ae2684",
+            "crn": 25752,
+            "semester": "640af193c14c81559cf58fdf",
+            "course": "6423b2e93651b3f2c4ab2bad",
+            "isHybrid": false,
+            "linkID": "A3",
+            "maxCredits": 4,
+            "meetings": [
+                {
+                    "startDate": "6/14/2021",
+                    "endDate": "8/03/2021",
+                    "days": [
+                        "M",
+                        "T",
+                        "W",
+                        "R",
+                        "F"
+                    ],
+                    "startTime": "11:00 AM",
+                    "endTime": "12:00 PM",
+                    "location": "Wilmeth Active Learning Center 3087",
+                    "instructors": [
+                        "6423b2e93651b3f2c4ab2d26"
+                    ]
+                }
+            ],
+            "minCredits": 4,
+            "name": "Systems Programming",
+            "requires": "A4",
+            "sectionID": "LE1"
+        },
+        "course": "6423b2e93651b3f2c4ab2bad",
+        "gpa": [
+            [
+                0,
+                0.14854682454251886
+            ],
+            [
+                0.7,
+                0
+            ],
+            [
+                1,
+                0.03659849300322928
+            ],
+            [
+                1.3,
+                0
+            ],
+            [
+                1.7,
+                0
+            ],
+            [
+                2,
+                0.03659849300322928
+            ],
+            [
+                2.3,
+                0.07427341227125943
+            ],
+            [
+                2.7,
+                0.07427341227125943
+            ],
+            [
+                3,
+                0.18514531754574812
+            ],
+            [
+                3.3,
+                0.07427341227125943
+            ],
+            [
+                3.7,
+                0.14854682454251886
+            ],
+            [
+                4,
+                0.2217438105489774
+            ]
+        ],
+        "grades": [
+            [
+                "A+",
+                0.10320641282565128
+            ],
+            [
+                "A",
+                0.10320641282565128
+            ],
+            [
+                "A-",
+                0.1382765531062124
+            ],
+            [
+                "B+",
+                0.0691382765531062
+            ],
+            [
+                "B",
+                0.17234468937875747
+            ],
+            [
+                "B-",
+                0.0691382765531062
+            ],
+            [
+                "C+",
+                0.0691382765531062
+            ],
+            [
+                "C",
+                0.03406813627254508
+            ],
+            [
+                "C-",
+                0
+            ],
+            [
+                "D+",
+                0
+            ],
+            [
+                "D",
+                0.03406813627254508
+            ],
+            [
+                "D-",
+                0
+            ],
+            [
+                "F",
+                0.1382765531062124
+            ],
+            [
+                "E",
+                0
+            ],
+            [
+                "IF",
+                0
+            ],
+            [
+                "I",
+                0
+            ],
+            [
+                "P",
+                0
+            ],
+            [
+                "N",
+                0
+            ],
+            [
+                "PI",
+                0
+            ],
+            [
+                "S",
+                0
+            ],
+            [
+                "U",
+                0
+            ],
+            [
+                "SI",
+                0
+            ],
+            [
+                "W",
+                0.0691382765531062
+            ],
+            [
+                "WF",
+                0
+            ],
+            [
+                "WN",
+                0
+            ],
+            [
+                "WU",
+                0
+            ],
+            [
+                "AU",
+                0
+            ],
+            [
+                "NS",
+                0
+            ]
+        ],
+        "semester": {
+            "_id": "640af193c14c81559cf58fdf",
+            "semester": "Summer",
+            "year": 2021,
+            "__v": 0,
+            "term": "202130"
+        }
     },
     {
-        "id": 12334,
-        "subject": "CS",
-        "subject_desc": "CS-Computer Sciences",
-        "course_num": 18000,
-        "title": "Prob Solving & O-O Programming",
-        "academic_period": 202010,
-        "academic_period_desc": "Fall 2019",
-        "section": "GLD",
-        "crn": 10955,
-        "instructor": "Dunsmore, Hubert E.",
-        "a": "37.4%",
-        "a_minus": "6.4%",
-        "a_plus": "0.4%",
-        "au": null,
-        "b": "24.7%",
-        "b_minus": "4.7%",
-        "b_plus": "3.4%",
-        "c": "11.1%",
-        "c_minus": null,
-        "c_plus": "3.0%",
-        "d": "1.3%",
-        "d_minus": "0.9%",
-        "d_plus": null,
-        "e": null,
-        "f": "3.4%",
-        "fn": null,
-        "i": "0.4%",
-        "i_f": null,
-        "n": null,
-        "ns": null,
-        "p": null,
-        "p_i": null,
-        "s": null,
-        "s_i": null,
-        "u": null,
-        "w": "3.0%",
-        "w_f": null,
-        "w_n": null,
-        "w_u": null,
-        "blank": null
+        "_id": "643f845a7fdcd39e74d13e18",
+        "instructor": {
+            "_id": "6423b2e93651b3f2c4ab2d26",
+            "email": "grr@purdue.edu",
+            "firstname": "Gustavo",
+            "lastname": "Rodriguez-Rivera",
+            "rateMyProfIds": [
+                "132641"
+            ],
+            "__v": 1
+        },
+        "section": {
+            "_id": "6423ba0d3651b3f2c4ae6b92",
+            "crn": 64662,
+            "semester": "640af192c14c81559cf58fdd",
+            "course": "6423b2e93651b3f2c4ab2bad",
+            "isHybrid": false,
+            "linkID": "A1",
+            "maxCredits": 4,
+            "meetings": [
+                {
+                    "startDate": "8/23/2021",
+                    "endDate": "12/11/2021",
+                    "days": [
+                        "M",
+                        "W",
+                        "F"
+                    ],
+                    "startTime": "12:30 PM",
+                    "endTime": "1:20 PM",
+                    "location": "Mathematical Sciences Building 175",
+                    "instructors": [
+                        "6423b2e93651b3f2c4ab2d26"
+                    ]
+                }
+            ],
+            "minCredits": 4,
+            "name": "Systems Programming",
+            "requires": "A4",
+            "sectionID": "LE1"
+        },
+        "course": "6423b2e93651b3f2c4ab2bad",
+        "gpa": [
+            [
+                0,
+                0.0784313725490196
+            ],
+            [
+                0.7,
+                0
+            ],
+            [
+                1,
+                0.12418300653594772
+            ],
+            [
+                1.3,
+                0
+            ],
+            [
+                1.7,
+                0.0196078431372549
+            ],
+            [
+                2,
+                0.0392156862745098
+            ],
+            [
+                2.3,
+                0.05882352941176471
+            ],
+            [
+                2.7,
+                0.0784313725490196
+            ],
+            [
+                3,
+                0.07189542483660132
+            ],
+            [
+                3.3,
+                0.13071895424836602
+            ],
+            [
+                3.7,
+                0.10457516339869281
+            ],
+            [
+                4,
+                0.29411764705882354
+            ]
+        ],
+        "grades": [
+            [
+                "A+",
+                0.11377245508982034
+            ],
+            [
+                "A",
+                0.155688622754491
+            ],
+            [
+                "A-",
+                0.09580838323353291
+            ],
+            [
+                "B+",
+                0.11976047904191615
+            ],
+            [
+                "B",
+                0.06586826347305388
+            ],
+            [
+                "B-",
+                0.07185628742514968
+            ],
+            [
+                "C+",
+                0.05389221556886227
+            ],
+            [
+                "C",
+                0.03592814371257484
+            ],
+            [
+                "C-",
+                0.01796407185628742
+            ],
+            [
+                "D+",
+                0
+            ],
+            [
+                "D",
+                0.11377245508982034
+            ],
+            [
+                "D-",
+                0
+            ],
+            [
+                "F",
+                0.07185628742514968
+            ],
+            [
+                "E",
+                0
+            ],
+            [
+                "IF",
+                0
+            ],
+            [
+                "I",
+                0
+            ],
+            [
+                "P",
+                0
+            ],
+            [
+                "N",
+                0
+            ],
+            [
+                "PI",
+                0
+            ],
+            [
+                "S",
+                0
+            ],
+            [
+                "U",
+                0
+            ],
+            [
+                "SI",
+                0
+            ],
+            [
+                "W",
+                0.08383233532934131
+            ],
+            [
+                "WF",
+                0
+            ],
+            [
+                "WN",
+                0
+            ],
+            [
+                "WU",
+                0
+            ],
+            [
+                "AU",
+                0
+            ],
+            [
+                "NS",
+                0
+            ]
+        ],
+        "semester": {
+            "_id": "640af192c14c81559cf58fdd",
+            "semester": "Fall",
+            "year": 2021,
+            "__v": 0,
+            "term": "202210"
+        }
     },
     {
-        "id": 12335,
-        "subject": "CS",
-        "subject_desc": "CS-Computer Sciences",
-        "course_num": 18000,
-        "title": "Prob Solving & O-O Programming",
-        "academic_period": 202020,
-        "academic_period_desc": "Spring 2020",
-        "section": "LE1",
-        "crn": 19979,
-        "instructor": "Bergstrom, Anthony D.",
-        "a": "52.1%",
-        "a_minus": "4.7%",
-        "a_plus": "3.3%",
-        "au": null,
-        "b": "7.1%",
-        "b_minus": "0.9%",
-        "b_plus": "2.4%",
-        "c": "1.9%",
-        "c_minus": null,
-        "c_plus": null,
-        "d": null,
-        "d_minus": null,
-        "d_plus": null,
-        "e": null,
-        "f": "1.4%",
-        "fn": null,
-        "i": "0.5%",
-        "i_f": null,
-        "n": "4.7%",
-        "ns": null,
-        "p": "10.9%",
-        "p_i": null,
-        "s": null,
-        "s_i": null,
-        "u": null,
-        "w": "10.0%",
-        "w_f": null,
-        "w_n": null,
-        "w_u": null,
-        "blank": null
+        "_id": "643f845a7fdcd39e74d13e19",
+        "instructor": {
+            "_id": "6423b2e93651b3f2c4ab2d26",
+            "email": "grr@purdue.edu",
+            "firstname": "Gustavo",
+            "lastname": "Rodriguez-Rivera",
+            "rateMyProfIds": [
+                "132641"
+            ],
+            "__v": 1
+        },
+        "section": {
+            "_id": "6423badb3651b3f2c4aecbe1",
+            "crn": 13333,
+            "semester": "640af191c14c81559cf58fdb",
+            "course": "6423b2e93651b3f2c4ab2bad",
+            "isHybrid": false,
+            "linkID": "A1",
+            "maxCredits": 4,
+            "meetings": [
+                {
+                    "startDate": "1/10/2022",
+                    "endDate": "4/30/2022",
+                    "days": [
+                        "M",
+                        "W",
+                        "F"
+                    ],
+                    "startTime": "1:30 PM",
+                    "endTime": "2:20 PM",
+                    "location": "Forney Hall of Chemical Engr G140",
+                    "instructors": [
+                        "6423b2e93651b3f2c4ab2d26"
+                    ]
+                }
+            ],
+            "minCredits": 4,
+            "name": "Systems Programming",
+            "requires": "A3",
+            "sectionID": "LE1"
+        },
+        "course": "6423b2e93651b3f2c4ab2bad",
+        "gpa": [
+            [
+                0,
+                0.023541453428863872
+            ],
+            [
+                0.7,
+                0
+            ],
+            [
+                1,
+                0.05834186284544524
+            ],
+            [
+                1.3,
+                0
+            ],
+            [
+                1.7,
+                0.006141248720573183
+            ],
+            [
+                2,
+                0.023541453428863872
+            ],
+            [
+                2.3,
+                0.047082906857727744
+            ],
+            [
+                2.7,
+                0.06448311156601842
+            ],
+            [
+                3,
+                0.09416581371545549
+            ],
+            [
+                3.3,
+                0.09416581371545549
+            ],
+            [
+                3.7,
+                0.10030706243602866
+            ],
+            [
+                4,
+                0.4882292732855681
+            ]
+        ],
+        "grades": [
+            [
+                "A+",
+                0.2362362362362363
+            ],
+            [
+                "A",
+                0.2412412412412413
+            ],
+            [
+                "A-",
+                0.09809809809809812
+            ],
+            [
+                "B+",
+                0.09209209209209211
+            ],
+            [
+                "B",
+                0.09209209209209211
+            ],
+            [
+                "B-",
+                0.06306306306306307
+            ],
+            [
+                "C+",
+                0.046046046046046056
+            ],
+            [
+                "C",
+                0.023023023023023028
+            ],
+            [
+                "C-",
+                0.006006006006006007
+            ],
+            [
+                "D+",
+                0
+            ],
+            [
+                "D",
+                0.05705705705705707
+            ],
+            [
+                "D-",
+                0
+            ],
+            [
+                "F",
+                0.023023023023023028
+            ],
+            [
+                "E",
+                0
+            ],
+            [
+                "IF",
+                0
+            ],
+            [
+                "I",
+                0.011011011011011014
+            ],
+            [
+                "P",
+                0
+            ],
+            [
+                "N",
+                0
+            ],
+            [
+                "PI",
+                0
+            ],
+            [
+                "S",
+                0
+            ],
+            [
+                "U",
+                0
+            ],
+            [
+                "SI",
+                0
+            ],
+            [
+                "W",
+                0.011011011011011014
+            ],
+            [
+                "WF",
+                0
+            ],
+            [
+                "WN",
+                0
+            ],
+            [
+                "WU",
+                0
+            ],
+            [
+                "AU",
+                0
+            ],
+            [
+                "NS",
+                0
+            ]
+        ],
+        "semester": {
+            "_id": "640af191c14c81559cf58fdb",
+            "semester": "Spring",
+            "year": 2022,
+            "__v": 0,
+            "term": "202220"
+        }
     },
     {
-        "id": 12336,
-        "subject": "CS",
-        "subject_desc": "CS-Computer Sciences",
-        "course_num": 18000,
-        "title": "Prob Solving & O-O Programming",
-        "academic_period": 202020,
-        "academic_period_desc": "Spring 2020",
-        "section": "LE2",
-        "crn": 11064,
-        "instructor": "Dunsmore, Hubert E.",
-        "a": "47.3%",
-        "a_minus": "5.5%",
-        "a_plus": "0.9%",
-        "au": "0.5%",
-        "b": "8.6%",
-        "b_minus": "1.8%",
-        "b_plus": "3.2%",
-        "c": "6.4%",
-        "c_minus": null,
-        "c_plus": "0.5%",
-        "d": "1.8%",
-        "d_minus": "0.5%",
-        "d_plus": null,
-        "e": null,
-        "f": "1.4%",
-        "fn": null,
-        "i": null,
-        "i_f": null,
-        "n": "3.2%",
-        "ns": null,
-        "p": "10.9%",
-        "p_i": null,
-        "s": null,
-        "s_i": null,
-        "u": null,
-        "w": "7.7%",
-        "w_f": null,
-        "w_n": null,
-        "w_u": null,
-        "blank": null
+        "_id": "643f845a7fdcd39e74d13e1a",
+        "instructor": {
+            "_id": "6423b2e93651b3f2c4ab2d26",
+            "email": "grr@purdue.edu",
+            "firstname": "Gustavo",
+            "lastname": "Rodriguez-Rivera",
+            "rateMyProfIds": [
+                "132641"
+            ],
+            "__v": 1
+        },
+        "section": {
+            "_id": "6423badb3651b3f2c4aecbe2",
+            "crn": 13334,
+            "semester": "640af191c14c81559cf58fdb",
+            "course": "6423b2e93651b3f2c4ab2bad",
+            "isHybrid": false,
+            "linkID": "A2",
+            "maxCredits": 4,
+            "meetings": [
+                {
+                    "startDate": "1/10/2022",
+                    "endDate": "4/30/2022",
+                    "days": [
+                        "M",
+                        "W",
+                        "F"
+                    ],
+                    "startTime": "10:30 AM",
+                    "endTime": "11:20 AM",
+                    "location": "Forney Hall of Chemical Engr G140",
+                    "instructors": [
+                        "6423b2e93651b3f2c4ab2d26"
+                    ]
+                }
+            ],
+            "minCredits": 4,
+            "name": "Systems Programming",
+            "requires": "A4",
+            "sectionID": "LE2"
+        },
+        "course": "6423b2e93651b3f2c4ab2bad",
+        "gpa": [
+            [
+                0,
+                0.04145601617795753
+            ],
+            [
+                0.7,
+                0
+            ],
+            [
+                1,
+                0.035389282103134474
+            ],
+            [
+                1.3,
+                0
+            ],
+            [
+                1.7,
+                0.024266936299292215
+            ],
+            [
+                2,
+                0.04752275025278059
+            ],
+            [
+                2.3,
+                0.024266936299292215
+            ],
+            [
+                2.7,
+                0.09504550050556118
+            ],
+            [
+                3,
+                0.15470171890798787
+            ],
+            [
+                3.3,
+                0.12537917087967645
+            ],
+            [
+                3.7,
+                0.07178968655207281
+            ],
+            [
+                4,
+                0.3801820020222447
+            ]
+        ],
+        "grades": [
+            [
+                "A+",
+                0.12887112887112884
+            ],
+            [
+                "A",
+                0.2467532467532467
+            ],
+            [
+                "A-",
+                0.07092907092907091
+            ],
+            [
+                "B+",
+                0.12387612387612384
+            ],
+            [
+                "B",
+                0.1528471528471528
+            ],
+            [
+                "B-",
+                0.09390609390609389
+            ],
+            [
+                "C+",
+                0.02397602397602397
+            ],
+            [
+                "C",
+                0.046953046953046945
+            ],
+            [
+                "C-",
+                0.02397602397602397
+            ],
+            [
+                "D+",
+                0
+            ],
+            [
+                "D",
+                0.034965034965034954
+            ],
+            [
+                "D-",
+                0
+            ],
+            [
+                "F",
+                0.040959040959040946
+            ],
+            [
+                "E",
+                0
+            ],
+            [
+                "IF",
+                0
+            ],
+            [
+                "I",
+                0
+            ],
+            [
+                "P",
+                0
+            ],
+            [
+                "N",
+                0
+            ],
+            [
+                "PI",
+                0
+            ],
+            [
+                "S",
+                0
+            ],
+            [
+                "U",
+                0
+            ],
+            [
+                "SI",
+                0
+            ],
+            [
+                "W",
+                0.011988011988011985
+            ],
+            [
+                "WF",
+                0
+            ],
+            [
+                "WN",
+                0
+            ],
+            [
+                "WU",
+                0
+            ],
+            [
+                "AU",
+                0
+            ],
+            [
+                "NS",
+                0
+            ]
+        ],
+        "semester": {
+            "_id": "640af191c14c81559cf58fdb",
+            "semester": "Spring",
+            "year": 2022,
+            "__v": 0,
+            "term": "202220"
+        }
     },
     {
-        "id": 12337,
-        "subject": "CS",
-        "subject_desc": "CS-Computer Sciences",
-        "course_num": 18000,
-        "title": "Prob Solving & O-O Programming",
-        "academic_period": 202030,
-        "academic_period_desc": "Summer 2020",
-        "section": "Y01",
-        "crn": 15185,
-        "instructor": "Dunsmore, Hubert E.",
-        "a": "32.0%",
-        "a_minus": "5.2%",
-        "a_plus": null,
-        "au": null,
-        "b": "13.4%",
-        "b_minus": "6.2%",
-        "b_plus": "1.0%",
-        "c": "12.4%",
-        "c_minus": null,
-        "c_plus": null,
-        "d": "4.1%",
-        "d_minus": null,
-        "d_plus": null,
-        "e": null,
-        "f": "12.4%",
-        "fn": null,
-        "i": null,
-        "i_f": null,
-        "n": null,
-        "ns": null,
-        "p": null,
-        "p_i": null,
-        "s": null,
-        "s_i": null,
-        "u": null,
-        "w": "13.4%",
-        "w_f": null,
-        "w_n": null,
-        "w_u": null,
-        "blank": null
+        "_id": "643f845a7fdcd39e74d13e1b",
+        "instructor": {
+            "_id": "6423b2e93651b3f2c4ab2d26",
+            "email": "grr@purdue.edu",
+            "firstname": "Gustavo",
+            "lastname": "Rodriguez-Rivera",
+            "rateMyProfIds": [
+                "132641"
+            ],
+            "__v": 1
+        },
+        "section": {
+            "_id": "6423bb8d3651b3f2c4af1a2a",
+            "crn": 25752,
+            "semester": "640af190c14c81559cf58fd8",
+            "course": "6423b2e93651b3f2c4ab2bad",
+            "isHybrid": false,
+            "linkID": "A3",
+            "maxCredits": 4,
+            "meetings": [
+                {
+                    "startDate": "6/13/2022",
+                    "endDate": "8/02/2022",
+                    "days": [
+                        "M",
+                        "T",
+                        "W",
+                        "R",
+                        "F"
+                    ],
+                    "startTime": "11:00 AM",
+                    "endTime": "12:00 PM",
+                    "location": "Grissom Hall 103",
+                    "instructors": [
+                        "6423b2e93651b3f2c4ab2d26"
+                    ]
+                }
+            ],
+            "minCredits": 4,
+            "name": "Systems Programming",
+            "requires": "A4",
+            "sectionID": "LE1"
+        },
+        "course": "6423b2e93651b3f2c4ab2bad",
+        "gpa": [
+            [
+                0,
+                0
+            ],
+            [
+                0.7,
+                0
+            ],
+            [
+                1,
+                0.04396728016359918
+            ],
+            [
+                1.3,
+                0
+            ],
+            [
+                1.7,
+                0
+            ],
+            [
+                2,
+                0.02147239263803681
+            ],
+            [
+                2.3,
+                0.02147239263803681
+            ],
+            [
+                2.7,
+                0.08691206543967281
+            ],
+            [
+                3,
+                0.17382413087934562
+            ],
+            [
+                3.3,
+                0.08691206543967281
+            ],
+            [
+                3.7,
+                0.19529652351738244
+            ],
+            [
+                4,
+                0.3701431492842536
+            ]
+        ],
+        "grades": [
+            [
+                "A+",
+                0.14914914914914917
+            ],
+            [
+                "A",
+                0.21321321321321324
+            ],
+            [
+                "A-",
+                0.1911911911911912
+            ],
+            [
+                "B+",
+                0.0850850850850851
+            ],
+            [
+                "B",
+                0.1701701701701702
+            ],
+            [
+                "B-",
+                0.0850850850850851
+            ],
+            [
+                "C+",
+                0.021021021021021023
+            ],
+            [
+                "C",
+                0.021021021021021023
+            ],
+            [
+                "C-",
+                0
+            ],
+            [
+                "D+",
+                0
+            ],
+            [
+                "D",
+                0.043043043043043044
+            ],
+            [
+                "D-",
+                0
+            ],
+            [
+                "F",
+                0
+            ],
+            [
+                "E",
+                0
+            ],
+            [
+                "IF",
+                0
+            ],
+            [
+                "I",
+                0
+            ],
+            [
+                "P",
+                0
+            ],
+            [
+                "N",
+                0
+            ],
+            [
+                "PI",
+                0
+            ],
+            [
+                "S",
+                0
+            ],
+            [
+                "U",
+                0
+            ],
+            [
+                "SI",
+                0
+            ],
+            [
+                "W",
+                0
+            ],
+            [
+                "WF",
+                0
+            ],
+            [
+                "WN",
+                0
+            ],
+            [
+                "WU",
+                0
+            ],
+            [
+                "AU",
+                0.021021021021021023
+            ],
+            [
+                "NS",
+                0
+            ]
+        ],
+        "semester": {
+            "_id": "640af190c14c81559cf58fd8",
+            "semester": "Summer",
+            "year": 2022,
+            "__v": 0,
+            "term": "202230"
+        }
     },
     {
-        "id": 12338,
-        "subject": "CS",
-        "subject_desc": "CS-Computer Sciences",
-        "course_num": 18000,
-        "title": "Prob Solving & O-O Programming",
-        "academic_period": 202110,
-        "academic_period_desc": "Fall 2020",
-        "section": "001",
-        "crn": 25665,
-        "instructor": "Turkstra, Jeffrey A.",
-        "a": "58.7%",
-        "a_minus": "8.0%",
-        "a_plus": "5.3%",
-        "au": null,
-        "b": "8.0%",
-        "b_minus": "1.3%",
-        "b_plus": "2.7%",
-        "c": "4.0%",
-        "c_minus": null,
-        "c_plus": null,
-        "d": "2.7%",
-        "d_minus": null,
-        "d_plus": null,
-        "e": null,
-        "f": "5.3%",
-        "fn": null,
-        "i": null,
-        "i_f": null,
-        "n": null,
-        "ns": null,
-        "p": "1.3%",
-        "p_i": null,
-        "s": null,
-        "s_i": null,
-        "u": null,
-        "w": "2.7%",
-        "w_f": null,
-        "w_n": null,
-        "w_u": null,
-        "blank": null
-    },
-    {
-        "id": 12339,
-        "subject": "CS",
-        "subject_desc": "CS-Computer Sciences",
-        "course_num": 18000,
-        "title": "Prob Solving & O-O Programming",
-        "academic_period": 202110,
-        "academic_period_desc": "Fall 2020",
-        "section": "002",
-        "crn": 25823,
-        "instructor": "Dunsmore, Hubert E.",
-        "a": "48.6%",
-        "a_minus": "7.3%",
-        "a_plus": "1.8%",
-        "au": null,
-        "b": "15.6%",
-        "b_minus": "1.8%",
-        "b_plus": "0.9%",
-        "c": "7.3%",
-        "c_minus": null,
-        "c_plus": "0.9%",
-        "d": "2.8%",
-        "d_minus": null,
-        "d_plus": null,
-        "e": null,
-        "f": "5.5%",
-        "fn": null,
-        "i": null,
-        "i_f": null,
-        "n": null,
-        "ns": null,
-        "p": null,
-        "p_i": null,
-        "s": null,
-        "s_i": null,
-        "u": null,
-        "w": "7.3%",
-        "w_f": null,
-        "w_n": null,
-        "w_u": null,
-        "blank": null
-    },
-    {
-        "id": 12340,
-        "subject": "CS",
-        "subject_desc": "CS-Computer Sciences",
-        "course_num": 18000,
-        "title": "Prob Solving & O-O Programming",
-        "academic_period": 202110,
-        "academic_period_desc": "Fall 2020",
-        "section": "BLK",
-        "crn": 10687,
-        "instructor": "Turkstra, Jeffrey A.",
-        "a": "57.7%",
-        "a_minus": "5.9%",
-        "a_plus": "5.4%",
-        "au": null,
-        "b": "12.1%",
-        "b_minus": "1.7%",
-        "b_plus": "3.8%",
-        "c": "5.0%",
-        "c_minus": null,
-        "c_plus": "1.7%",
-        "d": "1.7%",
-        "d_minus": null,
-        "d_plus": null,
-        "e": null,
-        "f": "2.5%",
-        "fn": null,
-        "i": null,
-        "i_f": null,
-        "n": null,
-        "ns": null,
-        "p": null,
-        "p_i": null,
-        "s": null,
-        "s_i": null,
-        "u": null,
-        "w": "2.5%",
-        "w_f": null,
-        "w_n": null,
-        "w_u": null,
-        "blank": null
-    },
-    {
-        "id": 12341,
-        "subject": "CS",
-        "subject_desc": "CS-Computer Sciences",
-        "course_num": 18000,
-        "title": "Prob Solving & O-O Programming",
-        "academic_period": 202110,
-        "academic_period_desc": "Fall 2020",
-        "section": "GLD",
-        "crn": 10955,
-        "instructor": "Dunsmore, Hubert E.",
-        "a": "38.0%",
-        "a_minus": "8.4%",
-        "a_plus": "0.6%",
-        "au": null,
-        "b": "19.0%",
-        "b_minus": "3.4%",
-        "b_plus": "1.7%",
-        "c": "8.4%",
-        "c_minus": null,
-        "c_plus": "2.2%",
-        "d": "0.6%",
-        "d_minus": null,
-        "d_plus": null,
-        "e": null,
-        "f": "7.8%",
-        "fn": null,
-        "i": null,
-        "i_f": null,
-        "n": null,
-        "ns": null,
-        "p": null,
-        "p_i": null,
-        "s": null,
-        "s_i": null,
-        "u": null,
-        "w": "10.1%",
-        "w_f": null,
-        "w_n": null,
-        "w_u": null,
-        "blank": null
-    },
-    {
-        "id": 12342,
-        "subject": "CS",
-        "subject_desc": "CS-Computer Sciences",
-        "course_num": 18000,
-        "title": "Prob Solving & O-O Programming",
-        "academic_period": 202120,
-        "academic_period_desc": "Spring 2021",
-        "section": "LE1",
-        "crn": 28888,
-        "instructor": "Dunsmore, Hubert E.",
-        "a": "42.2%",
-        "a_minus": "7.3%",
-        "a_plus": "1.9%",
-        "au": null,
-        "b": "15.0%",
-        "b_minus": "2.4%",
-        "b_plus": "4.4%",
-        "c": "4.9%",
-        "c_minus": null,
-        "c_plus": "0.5%",
-        "d": "2.4%",
-        "d_minus": null,
-        "d_plus": null,
-        "e": null,
-        "f": "6.3%",
-        "fn": null,
-        "i": null,
-        "i_f": null,
-        "n": "0.5%",
-        "ns": null,
-        "p": null,
-        "p_i": null,
-        "s": null,
-        "s_i": null,
-        "u": null,
-        "w": "12.1%",
-        "w_f": null,
-        "w_n": null,
-        "w_u": null,
-        "blank": null
-    },
-    {
-        "id": 12343,
-        "subject": "CS",
-        "subject_desc": "CS-Computer Sciences",
-        "course_num": 18000,
-        "title": "Prob Solving & O-O Programming",
-        "academic_period": 202120,
-        "academic_period_desc": "Spring 2021",
-        "section": "LE2",
-        "crn": 28889,
-        "instructor": "Dunsmore, Hubert E.",
-        "a": "50.8%",
-        "a_minus": "5.0%",
-        "a_plus": "4.5%",
-        "au": null,
-        "b": "10.6%",
-        "b_minus": "1.1%",
-        "b_plus": "3.4%",
-        "c": "9.5%",
-        "c_minus": null,
-        "c_plus": null,
-        "d": "1.1%",
-        "d_minus": null,
-        "d_plus": null,
-        "e": null,
-        "f": "3.4%",
-        "fn": null,
-        "i": "0.6%",
-        "i_f": null,
-        "n": null,
-        "ns": null,
-        "p": null,
-        "p_i": null,
-        "s": null,
-        "s_i": null,
-        "u": null,
-        "w": "10.1%",
-        "w_f": null,
-        "w_n": null,
-        "w_u": null,
-        "blank": null
-    },
-    {
-        "id": 12344,
-        "subject": "CS",
-        "subject_desc": "CS-Computer Sciences",
-        "course_num": 18000,
-        "title": "Prob Solving & O-O Programming",
-        "academic_period": 202120,
-        "academic_period_desc": "Spring 2021",
-        "section": "OL1",
-        "crn": 26888,
-        "instructor": "Dunsmore, Hubert E.",
-        "a": "45.7%",
-        "a_minus": "4.3%",
-        "a_plus": "1.7%",
-        "au": null,
-        "b": "12.9%",
-        "b_minus": "0.9%",
-        "b_plus": "3.4%",
-        "c": "7.8%",
-        "c_minus": null,
-        "c_plus": "0.9%",
-        "d": null,
-        "d_minus": null,
-        "d_plus": null,
-        "e": null,
-        "f": "9.5%",
-        "fn": null,
-        "i": null,
-        "i_f": null,
-        "n": "1.7%",
-        "ns": null,
-        "p": null,
-        "p_i": null,
-        "s": null,
-        "s_i": null,
-        "u": null,
-        "w": "11.2%",
-        "w_f": null,
-        "w_n": null,
-        "w_u": null,
-        "blank": null
-    },
-    {
-        "id": 12345,
-        "subject": "CS",
-        "subject_desc": "CS-Computer Sciences",
-        "course_num": 18000,
-        "title": "Prob Solving & O-O Programming",
-        "academic_period": 202130,
-        "academic_period_desc": "Summer 2021",
-        "section": "L01",
-        "crn": 29708,
-        "instructor": "Dunsmore, Hubert E.",
-        "a": "37.1%",
-        "a_minus": null,
-        "a_plus": null,
-        "au": null,
-        "b": "8.6%",
-        "b_minus": null,
-        "b_plus": "2.9%",
-        "c": "11.4%",
-        "c_minus": null,
-        "c_plus": null,
-        "d": null,
-        "d_minus": null,
-        "d_plus": null,
-        "e": null,
-        "f": "17.1%",
-        "fn": null,
-        "i": null,
-        "i_f": null,
-        "n": null,
-        "ns": null,
-        "p": null,
-        "p_i": null,
-        "s": null,
-        "s_i": null,
-        "u": null,
-        "w": "22.9%",
-        "w_f": null,
-        "w_n": null,
-        "w_u": null,
-        "blank": null
-    },
-    {
-        "id": 12346,
-        "subject": "CS",
-        "subject_desc": "CS-Computer Sciences",
-        "course_num": 18000,
-        "title": "Prob Solving & O-O Programming",
-        "academic_period": 202130,
-        "academic_period_desc": "Summer 2021",
-        "section": "Y01",
-        "crn": 30773,
-        "instructor": "Dunsmore, Hubert E.",
-        "a": "40.0%",
-        "a_minus": "6.7%",
-        "a_plus": null,
-        "au": null,
-        "b": null,
-        "b_minus": null,
-        "b_plus": null,
-        "c": "13.3%",
-        "c_minus": null,
-        "c_plus": "3.3%",
-        "d": "6.7%",
-        "d_minus": null,
-        "d_plus": null,
-        "e": null,
-        "f": "26.7%",
-        "fn": null,
-        "i": null,
-        "i_f": null,
-        "n": null,
-        "ns": null,
-        "p": null,
-        "p_i": null,
-        "s": null,
-        "s_i": null,
-        "u": null,
-        "w": "3.3%",
-        "w_f": null,
-        "w_n": null,
-        "w_u": null,
-        "blank": null
-    },
-    {
-        "id": 12347,
-        "subject": "CS",
-        "subject_desc": "CS-Computer Sciences",
-        "course_num": 18000,
-        "title": "Prob Solvng & O-O Progr-Honors",
-        "academic_period": 202010,
-        "academic_period_desc": "Fall 2019",
-        "section": "BLK",
-        "crn": 10687,
-        "instructor": "Bergstrom, Anthony D.",
-        "a": "100.0%",
-        "a_minus": null,
-        "a_plus": null,
-        "au": null,
-        "b": null,
-        "b_minus": null,
-        "b_plus": null,
-        "c": null,
-        "c_minus": null,
-        "c_plus": null,
-        "d": null,
-        "d_minus": null,
-        "d_plus": null,
-        "e": null,
-        "f": null,
-        "fn": null,
-        "i": null,
-        "i_f": null,
-        "n": null,
-        "ns": null,
-        "p": null,
-        "p_i": null,
-        "s": null,
-        "s_i": null,
-        "u": null,
-        "w": null,
-        "w_f": null,
-        "w_n": null,
-        "w_u": null,
-        "blank": null
-    },
-    {
-        "id": 12348,
-        "subject": "CS",
-        "subject_desc": "CS-Computer Sciences",
-        "course_num": 18000,
-        "title": "Prob Solvng & O-O Progr-Honors",
-        "academic_period": 202010,
-        "academic_period_desc": "Fall 2019",
-        "section": "GLD",
-        "crn": 10955,
-        "instructor": "Dunsmore, Hubert E.",
-        "a": "33.3%",
-        "a_minus": "33.3%",
-        "a_plus": null,
-        "au": null,
-        "b": "33.3%",
-        "b_minus": null,
-        "b_plus": null,
-        "c": null,
-        "c_minus": null,
-        "c_plus": null,
-        "d": null,
-        "d_minus": null,
-        "d_plus": null,
-        "e": null,
-        "f": null,
-        "fn": null,
-        "i": null,
-        "i_f": null,
-        "n": null,
-        "ns": null,
-        "p": null,
-        "p_i": null,
-        "s": null,
-        "s_i": null,
-        "u": null,
-        "w": null,
-        "w_f": null,
-        "w_n": null,
-        "w_u": null,
-        "blank": null
-    },
-    {
-        "id": 46107,
-        "subject": "CS",
-        "subject_desc": "CS-Computer Sciences",
-        "course_num": 18000,
-        "title": "Prob Solv & O-O Prgr- Honors",
-        "academic_period": 202210,
-        "academic_period_desc": "Fall 2021",
-        "section": "GLD",
-        "crn": 26043,
-        "instructor": "Dunsmore, Hubert E.",
-        "a": "100.0%",
-        "a_minus": null,
-        "a_plus": null,
-        "au": null,
-        "b": null,
-        "b_minus": null,
-        "b_plus": null,
-        "c": null,
-        "c_minus": null,
-        "c_plus": null,
-        "d": null,
-        "d_minus": null,
-        "d_plus": null,
-        "e": null,
-        "f": null,
-        "fn": null,
-        "i": null,
-        "i_f": null,
-        "n": null,
-        "ns": null,
-        "p": null,
-        "p_i": null,
-        "s": null,
-        "s_i": null,
-        "u": null,
-        "w": null,
-        "w_f": null,
-        "w_n": null,
-        "w_u": null,
-        "blank": null
-    },
-    {
-        "id": 46108,
-        "subject": "CS",
-        "subject_desc": "CS-Computer Sciences",
-        "course_num": 18000,
-        "title": "Prob Solv & O-O Prgr-Honors",
-        "academic_period": 202210,
-        "academic_period_desc": "Fall 2021",
-        "section": "GLD",
-        "crn": 26043,
-        "instructor": "Dunsmore, Hubert E.",
-        "a": null,
-        "a_minus": null,
-        "a_plus": null,
-        "au": null,
-        "b": "100.0%",
-        "b_minus": null,
-        "b_plus": null,
-        "c": null,
-        "c_minus": null,
-        "c_plus": null,
-        "d": null,
-        "d_minus": null,
-        "d_plus": null,
-        "e": null,
-        "f": null,
-        "fn": null,
-        "i": null,
-        "i_f": null,
-        "n": null,
-        "ns": null,
-        "p": null,
-        "p_i": null,
-        "s": null,
-        "s_i": null,
-        "u": null,
-        "w": null,
-        "w_f": null,
-        "w_n": null,
-        "w_u": null,
-        "blank": null
-    },
-    {
-        "id": 46109,
-        "subject": "CS",
-        "subject_desc": "CS-Computer Sciences",
-        "course_num": 18000,
-        "title": "Prob Solv & O-O Progr- Honors",
-        "academic_period": 202210,
-        "academic_period_desc": "Fall 2021",
-        "section": "GLD",
-        "crn": 26043,
-        "instructor": "Dunsmore, Hubert E.",
-        "a": "100.0%",
-        "a_minus": null,
-        "a_plus": null,
-        "au": null,
-        "b": null,
-        "b_minus": null,
-        "b_plus": null,
-        "c": null,
-        "c_minus": null,
-        "c_plus": null,
-        "d": null,
-        "d_minus": null,
-        "d_plus": null,
-        "e": null,
-        "f": null,
-        "fn": null,
-        "i": null,
-        "i_f": null,
-        "n": null,
-        "ns": null,
-        "p": null,
-        "p_i": null,
-        "s": null,
-        "s_i": null,
-        "u": null,
-        "w": null,
-        "w_f": null,
-        "w_n": null,
-        "w_u": null,
-        "blank": null
-    },
-    {
-        "id": 46110,
-        "subject": "CS",
-        "subject_desc": "CS-Computer Sciences",
-        "course_num": 18000,
-        "title": "Prob Solving & O-O Programming",
-        "academic_period": 202210,
-        "academic_period_desc": "Fall 2021",
-        "section": "BLK",
-        "crn": 10687,
-        "instructor": "Turkstra, Jeffrey A.",
-        "a": "71.4%",
-        "a_minus": "4.1%",
-        "a_plus": "3.8%",
-        "au": null,
-        "b": "7.9%",
-        "b_minus": "1.0%",
-        "b_plus": "0.7%",
-        "c": "3.8%",
-        "c_minus": null,
-        "c_plus": "0.3%",
-        "d": "1.0%",
-        "d_minus": null,
-        "d_plus": null,
-        "e": null,
-        "f": "4.1%",
-        "fn": null,
-        "i": null,
-        "i_f": null,
-        "n": null,
-        "ns": null,
-        "p": null,
-        "p_i": null,
-        "s": null,
-        "s_i": null,
-        "u": null,
-        "w": "1.7%",
-        "w_f": null,
-        "w_n": null,
-        "w_u": null,
-        "blank": null
-    },
-    {
-        "id": 46111,
-        "subject": "CS",
-        "subject_desc": "CS-Computer Sciences",
-        "course_num": 18000,
-        "title": "Prob Solving & O-O Programming",
-        "academic_period": 202210,
-        "academic_period_desc": "Fall 2021",
-        "section": "GLD",
-        "crn": 26043,
-        "instructor": "Dunsmore, Hubert E.",
-        "a": "50.3%",
-        "a_minus": "7.1%",
-        "a_plus": "0.7%",
-        "au": null,
-        "b": "13.3%",
-        "b_minus": "3.1%",
-        "b_plus": "2.7%",
-        "c": "9.2%",
-        "c_minus": null,
-        "c_plus": "1.0%",
-        "d": "2.0%",
-        "d_minus": null,
-        "d_plus": null,
-        "e": null,
-        "f": "7.5%",
-        "fn": null,
-        "i": null,
-        "i_f": null,
-        "n": null,
-        "ns": null,
-        "p": null,
-        "p_i": null,
-        "s": null,
-        "s_i": null,
-        "u": null,
-        "w": "3.1%",
-        "w_f": null,
-        "w_n": null,
-        "w_u": null,
-        "blank": null
-    },
-    {
-        "id": 50666,
-        "subject": "CS",
-        "subject_desc": "CS-Computer Sciences",
-        "course_num": 18000,
-        "title": "Prob Solving & O-O Programming",
-        "academic_period": 202220,
-        "academic_period_desc": "Spring 2022",
-        "section": "LE1",
-        "crn": 13105,
-        "instructor": "Bergstrom, Anthony D.",
-        "a": "47.7%",
-        "a_minus": "4.3%",
-        "a_plus": "1.2%",
-        "au": null,
-        "b": "10.9%",
-        "b_minus": "3.5%",
-        "b_plus": "2.7%",
-        "c": "4.3%",
-        "c_minus": null,
-        "c_plus": "1.6%",
-        "d": "2.7%",
-        "d_minus": null,
-        "d_plus": null,
-        "e": null,
-        "f": "9.3%",
-        "fn": null,
-        "i": "0.4%",
-        "i_f": null,
-        "n": null,
-        "ns": null,
-        "p": null,
-        "p_i": null,
-        "s": null,
-        "s_i": null,
-        "u": null,
-        "w": "11.6%",
-        "w_f": null,
-        "w_n": null,
-        "w_u": null,
-        "blank": null
-    },
-    {
-        "id": 50667,
-        "subject": "CS",
-        "subject_desc": "CS-Computer Sciences",
-        "course_num": 18000,
-        "title": "Prob Solving & O-O Programming",
-        "academic_period": 202220,
-        "academic_period_desc": "Spring 2022",
-        "section": "LE2",
-        "crn": 13116,
-        "instructor": "Dunsmore, Hubert E.",
-        "a": "46.1%",
-        "a_minus": "5.1%",
-        "a_plus": "2.7%",
-        "au": null,
-        "b": "13.3%",
-        "b_minus": "2.7%",
-        "b_plus": "2.3%",
-        "c": "9.8%",
-        "c_minus": "0.4%",
-        "c_plus": "0.8%",
-        "d": "2.3%",
-        "d_minus": null,
-        "d_plus": null,
-        "e": null,
-        "f": "7.0%",
-        "fn": null,
-        "i": "0.4%",
-        "i_f": null,
-        "n": null,
-        "ns": null,
-        "p": null,
-        "p_i": null,
-        "s": null,
-        "s_i": null,
-        "u": null,
-        "w": "7.0%",
-        "w_f": null,
-        "w_n": null,
-        "w_u": null,
-        "blank": null
-    },
-    {
-        "id": 53870,
-        "subject": "CS",
-        "subject_desc": "CS-Computer Sciences",
-        "course_num": 18000,
-        "title": "Prob Solving & O-O Programming",
-        "academic_period": 202230,
-        "academic_period_desc": "Summer 2022",
-        "section": "LE1",
-        "crn": 31021,
-        "instructor": "Dunsmore, Hubert E.",
-        "a": "36.2%",
-        "a_minus": "4.3%",
-        "a_plus": "1.4%",
-        "au": null,
-        "b": "18.8%",
-        "b_minus": "5.8%",
-        "b_plus": "4.3%",
-        "c": "10.1%",
-        "c_minus": null,
-        "c_plus": "4.3%",
-        "d": "1.4%",
-        "d_minus": null,
-        "d_plus": null,
-        "e": null,
-        "f": "10.1%",
-        "fn": null,
-        "i": null,
-        "i_f": null,
-        "n": null,
-        "ns": null,
-        "p": null,
-        "p_i": null,
-        "s": null,
-        "s_i": null,
-        "u": null,
-        "w": "2.9%",
-        "w_f": null,
-        "w_n": null,
-        "w_u": null,
-        "blank": null
-    },
-    {
-        "id": 55712,
-        "subject": "CS",
-        "subject_desc": "CS-Computer Sciences",
-        "course_num": 18000,
-        "title": "Prob Slvng & O-O Prgrmg-Honors",
-        "academic_period": 202310,
-        "academic_period_desc": "Fall 2022",
-        "section": "BLK",
-        "crn": 10687,
-        "instructor": "Turkstra, Jeffrey A.",
-        "a": "60.0%",
-        "a_minus": null,
-        "a_plus": "40.0%",
-        "au": null,
-        "b": null,
-        "b_minus": null,
-        "b_plus": null,
-        "c": null,
-        "c_minus": null,
-        "c_plus": null,
-        "d": null,
-        "d_minus": null,
-        "d_plus": null,
-        "e": null,
-        "f": null,
-        "fn": null,
-        "i": null,
-        "i_f": null,
-        "n": null,
-        "ns": null,
-        "p": null,
-        "p_i": null,
-        "s": null,
-        "s_i": null,
-        "u": null,
-        "w": null,
-        "w_f": null,
-        "w_n": null,
-        "w_u": null,
-        "blank": null
-    },
-    {
-        "id": 55713,
-        "subject": "CS",
-        "subject_desc": "CS-Computer Sciences",
-        "course_num": 18000,
-        "title": "Prob Slvng & O-O Prgrmg-Honors",
-        "academic_period": 202310,
-        "academic_period_desc": "Fall 2022",
-        "section": "GLD",
-        "crn": 26043,
-        "instructor": "Dunsmore, Hubert E.",
-        "a": "66.7%",
-        "a_minus": null,
-        "a_plus": "33.3%",
-        "au": null,
-        "b": null,
-        "b_minus": null,
-        "b_plus": null,
-        "c": null,
-        "c_minus": null,
-        "c_plus": null,
-        "d": null,
-        "d_minus": null,
-        "d_plus": null,
-        "e": null,
-        "f": null,
-        "fn": null,
-        "i": null,
-        "i_f": null,
-        "n": null,
-        "ns": null,
-        "p": null,
-        "p_i": null,
-        "s": null,
-        "s_i": null,
-        "u": null,
-        "w": null,
-        "w_f": null,
-        "w_n": null,
-        "w_u": null,
-        "blank": null
-    },
-    {
-        "id": 55714,
-        "subject": "CS",
-        "subject_desc": "CS-Computer Sciences",
-        "course_num": 18000,
-        "title": "Prob Solving & O-O Programming",
-        "academic_period": 202310,
-        "academic_period_desc": "Fall 2022",
-        "section": "BLK",
-        "crn": 10687,
-        "instructor": "Turkstra, Jeffrey A.",
-        "a": "74.4%",
-        "a_minus": "2.2%",
-        "a_plus": "7.0%",
-        "au": null,
-        "b": "6.3%",
-        "b_minus": "0.9%",
-        "b_plus": "2.0%",
-        "c": "4.7%",
-        "c_minus": null,
-        "c_plus": null,
-        "d": "0.2%",
-        "d_minus": null,
-        "d_plus": null,
-        "e": null,
-        "f": "1.3%",
-        "fn": null,
-        "i": null,
-        "i_f": null,
-        "n": null,
-        "ns": null,
-        "p": null,
-        "p_i": null,
-        "s": null,
-        "s_i": null,
-        "u": null,
-        "w": "0.9%",
-        "w_f": null,
-        "w_n": null,
-        "w_u": null,
-        "blank": null
-    },
-    {
-        "id": 55715,
-        "subject": "CS",
-        "subject_desc": "CS-Computer Sciences",
-        "course_num": 18000,
-        "title": "Prob Solving & O-O Programming",
-        "academic_period": 202310,
-        "academic_period_desc": "Fall 2022",
-        "section": "GLD",
-        "crn": 26043,
-        "instructor": "Dunsmore, Hubert E.",
-        "a": "54.6%",
-        "a_minus": "6.9%",
-        "a_plus": "2.3%",
-        "au": null,
-        "b": "14.0%",
-        "b_minus": "2.6%",
-        "b_plus": "3.7%",
-        "c": "4.6%",
-        "c_minus": null,
-        "c_plus": "2.3%",
-        "d": "2.0%",
-        "d_minus": null,
-        "d_plus": null,
-        "e": null,
-        "f": "4.6%",
-        "fn": null,
-        "i": null,
-        "i_f": null,
-        "n": null,
-        "ns": null,
-        "p": null,
-        "p_i": null,
-        "s": null,
-        "s_i": null,
-        "u": null,
-        "w": "2.6%",
-        "w_f": null,
-        "w_n": null,
-        "w_u": null,
-        "blank": null
+        "_id": "643f845a7fdcd39e74d13e1c",
+        "instructor": {
+            "_id": "6423b2e93651b3f2c4ab2d26",
+            "email": "grr@purdue.edu",
+            "firstname": "Gustavo",
+            "lastname": "Rodriguez-Rivera",
+            "rateMyProfIds": [
+                "132641"
+            ],
+            "__v": 1
+        },
+        "section": {
+            "_id": "6423bc463651b3f2c4af60eb",
+            "crn": 64662,
+            "semester": "640af18fc14c81559cf58fd6",
+            "course": "6423b2e93651b3f2c4ab2bad",
+            "isHybrid": false,
+            "linkID": "A1",
+            "maxCredits": 4,
+            "meetings": [
+                {
+                    "startDate": "8/22/2022",
+                    "endDate": "12/10/2022",
+                    "days": [
+                        "M",
+                        "W",
+                        "F"
+                    ],
+                    "startTime": "10:30 AM",
+                    "endTime": "11:20 AM",
+                    "location": "Smith Hall 108",
+                    "instructors": [
+                        "6423b2e93651b3f2c4ab2d26",
+                        "6423b89a3651b3f2c4addb75"
+                    ]
+                }
+            ],
+            "minCredits": 4,
+            "name": "Systems Programming",
+            "requires": "A4",
+            "sectionID": "LE1"
+        },
+        "course": "6423b2e93651b3f2c4ab2bad",
+        "gpa": [
+            [
+                0,
+                0.1402439024390244
+            ],
+            [
+                0.7,
+                0
+            ],
+            [
+                1,
+                0.038617886178861784
+            ],
+            [
+                1.3,
+                0
+            ],
+            [
+                1.7,
+                0
+            ],
+            [
+                2,
+                0.06402439024390244
+            ],
+            [
+                2.3,
+                0.10162601626016259
+            ],
+            [
+                2.7,
+                0.09552845528455285
+            ],
+            [
+                3,
+                0.17174796747967477
+            ],
+            [
+                3.3,
+                0.133130081300813
+            ],
+            [
+                3.7,
+                0.14634146341463414
+            ],
+            [
+                4,
+                0.10873983739837399
+            ]
+        ],
+        "grades": [
+            [
+                "A+",
+                0.01296111665004985
+            ],
+            [
+                "A",
+                0.09371884346959124
+            ],
+            [
+                "A-",
+                0.14356929212362912
+            ],
+            [
+                "B+",
+                0.13060817547357925
+            ],
+            [
+                "B",
+                0.16849451645064806
+            ],
+            [
+                "B-",
+                0.09371884346959124
+            ],
+            [
+                "C+",
+                0.09970089730807577
+            ],
+            [
+                "C",
+                0.06281156530408774
+            ],
+            [
+                "C-",
+                0
+            ],
+            [
+                "D+",
+                0
+            ],
+            [
+                "D",
+                0.03788634097706879
+            ],
+            [
+                "D-",
+                0
+            ],
+            [
+                "F",
+                0.13758723828514458
+            ],
+            [
+                "E",
+                0
+            ],
+            [
+                "IF",
+                0
+            ],
+            [
+                "I",
+                0
+            ],
+            [
+                "P",
+                0
+            ],
+            [
+                "N",
+                0
+            ],
+            [
+                "PI",
+                0
+            ],
+            [
+                "S",
+                0
+            ],
+            [
+                "U",
+                0
+            ],
+            [
+                "SI",
+                0
+            ],
+            [
+                "W",
+                0.018943170488534396
+            ],
+            [
+                "WF",
+                0
+            ],
+            [
+                "WN",
+                0
+            ],
+            [
+                "WU",
+                0
+            ],
+            [
+                "AU",
+                0
+            ],
+            [
+                "NS",
+                0
+            ]
+        ],
+        "semester": {
+            "_id": "640af18fc14c81559cf58fd6",
+            "semester": "Fall",
+            "year": 2022,
+            "__v": 0,
+            "term": "202310"
+        }
     }
 ]

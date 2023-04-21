@@ -1,5 +1,6 @@
 import { Api } from './Api';
 import { UserCourse } from '../types/user-course';
+import { makePromiseCache } from '../utils/promise-cache';
 
 class CourseHistoryService extends Api {
     getCourses() {
@@ -17,6 +18,8 @@ class CourseHistoryService extends Api {
     modifyCourses(courses: Pick<UserCourse, '_id' | 'grade'>[]) {
         return this.post('/api/courseHistory/modify', { courses });
     }
+
+    cachedGetCourses = makePromiseCache(this.getCourses.bind(this));
 }
 
 export default new CourseHistoryService();

@@ -20,6 +20,7 @@ const navigate = vi.fn();
 beforeEach(() => {
     vi.spyOn(router, 'useNavigate')
         .mockImplementation(() => navigate);
+
 });
 
 afterEach(() => {
@@ -41,13 +42,16 @@ describe('Review page tests', async () => {
         vi.spyOn(RatingService, 'getRatings')
             .mockReturnValue(Promise.resolve(ratings as any));
 
+
         vi.spyOn(CourseHistoryService, 'getCourses')
+            .mockReturnValue(Promise.resolve({ courses: [] }))
+        vi.spyOn(CourseHistoryService, 'cachedGetCourses')
             .mockReturnValue(Promise.resolve({ courses: [] }))
 
         vi.spyOn(BoilerGradesService, 'getCourse')
-            .mockReturnValue(Promise.resolve(boilergrades));
+            .mockReturnValue(Promise.resolve(boilergrades as any));
 
-        vi.spyOn(DegreePlanService, 'getPlans')
+        vi.spyOn(DegreePlanService, 'cachedGetPlans')
             .mockReturnValue(Promise.resolve({ degreePlans: [] }))
 
         vi.spyOn(SemesterService, 'getSemesters')
@@ -76,6 +80,6 @@ describe('Review page tests', async () => {
 
         expect(await screen.queryByText(/Boilergrades/)).not.eq(null);
 
-        expect(await screen.queryByText(new RegExp(boilergrades[0].instructor))).not.eq(null);
+        expect(await screen.queryByText(new RegExp(boilergrades[0].instructor.firstname))).not.eq(null);
     });
 });
