@@ -153,12 +153,12 @@ export function FuturePlan() {
 
             const semIndicies = ['Spring', 'Summer', 'Fall', 'Winter']
             const futureCourses = degreePlan?.courses.filter(c => {
-                if (c.year > semester.year) return true;
-                if (c.year < semester.year) return false;
+                if (c.year > semester.year) return false;
+                if (c.year < semester.year) return true;
                 const courseSemesterIndex = semIndicies.indexOf(c.semester);
                 const thisSemIndex = semIndicies.indexOf(semester.semester);
 
-                return courseSemesterIndex > thisSemIndex;
+                return courseSemesterIndex < thisSemIndex;
             });
 
             return futureCourses?.some(c => c.courseID === req.courseID && c.subject === req.subject) ?? false;
