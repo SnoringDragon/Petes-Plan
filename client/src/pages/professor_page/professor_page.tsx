@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Layout } from '../../components/layout/layout';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { ApiProfessor } from '../../types/professor';
@@ -7,6 +7,9 @@ import ProfessorService from '../../services/ProfessorService';
 import { Ratings } from '../../components/ratings/ratings';
 import { Boilergrades } from '../../components/boilergrades/boilergrades';
 import { Boilergrade } from '../../types/boilergrades';
+import BoilerGradesService from '../../services/BoilerGradesService';
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, Checkbox } from '@material-ui/core';
+import RatingService from '../../services/RatingService';
 
 export function Professor_Page() {
     const [searchParams] = useSearchParams();
@@ -17,6 +20,17 @@ export function Professor_Page() {
 
     const [professor, setProfessor] = useState<ApiProfessor | null>(null);
     const [boilergrades, setBoilergrades] = useState<Boilergrade[]>([]);
+
+    const [makeReviews, setMakeReviews] = useState(false);
+    const [takeAgain, setTakeAgain] = useState(false);
+
+    const courseID = useRef({value:''});
+    const courseSubject = useRef({value:''});
+    const rating = useRef({value:''});
+    const comment = useRef({value:''});
+    const grade = useRef({value:''});
+    const difficulty = useRef({value:''});
+    const attendanceReq = useState(false);
 
     useEffect(() => {
         const id = searchParams.get('id') ?? '';
@@ -45,7 +59,82 @@ export function Professor_Page() {
         </>}
     </div></Layout>)
 
-    return (<Layout><div className="w-full h-full flex flex-col items-center">
+    return (<Layout>
+        <Dialog open={makeReviews} onClose={() => setMakeReviews(false)}>
+            <DialogTitle>Make a Review</DialogTitle>    
+            <DialogContent>
+                <TextField
+                    autoFocus
+                    margin="dense"
+                    label="Course Subject ex. CS"
+                    fullWidth
+                    variant="standard"
+                    inputRef={courseSubject}
+                />
+                <TextField
+                    autoFocus
+                    margin="dense"
+                    label="Course ID ex. 18000"
+                    fullWidth
+                    variant="standard"
+                    inputRef={courseID}
+                />
+                <TextField
+                    autoFocus
+                    margin="dense"
+                    label="Rating 1-5"
+                    fullWidth
+                    variant="standard"
+                    inputRef={rating}
+                />
+                <TextField multiline={true}
+                    autoFocus
+                    margin="dense"
+                    label="Comment"
+                    fullWidth
+                    variant="standard"
+                    inputRef={comment}
+                />
+                <TextField
+                    autoFocus
+                    margin="dense"
+                    label="Grade"
+                    fullWidth
+                    variant="standard"
+                    inputRef={grade}
+                />
+                <TextField
+                    autoFocus
+                    margin="dense"
+                    label="Difficult 1-5"
+                    fullWidth
+                    variant="standard"
+                    inputRef={difficulty}
+                />
+                <Checkbox
+                    onChange={() => setTakeAgain(!takeAgain)}
+                    checked={takeAgain}
+                />
+                <text>Would you take a course with this professor again?</text>
+                <p></p>
+            </DialogContent>
+            <DialogActions>
+                <Button onClick={() => setMakeReviews(false)}>Close</Button>
+                <Button onClick={() => {
+                    console.log(difficulty)
+                    RatingService.createReview({ instructor_id: professor._id, 
+                        in_courseSubject: courseSubject.current.value,
+                        in_courseID: courseID.current.value,
+                        rating: Number(rating.current.value),
+                        comment: comment.current.value,
+                        in_wouldTakeAgain: takeAgain,
+                        difficulty: parseFloat(difficulty.current.value),
+                        in_grade: grade.current.value })
+                    setMakeReviews(false);
+                }}>Add</Button>
+            </DialogActions>
+        </Dialog>
+        <div className="w-full h-full flex flex-col items-center">
         <header className="text-center text-white text-3xl mt-4 w-full">
             <div className="float-left ml-2 text-2xl cursor-pointer" onClick={() => navigate(-1)}>
                 <FaArrowLeft />
@@ -74,5 +163,16 @@ export function Professor_Page() {
         <Boilergrades instructor={professor._id} className="w-full mb-4"  />
 
         <Ratings instructor={professor._id} filter={searchParams.get('filter')?.split(',') ?? []} />
+        <div></div>
+        <Button
+            variant="contained"
+            size="large"
+            color="primary"
+            className="w-full h-6"
+            onClick={() => {
+                setMakeReviews(true);
+            }}>
+            Do you want to leave a review? Click Here.
+        </Button>
     </div></Layout>)
 }

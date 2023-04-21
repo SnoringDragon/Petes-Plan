@@ -29,7 +29,7 @@ const userSchema = new mongoose.Schema({
     }],
     apTests: [{
         test: { type: mongoose.Schema.Types.ObjectId, ref: 'APTest' },
-        score: Number,
+         score: String,
         _id: false
     }]
 });
