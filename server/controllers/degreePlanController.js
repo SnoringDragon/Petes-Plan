@@ -681,23 +681,20 @@ exports.getRecommendedCourses = async (req, res) => {
 
     /* Add unmet requirements from degrees to requirements map */
     var degreeReqs = new Map();
-    user.populate('degreePlans.degrees');
-    
-    //TODO: Uncomment when degree requirements are added
-    //for (const degree of degreePlan.degrees) {
-    //    /* Check if degree requirements met */
-    //    if (!degreeData.requirements) continue;
-    //    const reqs = await meetsReqs(credits, plannedCourses, null, null, degreeData.requirements);
-    //    /* Add requirements to map */
-    //    if (reqs.success || !reqs.reqs) continue;
-    //    for (const entry of reqs.reqs.entries()) {
-    //        const key = entry[0];
-    //        const value = entry[1];
-    //        if (prereqs.has(key)) continue; // Ignore duplicate requirements
-    //        if (degreeReqs.has(key)) degreeReqs.set(key, degreeReqs.get(key) + value);
-    //        else degreeReqs.set(key, value);
-    //    }
-    //}
+    for (const degree of degreePlan.degrees) {
+        /* Check if degree requirements met */
+        if (!degree.requirements) continue;
+        const reqs = await meetsReqs(credits, plannedCourses, null, null, degree.requirements);
+        /* Add requirements to map */
+        if (reqs.success || !reqs.reqs) continue;
+        for (const entry of reqs.reqs.entries()) {
+            const key = entry[0];
+            const value = entry[1];
+            if (prereqs.has(key)) continue; // Ignore duplicate requirements
+            if (degreeReqs.has(key)) degreeReqs.set(key, degreeReqs.get(key) + value);
+            else degreeReqs.set(key, value);
+        }
+    }
 
     /**************  Get Requirements - Planned Degrees - END  **************/
     /**************  Sort Requirements for Recommendations - BEGIN  **************/
@@ -769,11 +766,30 @@ async function meetsReqs(credits, plannedCourses, semester, year, container) {
         }), 1);
         return {success: 0, reqs: reqs};
     }
+
+    if (Array.isArray(container)) {
+        for (const child of container) {
+            const childReqs = await meetsReqs(credits, plannedCourses, semester, year, child);
+            if (childReqs.success || !childReqs.reqs) continue;
+            
+            /* Combine child requirements with parent requirements */
+            for (const entry of childReqs.reqs.entries()) {
+                const key = entry[0];
+                const value = entry[1];
+                if (reqs.has(key)) reqs.set(key, reqs.get(key) + value);
+                else reqs.set(key, value);
+            }
+        }
+
+        /* Check if all child requirements have been met */
+        if (reqs.size == 0) return {success: 1};
+        else return {success: 0, reqs: reqs};
+    }
     
     /* Check if all child requirements have been met */
     /* If not, collect list of unmet requirements */
-    if (container.type === 'and') {
-        for (const child of container.children) {
+    if (container.type === 'and' || container.type === 'group') {
+        for (const child of (container.children ?? container.groups)) {
             const childReqs = await meetsReqs(credits, plannedCourses, semester, year, child);
             if (childReqs.success || !childReqs.reqs) continue;
             
@@ -794,7 +810,7 @@ async function meetsReqs(credits, plannedCourses, semester, year, container) {
     /* Check if any child requirements have been met */
     /* If not, collect list of unmet requirements */
     if (container.type === 'or') {
-        for (const child of container.children) {
+        for (const child of (container.children ?? container.groups)) {
             const childReqs = await meetsReqs(credits, plannedCourses, semester, year, child);
             if (childReqs.success) return {success: 1};
             else if (!childReqs.reqs) continue;
