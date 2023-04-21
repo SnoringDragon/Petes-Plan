@@ -1,26 +1,13 @@
 import { Layout } from "../../components/layout/layout";
-import { useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button, Checkbox, TextField } from '@material-ui/core';
 import { CourseLink } from '../../components/course-link/course-link';
+import { Grade } from '../../types/grades';
+import GradesService from '../../services/GradesService';
 
 export function GradeCalc() {
-    const [grades, _setGrades] = useState<{
-        course: {
-            courseID: string,
-            subject: string,
-            grades: {
-                category: string,
-                capped: boolean,
-                weight: number,
-                assignments: {
-                    name: string,
-                    numerator: number,
-                    denominator: number
-                }[]
-            }[]
-        }
-    }[]>(JSON.parse(localStorage.getItem('grades') ?? '[]'));
+    const [grades, _setGrades] = useState<Grade[] | null>(null);
 
     const courseRef = useRef({ value: '' });
 
@@ -36,12 +23,31 @@ export function GradeCalc() {
     const assignmentNumeratorRef = useRef<{ value: '' }[][][]>([]);
     const assignmentDenominatorRef = useRef<{ value: '' }[][][]>([]);
 
-    const setGrades = (g: typeof grades) => {
-        localStorage.setItem('grades', JSON.stringify(g));
+    const postGrades = useMemo(() => {
+        let lastCallback: number | undefined = undefined;
+
+        return (g: Grade[], n = 250) => {
+            clearTimeout(lastCallback);
+            if (!n)
+                GradesService.setGrades(g)
+            else
+                lastCallback = setTimeout(() => {
+                    GradesService.setGrades(g);
+                }, n) as any;
+        };
+    }, []);
+
+    const setGrades = (g: Grade[]) => {
+        postGrades(g);
         return _setGrades(g);
     }
 
-    const calculateCategoryGrade = (category: (typeof grades)[number]['course']['grades'][number]) => {
+    useEffect(() => {
+        GradesService.getGrades()
+            .then(r => setGrades(r));
+    }, []);
+
+    const calculateCategoryGrade = (category: Grade['course']['grades'][number]) => {
         let numerator = 0;
         let denominator = 0;
 
@@ -55,7 +61,7 @@ export function GradeCalc() {
         return denominator === 0 ? 0 : numerator / denominator;
     };
 
-    const calculateGrade = (course: (typeof grades)[number]) => {
+    const calculateGrade = (course: Grade) => {
         const values = course.course.grades.map(category => {
             return { value: calculateCategoryGrade(category),
                 weight: category.weight}
@@ -66,6 +72,7 @@ export function GradeCalc() {
         return values.reduce((t, x) => t + x.value * x.weight / totalWeights, 0)
     }
 
+    if (!grades) return <Layout></Layout>;
 
 
     return(<Layout>
@@ -87,7 +94,7 @@ export function GradeCalc() {
 
                 {course.course.grades.map((cat, j) => <div className="p-4 flex flex-col bg-gray-500 rounded-md bg-opacity-25 mb-4 text-white" key={j}>
                     <div className="flex mb-3 items-center">
-                        <TextField className="text-2xl" size={"small"} variant={"outlined"} InputProps={{ className: 'text-white text-xl' }}
+                        <TextField className="text-2xl" size={"small"} variant={"outlined"} InputProps={{ className: 'text-inherit' }}
                                    defaultValue={cat.category} onChange={ev => {
                                        const g = [...grades];
                                        g[i].course.grades[j].category = ev.target.value;
@@ -102,7 +109,7 @@ export function GradeCalc() {
                                 alert('Invalid value for weight')
                             else
                                 setGrades(g);
-                        }}/>
+                        }} InputProps={{ className: 'text-inherit' }}/>
                         <span className="mx-4">Is capped:</span>
                         <Checkbox defaultChecked={cat.capped} onChange={ev => {
                             const g = [...grades];
@@ -122,19 +129,19 @@ export function GradeCalc() {
                             if (!assignmentNameRef.current[i]) assignmentNameRef.current[i] = [];
                             if (!assignmentNameRef.current[i][j]) assignmentNameRef.current[i][j] = [];
                             assignmentNameRef.current[i][j][k] = ref;
-                        }} className="text-lg" defaultValue={assignment.name}></TextField>
+                        }} className="text-lg" defaultValue={assignment.name} InputProps={{ className: 'text-inherit' }}></TextField>
                         <span className="mx-2">Earned Points:</span>
                         <TextField inputRef={ref => {
                             if (!assignmentNumeratorRef.current[i]) assignmentNumeratorRef.current[i] = [];
                             if (!assignmentNumeratorRef.current[i][j]) assignmentNumeratorRef.current[i][j] = [];
                             assignmentNumeratorRef.current[i][j][k] = ref;
-                        }} type="number" defaultValue={assignment.numerator}></TextField>
+                        }} type="number" defaultValue={assignment.numerator} InputProps={{ className: 'text-inherit' }}></TextField>
                         <span className="mx-2">Total Points:</span>
                         <TextField inputRef={ref => {
                             if (!assignmentDenominatorRef.current[i]) assignmentDenominatorRef.current[i] = [];
                             if (!assignmentDenominatorRef.current[i][j]) assignmentDenominatorRef.current[i][j] = [];
                             assignmentDenominatorRef.current[i][j][k] = ref;
-                        }} type="number" defaultValue={assignment.denominator}></TextField>
+                        }} type="number" defaultValue={assignment.denominator} InputProps={{ className: 'text-inherit' }}></TextField>
 
                         <Button variant="outlined" className="ml-auto" color="inherit" onClick={() => {
                             const name = assignmentNameRef.current[i][j][k].value;
@@ -165,17 +172,17 @@ export function GradeCalc() {
                         <TextField className="text-white mr-4" inputRef={ref => {
                             if (!assignmentAddRef.current[i]) assignmentAddRef.current[i] = [];
                             assignmentAddRef.current[i][j] = ref;
-                        }}></TextField>
+                        }} InputProps={{ className: 'text-inherit' }}></TextField>
                         <span className="mr-2">Points Earned:</span>
                         <TextField className="text-white mr-4" type="number" inputRef={ref => {
                             if (!assignmentAddNumeratorRef.current[i]) assignmentAddNumeratorRef.current[i] = [];
                             assignmentAddNumeratorRef.current[i][j] = ref;
-                        }}></TextField>
+                        }} InputProps={{ className: 'text-inherit' }}></TextField>
                         <span className="mr-2">Total Points:</span>
                         <TextField className="text-white mr-4" type="number" inputRef={ref => {
                             if (!assignmentAddDenominatorRef.current[i]) assignmentAddDenominatorRef.current[i] = [];
                             assignmentAddDenominatorRef.current[i][j] = ref;
-                        }}></TextField>
+                        }} InputProps={{ className: 'text-inherit' }}></TextField>
                         <Button variant="outlined" className="ml-auto" color="inherit" onClick={() => {
                             const name = assignmentAddRef.current[i][j].value;
                             const numerator = parseFloat(assignmentAddNumeratorRef.current[i][j].value);
@@ -195,11 +202,11 @@ export function GradeCalc() {
                 <span className="text-xl mr-4">Add category:</span>
                 <TextField className="text-white mr-4" inputRef={ref => {
                     categoryAddRef.current[i] = ref;
-                }}></TextField>
+                }} InputProps={{ className: 'text-inherit' }}></TextField>
                 <span className="mr-2">Weight:</span>
                 <TextField className="text-white mr-4" type="number" inputRef={ref => {
                     categoryWeightRef.current[i] = ref;
-                }}></TextField>
+                }} InputProps={{ className: 'text-inherit' }}></TextField>
                 <span>Capped:</span>
                 <Checkbox inputRef={ref => categoryCappedRef.current[i] = ref as any}></Checkbox>
                 <Button className="ml-auto" variant="outlined" color="inherit" onClick={() => {
@@ -222,7 +229,7 @@ export function GradeCalc() {
         </div>)}
         <div className="flex p-4 bg-gray-500 rounded-md bg-opacity-25 items-center text-white">
             <span className="text-xl mr-4">Add course:</span>
-            <TextField className="text-white mr-4" inputRef={courseRef}></TextField>
+            <TextField className="text-white mr-4" inputRef={courseRef} InputProps={{ className: 'text-inherit' }}></TextField>
             <Button className="ml-auto" variant="outlined" color="inherit" onClick={() => {
                 const [subject, courseID] = courseRef.current.value.trim().toUpperCase().split(' ');
                 setGrades([...grades, {

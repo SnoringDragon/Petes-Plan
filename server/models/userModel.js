@@ -31,7 +31,8 @@ const userSchema = new mongoose.Schema({
         test: { type: mongoose.Schema.Types.ObjectId, ref: 'APTest' },
          score: String,
         _id: false
-    }]
+    }],
+    grades: Object
 });
 
 /* modify secret key by xor-ing it with hash of user's password
