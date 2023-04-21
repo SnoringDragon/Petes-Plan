@@ -128,8 +128,7 @@ export function Professor_Page() {
             <DialogActions>
                 <Button onClick={() => setMakeReviews(false)}>Close</Button>
                 <Button onClick={() => {
-                    console.log(difficulty)
-                    RatingService.createReview({ instructor_id: professor._id, 
+                    RatingService.createReview({ instructor_id: professor._id,
                         in_courseSubject: courseSubject.current.value,
                         in_courseID: courseID.current.value,
                         rating: Number(rating.current.value),
@@ -137,6 +136,7 @@ export function Professor_Page() {
                         in_wouldTakeAgain: takeAgain,
                         difficulty: parseFloat(difficulty.current.value),
                         in_grade: grade.current.value })
+                        .then(() => navigate(0))
                     setMakeReviews(false);
                 }}>Add</Button>
             </DialogActions>

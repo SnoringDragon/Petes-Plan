@@ -194,6 +194,8 @@ export function Course_Description() {
                         in_wouldTakeAgain: takeAgain,
                         difficulty: Number(difficulty.current.value),
                         in_grade: grade.current.value  })
+                        .then(() => navigate(0))
+
                     setMakeReviews(false);
                 }}>Add</Button>
             </DialogActions>
