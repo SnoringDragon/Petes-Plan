@@ -1,8 +1,8 @@
 const mongoose = require('mongoose');
 
 const apTestSchema = new mongoose.Schema({
-    name: { type: String, unique: true },
-    type: { type: String, default: "ap"},
+    name: { type: String, },
+    type: { type: String, default: "ap" },
     credits: [{
         _id: false, // dont need id on sub schema
         score: String, 
@@ -13,5 +13,7 @@ const apTestSchema = new mongoose.Schema({
         }],
     }]
 });
+
+apTestSchema.index({ type: 1, name: 1 }, { unique: true });
 
 module.exports = mongoose.model('APTest', apTestSchema);
