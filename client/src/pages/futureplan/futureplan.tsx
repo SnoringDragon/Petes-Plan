@@ -102,6 +102,8 @@ export function FuturePlan() {
         delete: string[]
     }>({ delete: [], add: [] });
 
+    const [overrideCourse, setOverrideCourse] = useState<typeof courseModifications['add']>([]);
+
     const [degreeModifications, setDegreeModifications] = useState<{
         add: Degree[],
         delete: string[]
@@ -381,8 +383,10 @@ export function FuturePlan() {
                    //setSemCourse(course!);
                    setOverride(true);
                    setWarning(false);
-                   console.log("here");
-                    //TODO Update Integration 
+                   setCourseModifications({...courseModifications,
+                        add: [...courseModifications.add, ...overrideCourse]
+                   });
+                   setOverrideCourse([]);
                 }}>Override</Button>
             </DialogActions>
         </Dialog>
@@ -553,12 +557,18 @@ export function FuturePlan() {
 
                         if (checkOverride(semCourse, semesters)) {
                             setWarning(true);
-                            if (overidden) {
-                                setValues(semCourse, semesters, now);
-                                
-                                setOverride(false);
-                                console.log("reached");
-                            }
+                            setOverrideCourse((selectedSection?.map((s, i) => {
+                                return {
+                                    _id: '' + (now + i),
+                                    subject: semCourse.subject,
+                                    courseID: semCourse.courseID,
+                                    semester: semesters.semester,
+                                    grade: 'A',
+                                    year: semesters.year,
+                                    section: s,
+                                    courseData: {  ...semCourse, sections: section }
+                                }
+                            }).filter(x => x) ?? []));
                         } else {
                             setCourseModifications({
                                 ...courseModifications,
