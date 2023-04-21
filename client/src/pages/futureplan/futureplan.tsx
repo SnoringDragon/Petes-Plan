@@ -837,7 +837,7 @@ export function FuturePlan() {
                                 <DialogContent>
                                     <div>Section:</div>
                                     <Select defaultValue={course.section?._id} onChange={ev => {
-                                        const section = course.courseData.sections?.flat(2).find(s => s._id === ev.target.value)
+                                        const section = course.courseData?.sections?.flat(2).find(s => s._id === ev.target.value)
 
                                         if (!isNew) {
                                             setDegreePlan({
@@ -862,7 +862,7 @@ export function FuturePlan() {
                                             });
                                         }
                                     }}>
-                                        {course.courseData.sections?.flat(2).map(section => renderSectionMenuItem(section))}
+                                        {course.courseData?.sections?.flat(2).map(section => renderSectionMenuItem(section))}
                                     </Select>
                                 </DialogContent>
                                 <DialogActions>
