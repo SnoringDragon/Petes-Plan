@@ -18,6 +18,7 @@ class DegreePlanService extends Api {
         year: number,
         subject: string,
         section: string,
+        overrideStatus?: string
     }[]) {
         return this.post<{ degreePlan: DegreePlan }>(`/api/degreePlan/${plan}/add`, { degrees, courses });
     }

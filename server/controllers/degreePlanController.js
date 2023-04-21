@@ -239,7 +239,8 @@ exports.addCourse = async (req, res) => {
                 semester: course.semester,
                 year: course.year,
                 subject: course.subject,
-                section: course.section
+                section: course.section,
+                overrideStatus: course.overrideStatus
             });
         }
     }

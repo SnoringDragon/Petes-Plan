@@ -8,7 +8,15 @@ import Button from '@material-ui/core/Button';
 import React, { useEffect, useMemo, useRef } from 'react';
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import {FaChevronDown, FaMinus, FaPlus, FaSearch} from 'react-icons/fa';
+import {
+    FaChevronDown,
+    FaExclamation,
+    FaExclamationCircle,
+    FaMinus,
+    FaMinusCircle,
+    FaPlus,
+    FaSearch
+} from 'react-icons/fa';
 import { ApiCourse, Meeting, Requirement } from '../../types/course-requirements';
 import CourseService from '../../services/CourseService';
 import { Degree } from '../../types/degree';
@@ -135,12 +143,12 @@ export function FuturePlan() {
         }*/
     }
 
-    const satisfied = (req: Requirement, semester: Semester): Boolean => {
+    const satisfied = (req: Requirement | undefined | null, semester: Semester | undefined | null): Boolean => {
         let gradeValues: { [key: string]: number } = {
             'D-': 1, 'D': 2, 'D+': 3, 'C-': 4, 'C': 5, 'C+': 6, 'B-': 7, 'B': 8, 'B+': 9, 'A-': 10, 'A': 11, 'A+': 12
         };
 
-        if (!req) return true;
+        if (!req || !semester) return true;
         if (req.type === 'or')
             return req.children.some(c => satisfied(c, semester));
         if (req.type === 'and')
@@ -582,7 +590,8 @@ export function FuturePlan() {
                                     grade: 'A',
                                     year: semesters.year,
                                     section: s,
-                                    courseData: {  ...semCourse, sections: section }
+                                    courseData: {  ...semCourse, sections: section },
+                                    overrideStatus: 'override'
                                 }
                             }).filter(x => x) ?? []));
                         } else {
@@ -773,7 +782,7 @@ export function FuturePlan() {
                         </div>
                         {Object.entries([degreePlan.courses, userCourses, courseModifications.add]
                             .flatMap(courses => {
-                                return courses.map(course => ({ course, isNew: courses !== degreePlan.courses }))
+                                return courses.map(course => ({ course, isNew: courses !== degreePlan.courses, isUserCourse: courses === userCourses }))
                             })
                             .reduce((semesterDict, course) => {
                                 const sem = `${course.course.semester} ${course.course.year}`;
@@ -781,7 +790,7 @@ export function FuturePlan() {
                                     semesterDict[sem] = [];
                                 semesterDict[sem].push(course);
                                 return semesterDict;
-                            }, {} as { [key: string]: {isNew: boolean, course: UserCourse}[] }))
+                            }, {} as { [key: string]: {isNew: boolean, isUserCourse: boolean, course: UserCourse}[] }))
                             .sort(([semA], [semB]) => {
                                 const [semATerm, semAYear] = semA.split(' ');
                                 const [semBTerm, semBYear] = semB.split(' ');
@@ -800,9 +809,16 @@ export function FuturePlan() {
                                         {semester}
                                     </div ></AccordionSummary>
                                     <AccordionDetails className="flex flex-col">
-                                    {courses.map(({ course, isNew }, j) => (<div key={j} className="flex items-center py-2 border-b border-gray-300">
+                                    {courses.map(({ course, isNew, isUserCourse }, j) => (<div key={j} className="flex items-center py-2 border-b border-gray-300">
                             <div className="flex flex-col">
-                                <CourseLink courseID={course.courseID} subject={course.subject} useColor={false} />
+                                <div className="flex items-center">
+                                    <CourseLink className="mr-1" courseID={course.courseID} subject={course.subject} useColor={false} />
+
+                                    {!isUserCourse && !satisfied(course?.courseData?.requirements,
+                                        semesters.find(s => s.semester === course.semester && s.year === course.year))  && (course.overrideStatus === 'override' ?
+                                        <Tooltip title={"Overridden"}><FaMinusCircle /></Tooltip> : <Tooltip title={"Prerequisites not met"}><FaExclamationCircle /></Tooltip>) }
+
+                                </div>
 
                                 {course.section && <div>{course.section?.name} ({course.section?.sectionID})</div>}
                                 <div>Instructors: {(() => {
@@ -854,27 +870,30 @@ export function FuturePlan() {
                                 </DialogActions>
                             </Dialog>
 
-                            <Button className="ml-auto mr-2" variant="contained" color="secondary" onClick={() => {
-                                setModifyCourse(course);
-                            }}>Modify</Button>
-                            <Button variant="contained" color="secondary" onClick={() => {
-                                if (!isNew) {
-                                    setDegreePlan({
-                                        ...degreePlan,
-                                        courses: degreePlan.courses.filter(x => x !== course)
-                                    });
+                                        {isUserCourse ? <><span className="ml-auto mr-2">Grade: {course.grade}</span></> : <>
+                                <Button className="ml-auto mr-2" variant="contained" color="secondary" onClick={() => {
+                                    setModifyCourse(course);
+                                }}>Modify</Button>
+                                <Button variant="contained" color="secondary" onClick={() => {
+                                    if (!isNew) {
+                                        setDegreePlan({
+                                            ...degreePlan,
+                                            courses: degreePlan.courses.filter(x => x !== course)
+                                        });
 
-                                    setCourseModifications({
-                                        ...courseModifications,
-                                        delete: [...courseModifications.delete, course._id]
-                                    });
-                                } else {
-                                    setCourseModifications({
-                                        ...courseModifications,
-                                        add: courseModifications.add.filter(({ _id }) => _id !== course._id)
-                                    })
-                                }
-                            }}>Delete</Button>
+                                        setCourseModifications({
+                                            ...courseModifications,
+                                            delete: [...courseModifications.delete, course._id]
+                                        });
+                                    } else {
+                                        setCourseModifications({
+                                            ...courseModifications,
+                                            add: courseModifications.add.filter(({ _id }) => _id !== course._id)
+                                        })
+                                    }
+                                }}>Delete</Button>
+                            </>}
+
                                 </div>))}</AccordionDetails></Accordion>))}
                         {/*{courseModifications.add.map((course, i) => (<div key={i} className="flex items-center py-2 border-b border-gray-300">*/}
                         {/*    <Link className="mr-auto" to={`/course_description?subject=${course.subject}&courseID=${course.courseID}`}>{course.subject} {course.courseID}</Link>*/}
