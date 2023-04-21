@@ -8,7 +8,8 @@ export type CreateReview = {
     rating: number,
     comment: string,
     in_wouldTakeAgain: boolean | null,
-    difficulty: number
+    difficulty: number,
+    in_grade: string
 };
 
 class RatingService extends Api {
@@ -17,7 +18,7 @@ class RatingService extends Api {
     }
 
     createReview(body: CreateReview) {
-        return this.post('/api/ratings');
+        return this.post('/api/ratings', body);
     }
 }
 

@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Layout } from '../../components/layout/layout';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { ApiCourse } from '../../types/course-requirements';
+import { ApiProfessor } from '../../types/professor';
 import { Section } from '../../types/course-requirements';
 import { FaArrowLeft } from 'react-icons/fa';
 import { Prerequisites } from '../../components/prerequisites/prerequisites';
@@ -12,6 +13,7 @@ import { Ratings } from '../../components/ratings/ratings';
 import { Link } from 'react-router-dom';
 import {
     Button,
+    Checkbox,
     Dialog,
     DialogActions,
     DialogContent,
@@ -20,11 +22,14 @@ import {
     FormControl,
     InputLabel,
     MenuItem,
-    Select
+    Select,
+    TextField
 } from '@material-ui/core';
 import { Semester } from '../../types/semester';
 import SemesterService from '../../services/SemesterService';
 import { Boilergrades } from '../../components/boilergrades/boilergrades';
+import RatingService from '../../services/RatingService';
+import ProfessorService from '../../services/ProfessorService';
 
 export function Course_Description() {
     const [searchParams] = useSearchParams();
@@ -38,6 +43,18 @@ export function Course_Description() {
     const [section, setSection] = useState<Section[][][] | null>(null);
     const [showSections, setShowSections] = useState(true);
     const [semesters, setSemesters] = useState<Semester[]>([]);
+
+    const [makeReviews, setMakeReviews] = useState(false);
+    const [takeAgain, setTakeAgain] = useState(false);
+
+    const professor = useRef({value:''});
+    const rating = useRef({value:''});
+    const comment = useRef({value:''});
+    const grade = useRef({value:''});
+    const difficulty = useRef({value:''});
+    const attendanceReq = useRef({value:''});
+    const [professorList, setProfessorList] = useState<ApiProfessor[]>([]);
+    const [selectedProf, setSelectedProf] = useState('')
 
     useEffect(() => {
         CourseHistoryService.getCourses()
@@ -95,7 +112,80 @@ export function Course_Description() {
         </>}
     </div></Layout>);
 
-    return (<Layout><div className="w-full h-full flex flex-col items-center">
+    console.log(course)
+    return (<Layout>
+        <Dialog open={makeReviews} onClose={() => setMakeReviews(false)}>
+            <DialogTitle>Make a Review</DialogTitle>    
+            <DialogContent>
+                <TextField
+                    autoFocus
+                    margin="dense"
+                    label="Professor"
+                    fullWidth
+                    variant="standard"
+                    inputRef={professor}
+                    onChange={(event) => {
+                        ProfessorService.searchProfessor(professor.current.value).then(setProfessorList)
+                    }}
+                />
+                <Select value={selectedProf} onChange={ev => setSelectedProf(ev.target.value as any)}>
+                    {professorList.map((list) => <MenuItem value={list._id}>{list.firstname} {list.lastname}</MenuItem>)}
+                </Select>
+                <TextField
+                    autoFocus
+                    margin="dense"
+                    label="Rating 1-5"
+                    fullWidth
+                    variant="standard"
+                    inputRef={rating}
+                />
+                <TextField multiline={true}
+                    autoFocus
+                    margin="dense"
+                    label="Comment"
+                    fullWidth
+                    variant="standard"
+                    inputRef={comment}
+                />
+                <TextField
+                    autoFocus
+                    margin="dense"
+                    label="Grade"
+                    fullWidth
+                    variant="standard"
+                    inputRef={grade}
+                />
+                <TextField
+                    autoFocus
+                    margin="dense"
+                    label="Difficult 1-5"
+                    fullWidth
+                    variant="standard"
+                    inputRef={difficulty}
+                />
+                <Checkbox
+                    onChange={() => setTakeAgain(!takeAgain)}
+                    checked={takeAgain}
+                />
+                <text>Would you take the course again?</text>
+                <p></p>
+            </DialogContent>
+            <DialogActions>
+                <Button onClick={() => setMakeReviews(false)}>Close</Button>
+                <Button onClick={() => {
+                    RatingService.createReview({ instructor_id: selectedProf, 
+                        in_courseSubject: course.subject,
+                        in_courseID: course.courseID,
+                        rating: Number(rating.current.value),
+                        comment: comment.current.value,
+                        in_wouldTakeAgain: takeAgain,
+                        difficulty: Number(difficulty.current.value),
+                        in_grade: grade.current.value  })
+                    setMakeReviews(false);
+                }}>Add</Button>
+            </DialogActions>
+        </Dialog>
+        <div className="w-full h-full flex flex-col items-center">
         <header className="text-center text-white text-3xl mt-4 w-full">
             <div className="float-left ml-2 text-2xl cursor-pointer" onClick={() => navigate(-1)}>
                 <FaArrowLeft />
@@ -190,6 +280,17 @@ export function Course_Description() {
 
             <div className="mt-5 underline">Reviews:</div>
             <Ratings courseID={course.courseID} subject={course.subject} filter={searchParams.get('filter')?.split(',') ?? []} />
+            <div></div>
+            <Button
+                variant="contained"
+                size="large"
+                color="primary"
+                className="w-full h-6"
+                onClick={() => {
+                    setMakeReviews(true);
+                }}>
+                Do you want to leave a review? Click Here.
+            </Button>
         </div>
     </div></Layout>)
 }
