@@ -184,20 +184,6 @@ export function GradeCalc() {
                             assignmentAddDenominatorRef.current[i][j] = ref;
                         }} InputProps={{ className: 'text-inherit' }}></TextField>
                         <Button variant="outlined" className="ml-auto" color="inherit" 
-                        onKeyPress={(e) => {
-                            if (e.key === "Enter") {
-                                const name = assignmentAddRef.current[i][j].value;
-                            const numerator = parseFloat(assignmentAddNumeratorRef.current[i][j].value);
-                            const denominator = parseFloat(assignmentAddDenominatorRef.current[i][j].value);
-
-                            if (numerator < 0 || denominator < 0)
-                                return alert('Invalid grade entered')
-
-                            const g = [...grades];
-                            g[i].course.grades[j].assignments.push({ name, numerator, denominator });
-                            setGrades(g);
-                            }
-                        }} 
                         onClick={() => {
                             const name = assignmentAddRef.current[i][j].value;
                             const numerator = parseFloat(assignmentAddNumeratorRef.current[i][j].value);
