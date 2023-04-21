@@ -21,9 +21,6 @@ async function getClepData() {
     $("#inner-page-content > div > div > div.col-lg-8.main-content > div > table > tbody > tr > td:nth-child(2)").each((index, element) => {
         allCourses.push($(element).text());
     });
-    $("#inner-page-content > div > div > div.col-lg-8.main-content > div > table > tbody > tr > td:nth-child(3)").each((index, element) => {
-        allHours.push($(element).text());
-    });
     $("#inner-page-content > div > div > div.col-lg-8.main-content > div > table > tbody > tr > td:nth-child(4)").each((index, element) => {
         allScores.push($(element).text());
     });
@@ -58,31 +55,56 @@ async function getClepData() {
     }
     }
   );
-  let final = []
+  let uniqueCLEP = new Map();
   for (let i = 0; i < allExams.length; i++) {
-    let temp = []
-    temp.push(allExams[i])
-    temp.push(allCourses[i])
-    temp.push(allHours[i])
-    temp.push(allScores[i])
-    final.push(temp)
+    temp = []
+    if (uniqueCLEP.has(allExams[i])) {
+        uniqueCLEP.get(allExams[i]).push([allScores[i], allCourses[i]])
+    } else {
+        temp.push([allScores[i], allCourses[i]])
+        uniqueCLEP.set(allExams[i], temp);
+    }
+    uniqueCLEP.forEach(saveData)
+    // BIOL GENERAL: [ [55+, BIOL 11000], [70+, [BIOL 11000, 11100]] ]
+    //
   }
-  saveData(final)
+  saveData(uniqueCLEP)
+//   console.log(final[4], final[5])
 }
 // function saveData() {
 
 // }
-async function saveData(final) {
-    for (let i = 0; i < final.length; i++) {
-        let CLEP = await APTest.create({
-            name: instructor_ret,
-            course: course_ret,
-            quality: rating,
-            difficulty,
-            review: comment,
-            wouldTakeAgain: in_wouldTakeAgain,
-            grade: in_grade
-        }); 
+
+function returnCourses(value) {
+    courses = []
+    if (typeof value === "string") {
+        value = value.split(" ");
+        courses.push({
+            course_id: value[1],
+            subject: value[0]
+        })
+    } else if (typeof value === "object") {
+        for (let i = 0; i < value.length; i++) {
+            courses.push({
+                course_id: value[i][1],
+                subject: value[i][0]
+            })
+        }
     }
+    return courses;
+}
+
+async function saveData(value, key, map) {
+    credits = []
+    for (let i = 0; i < value.length; i++) {
+        credits.push({
+            score: value[i][0],
+            courses: returnCourses(value[i][1])
+        })
+    }
+    let CLEP = await APTest.create({
+        name: key,
+        credits: credits
+    }); 
 } 
 getClepData()
