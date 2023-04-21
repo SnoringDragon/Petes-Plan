@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Layout } from '../../components/layout/layout';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { ApiCourse } from '../../types/course-requirements';
+import { ApiProfessor } from '../../types/professor';
 import { Section } from '../../types/course-requirements';
 import { FaArrowLeft } from 'react-icons/fa';
 import { Prerequisites } from '../../components/prerequisites/prerequisites';
@@ -52,6 +53,8 @@ export function Course_Description() {
     const grade = useRef({value:''});
     const difficulty = useRef({value:''});
     const attendanceReq = useRef({value:''});
+    const [professorList, setProfessorList] = useState<ApiProfessor[]>([]);
+    const [selectedProf, setSelectedProf] = useState('')
 
     useEffect(() => {
         CourseHistoryService.getCourses()
@@ -121,7 +124,13 @@ export function Course_Description() {
                     fullWidth
                     variant="standard"
                     inputRef={professor}
+                    onChange={(event) => {
+                        ProfessorService.searchProfessor(professor.current.value).then(setProfessorList)
+                    }}
                 />
+                <Select value={selectedProf} onChange={ev => setSelectedProf(ev.target.value as any)}>
+                    {professorList.map((list) => <MenuItem value={list._id}>{list.firstname} {list.lastname}</MenuItem>)}
+                </Select>
                 <TextField
                     autoFocus
                     margin="dense"
@@ -144,7 +153,7 @@ export function Course_Description() {
                     label="Grade"
                     fullWidth
                     variant="standard"
-                    innerRef={grade}
+                    inputRef={grade}
                 />
                 <TextField
                     autoFocus
@@ -152,7 +161,7 @@ export function Course_Description() {
                     label="Difficult 1-5"
                     fullWidth
                     variant="standard"
-                    innerRef={difficulty}
+                    inputRef={difficulty}
                 />
                 <Checkbox
                     onChange={() => setTakeAgain(!takeAgain)}
@@ -164,15 +173,14 @@ export function Course_Description() {
             <DialogActions>
                 <Button onClick={() => setMakeReviews(false)}>Close</Button>
                 <Button onClick={() => {
-                    ProfessorService.searchProfessor({ professor.current.value })
-                    RatingService.createReview({ instructor_id: professor.current.value, 
+                    RatingService.createReview({ instructor_id: selectedProf, 
                         in_courseSubject: course.subject,
                         in_courseID: course.courseID,
                         rating: Number(rating.current.value),
                         comment: comment.current.value,
                         in_wouldTakeAgain: takeAgain,
                         difficulty: Number(difficulty.current.value),
-                        grade: grade.current.value  })
+                        in_grade: grade.current.value  })
                     setMakeReviews(false);
                 }}>Add</Button>
             </DialogActions>
