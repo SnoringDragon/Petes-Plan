@@ -34,7 +34,7 @@ class DegreePlanService extends Api {
     }
 
     getRecommendations(plan: string) {
-        return this.get<{recs: {uniqueID: string, courseID: string, subject: string}[]}>(`/api/degreePlan/${plan}/courseRecommendations`);
+        return this.get<{reqs: {uniqueID: string, courseID: string, subject: string}[]}>(`/api/degreePlan/${plan}/courseRecommendations`);
     }
 }
 

@@ -9,10 +9,11 @@ import React, { useEffect, useMemo, useRef } from 'react';
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {FaChevronDown, FaMinus, FaPlus, FaSearch} from 'react-icons/fa';
-import { ApiCourse, Meeting } from '../../types/course-requirements';
+import { ApiCourse, Meeting, Requirement } from '../../types/course-requirements';
 import CourseService from '../../services/CourseService';
 import { Degree } from '../../types/degree';
 import DegreeService from '../../services/DegreeService';
+import CourseHistoryService from '../../services/CourseHistoryService';
 import {
     Accordion, AccordionDetails, AccordionSummary,
     Dialog,
@@ -34,6 +35,7 @@ import GPAService from '../../services/GPAService';
 import { CourseLink } from '../../components/course-link/course-link';
 import { SCHEDULE_ORDER, SCHEDULE_TYPES } from '../../types/schedule-type';
 import { ProcessedEvent, Scheduler } from "@aldabil/react-scheduler";
+import { Api } from '../../services/Api';
 
 const renderSectionMenuItem = (section: Section, instructorFilter: string = '') => {
     if (instructorFilter && !section.meetings.some(m => m.instructors.some(i => i._id === instructorFilter)))
@@ -66,6 +68,8 @@ export function FuturePlan() {
     const searchRef = useRef({ value: '' });
     const [createSem, setSem] = useState(false);
     const yearRef = useRef({ value: '' });
+    const [overidden, setOverride] = useState(false);
+    const [overClass, setOverClass] = useState<{courseID: string, subject: string}[] | null>(null);
     const [semCourse, setSemCourse] = useState<ApiCourse>();
     const [selectedSem, setSelectedSem] = useState<string | null>(null);
     const [selectedSection, setSelectedSection] = useState<Section[] | null>(null);
@@ -83,6 +87,15 @@ export function FuturePlan() {
     const [degreeSearch, setDegreeSearch] = useState('');
     
     const [recs, setRecs] = useState<{uniqueID: string, courseID: string, subject: string}[] | null>(null);
+    const [reccomended, setReccomended] = useState<{uniqueID: string, courseID: string, subject: string}[] | null>(null);
+
+    const [showWarning, setWarning] = useState(false);
+    const [overrideCo, setOverrideCo] = useState<{courseID: string, subject: string}[] | null>(null);
+
+    
+    const [userCourses, setUserCourses] = useState<UserCourse[]>([]);
+    const [sems, setSems] = useState<Semester[]>([]);
+
 
     const [courseModifications, setCourseModifications] = useState<{
         add: UserCourse[],
@@ -101,7 +114,39 @@ export function FuturePlan() {
     };
     
     const recc = () => {
-        //DegreePlanService.getRecommendations(degreePlan!._id).then(res =>{setRecs(res.recs)});
+        console.log(degreePlan?._id);
+        DegreePlanService.getRecommendations(degreePlan!._id).then(res =>{console.log(res); setReccomended(res.reqs)});
+        console.log(reccomended);
+        /*try {
+            console.log("reached");
+            console.log(degreePlan?._id);
+            //await 
+        } catch {
+            //alert('Failed to update: ' + ((e as any)?.message ?? e)); // it is 4 am and i do not want to style this more
+        }*/
+    }
+
+    const flatten = (reqs : any) => {
+        if (reqs.type === 'group') return reqs.children.map(flatten).flat(Infinity);
+        else if (reqs.type === 'course') return reqs
+    }
+
+    const checkOverride = (course: ApiCourse, sem:Semester) => {
+        //for (let i = 0; i < course.)
+        const requ = course.requirements;
+        const list = flatten(requ);
+
+        let met = 0;
+        // let mystery = degreePlan;
+        // mystery!.courses.forEach(var => {
+        //     degreePlan!.courses.forEach(cour => {
+        //         if (cour.year > var.year || (cour.year == var.year && (cour.semester.localeCompare(var.semester) > 1))) {
+        //             if (cour)
+        //         }
+        //     });
+        // })
+        
+        return true;
     }
 
     const save = async () => {
@@ -133,9 +178,16 @@ export function FuturePlan() {
             if (res.degreePlans.length)
                 setDegreePlan(res.degreePlans[0]);
         });
-        
+        // DegreePlanService.getRecommendations(degreePlan!._id).then(res =>{setRecs(res.recs)});
         SemesterService.getSemesters().then(res => setSemesters(res));
         GPAService.getCumulativeGPA().then(res => setCumulativeGpa(res));
+    }, []);
+
+    useEffect(() => {
+        CourseHistoryService.getCourses()
+            .then(res => setUserCourses(res.courses));
+
+        SemesterService.getSemesters().then(res => setSems(res));
     }, []);
 
     useEffect(() => {
@@ -273,6 +325,19 @@ export function FuturePlan() {
     }, [selectedSection, section])
 
     return (<Layout>
+        <Dialog open={showWarning} onClose={() => setWarning(false)}>
+            <DialogTitle>The prerequisites for this course have not been fulfilled!</DialogTitle>    
+            <DialogActions>
+                <Button onClick={() => setWarning(false)}>Cancel</Button>
+                <Button onClick={() => {
+                   //setSemCourse(course!);
+                   setOverride(true);
+                   setWarning(false);
+                    //TODO Update Integration 
+                }}>Override</Button>
+            </DialogActions>
+        </Dialog>
+
         <Dialog open={createNewPlan} onClose={() => setCreateNewPlan(false)}>
             <DialogTitle>Enter Plan Name</DialogTitle>
             <DialogContent>
@@ -428,21 +493,44 @@ export function FuturePlan() {
                             setSelectedSection(null);
                             return;
                         }
-                        setCourseModifications({
-                            ...courseModifications,
-                            add: [...courseModifications.add, ...(selectedSection?.map((s, i) => {
-                                return {
-                                    _id: '' + (now + i),
-                                    subject: semCourse.subject,
-                                    courseID: semCourse.courseID,
-                                    semester: semesters.semester,
-                                    grade: 'A',
-                                    year: semesters.year,
-                                    section: s,
-                                    courseData: {  ...semCourse, sections: section }
-                                }
-                            }).filter(x => x) ?? [])]
-                        })
+
+                        if (checkOverride(semCourse, semesters)) {
+                            setWarning(true);
+                            if (overidden) {
+                                setCourseModifications({
+                                    ...courseModifications,
+                                    add: [...courseModifications.add, ...(selectedSection?.map((s, i) => {
+                                        return {
+                                            _id: '' + (now + i),
+                                            subject: semCourse.subject,
+                                            courseID: semCourse.courseID,
+                                            semester: semesters.semester,
+                                            grade: 'A',
+                                            year: semesters.year,
+                                            section: s,
+                                            courseData: {  ...semCourse, sections: section }
+                                        }
+                                    }).filter(x => x) ?? [])]
+                                });
+                                setOverride(false);
+                            }
+                        } else {
+                            setCourseModifications({
+                                ...courseModifications,
+                                add: [...courseModifications.add, ...(selectedSection?.map((s, i) => {
+                                    return {
+                                        _id: '' + (now + i),
+                                        subject: semCourse.subject,
+                                        courseID: semCourse.courseID,
+                                        semester: semesters.semester,
+                                        grade: 'A',
+                                        year: semesters.year,
+                                        section: s,
+                                        courseData: {  ...semCourse, sections: section }
+                                    }
+                                }).filter(x => x) ?? [])]
+                            })
+                        }
                         setSem(false);
                         setSelectedSection(null);
                     }}>
@@ -491,7 +579,8 @@ export function FuturePlan() {
                 
                 {recs?.map((rec, i) => (<div
                         className="w-full py-3 px-4 border-y flex items-center" key={i}>
-                        <Link to={`/course_description?subject=${rec.subject}&courseID=${rec.courseID}`} className="mr-auto">{rec.subject} {rec.courseID}</Link>
+                        <CourseLink className="mr-auto" courseID={rec.courseID} subject={rec.subject} useColor={false} />
+                        {/* <Link to={`/course_description?subject=${rec.subject}&courseID=${rec.courseID}`} className="mr-auto">{rec.subject} {rec.courseID}</Link> */}
                         <Button color="inherit" onClick={() => {
                             // setSemCourse(rec);
                             // setSem(true);
@@ -578,13 +667,16 @@ export function FuturePlan() {
                         <div className="flex">
                             <div className="text-2xl mr-auto">Planned Courses</div>
                             <div><span>Semester filter:&nbsp;</span>
-                                <Select value={semesterFilter} onChange={ev => setSemesterFilter(ev.target.value as string)}>
+                                <Select value={semesterFilter} onChange={ev => {setSemesterFilter(ev.target.value as string); setSelectedGpaSemester(ev.target.value as string)}}>
                                     <MenuItem value={""}>None</MenuItem>
                                     {[...new Set([degreePlan.courses, courseModifications.add]
                                         .flat().map(c => `${c.semester} ${c.year}`))].map((sem, i) => <MenuItem key={sem} value={sem}>
                                         {sem}
                                     </MenuItem>)}
                                 </Select>
+                                <span>
+                                     Semester GPA: {semesterGpa === null ? 'N/A' : semesterGpa.toFixed(2)}
+                                </span>
                             </div>
                         </div>
                         {Object.entries([degreePlan.courses, courseModifications.add]
