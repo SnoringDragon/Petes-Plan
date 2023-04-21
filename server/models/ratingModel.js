@@ -31,6 +31,7 @@ const ratingSchema = new mongoose.Schema({
     grade: String,
 
     typeSpecificId: String
+    
 
 }, {
     discriminatorKey: 'type',

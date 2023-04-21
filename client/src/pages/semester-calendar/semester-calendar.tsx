@@ -1,4 +1,4 @@
-import { Card, CardContent, CardHeader, FormControl, InputLabel, MenuItem, Select, TextField } from "@material-ui/core";
+import { Card, CardContent, CardHeader, FormControl, IconButton, InputLabel, MenuItem, Select, TextField } from "@material-ui/core";
 import { Layout } from "../../components/layout/layout";
 import { CSSProperties, useEffect, useRef, useState } from "react";
 import SemesterService from "../../services/SemesterService";
@@ -9,12 +9,12 @@ import { UserCourse } from "../../types/user-course";
 import "./semester-calendar.css";
 import { Meeting } from "../../types/course-requirements";
 import { Link } from "react-router-dom";
+import {AiOutlineLeft, AiOutlineRight} from "react-icons/ai";
 
 export function SemesterCalendar() {
     // Constant config options
     const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
     const colors = ["rgb(227, 23, 10)", "rgb(169, 229, 187)", "rgb(252, 246, 177)", "rgb(247, 179, 43)", "rgb(56, 145, 166)", "rgb(154, 196, 248)", "rgb(171, 146, 191)", "rgb(175, 77, 152)", "rgb(89, 210, 254)", "rgb(56, 102, 65)", "rgb(134, 22, 87)"];
-    const operatingHours = ["7AM", "8AM", "9AM", "10AM", "11AM", "12PM", "1PM", "2PM", "3PM", "4PM", "5PM"];
 
     const [selectedSem, setSem] = useState<string>((): string => {
         const date = new Date();
@@ -31,9 +31,9 @@ export function SemesterCalendar() {
     const [courses, setCourses] = useState<UserCourse[]>([]);
     const [colWidth, setColWidth] = useState<CSSProperties>({ width: "14%" });
     const [coursesByDay, setCoursesByDay] = useState<JSX.Element[][]>([[], [], [], [], [], [], []]);
-    const [selectedWeek, setSelectedWeek] = useState<Date>(); //TODO: Set to lowest date in courses
-    const [dateBounds, setDateBounds] = useState<(Date | undefined)[]>([undefined, undefined]); //TODO: Set to lowest and highest date in courses
-    //TODO: Add week selection
+    const [selectedWeek, setSelectedWeek] = useState<Date>();
+    const [dateBounds, setDateBounds] = useState<(Date | undefined)[]>([undefined, undefined]);
+    const [timeBounds, setTimeBounds] = useState<(Date | undefined)[]>([undefined, undefined]);
 
     // Get a Date object from a time string
     function parseTime(time: string): Date {
@@ -71,19 +71,30 @@ export function SemesterCalendar() {
     useEffect(() => {
         if (degreePlans.length === 0) return;
         var courses: UserCourse[] = [];
+        var dateBounds: (Date | undefined)[] = [undefined, undefined];
+        var timeBounds: (Date | undefined)[] = [undefined, undefined];
         degreePlans[degreePlan].courses.forEach(course => {
             if (course.semester) {
                 if (course.semester === selectedSem && course.year === selectedYear) {
                     courses.push(course);
 
-                    // Update date bounds
+                    // Update date/time bounds
                     if (course.section) {
-                        //TODO: Add support for courses with multiple sections
                         course.section.meetings.forEach((meeting: Meeting) => {
+                            // Update date bounds
                             var startDate: Date = parseDate(meeting.startDate);
                             var endDate: Date = parseDate(meeting.endDate);
-                            if (!dateBounds[0] || startDate < dateBounds[0]) setDateBounds([startDate, dateBounds[1]]);
-                            if (!dateBounds[1] || endDate > dateBounds[1]) setDateBounds([dateBounds[0], endDate]);
+                            if (!dateBounds[0] || startDate < dateBounds[0]) dateBounds[0] = startDate;
+                            if (!dateBounds[1] || endDate > dateBounds[1]) dateBounds[1] = endDate;
+
+                            // Update time bounds
+                            var startTime: Date = parseTime(meeting.startTime);
+                            startTime.setMinutes(startTime.getMinutes()-30);
+                            startTime.setMinutes(0);
+                            var endTime: Date = parseTime(meeting.endTime);
+                            endTime.setMinutes(60);
+                            if (!timeBounds[0] || startTime < timeBounds[0]) timeBounds[0] = startTime;
+                            if (!timeBounds[1] || endTime > timeBounds[1]) timeBounds[1] = endTime;
                         });
                     } else {
                         //TODO: Add support for courses with no section
@@ -99,6 +110,9 @@ export function SemesterCalendar() {
             setSelectedWeek(firstDay);
         }
 
+        // Update state
+        setDateBounds(dateBounds);
+        setTimeBounds(timeBounds);
         setCourses(courses);
     }, [semester, degreePlan, degreePlans]);
 
@@ -111,21 +125,32 @@ export function SemesterCalendar() {
             return meeting.instructors[0].lastname + ", " + meeting.instructors[0].firstname;
         }
 
+        if (!timeBounds[0] || !timeBounds[1]) return; // Skip if no time bounds (no courses)
+
         // Iterate through added courses
         var coursesByDay: JSX.Element[][] = [[], [], [], [], [], [], []];
+        var colorMap: Map<string, string> = new Map();
         courses.forEach((course: UserCourse, i: number) => {
+            // Get course color
+            var color: string;
+            if (colorMap.has(course.courseData._id)) {
+                color = colorMap.get(course.courseData._id) ?? "";
+            } else {
+                color = colors[colorMap.size % colors.length];
+                colorMap.set(course.courseData._id, color);
+            }
+
             // Add courses that have a selected section
             if (course.section) {
                 if (course.section.meetings.length == 0) return; // Skip courses with no meetings
 
-                //TODO: Add support for multiple sections
                 // Iterate through meetings
                 course.section.meetings.forEach((meeting: Meeting, j: number) => {
                     // Calculate meeting height and top offset
                     const start = parseTime(meeting.startTime);
                     const end = parseTime(meeting.endTime);
                     const duration = (end.getTime() - start.getTime()) / 1000 / 60;
-                    const top = (start.getTime() - (new Date(0,0,0,7)).getTime()) / 1000 / 60;
+                    const top = (start.getTime() - (timeBounds[0]?.getTime() ?? 0)) / 1000 / 60;
 
                     // Iterate through days in meeting
                     meeting.days.forEach((day: string) => {
@@ -143,7 +168,7 @@ export function SemesterCalendar() {
                         coursesByDay[dayIndex].push(<div key={parseInt(`${i}${j}${dayIndex}`)}>
                             <div 
                                 className="CourseStyle"
-                                style={{top: top+"px", height: duration+"px", backgroundColor: colors[i%colors.length]}}
+                                style={{top: top+"px", height: duration+"px", backgroundColor: color}}
                             >
                                 <Link to={`/course_description?subject=${course.subject}&courseID=${course.courseID}`}>
                                     <p className="courseName">{course.subject+" "+course.courseID+": "+course.courseData.name}</p>
@@ -169,10 +194,10 @@ export function SemesterCalendar() {
                 });
             }
 
-            // Add courses that have no selected section
+            //TODO: Add courses that have no selected section
         });
         setCoursesByDay(coursesByDay);
-    }, [courses]);
+    }, [courses, selectedWeek]);
     
     // Render semester selection with error if semester is not found
     function renderSemesterSelection(): (undefined | JSX.Element) {
@@ -251,6 +276,29 @@ export function SemesterCalendar() {
             );
         }
 
+        function weekModifier(): (undefined | JSX.Element) {
+            if (!selectedWeek || !dateBounds[0] || !dateBounds[1]) return;
+
+            const prevDate = new Date(selectedWeek.getTime());
+            prevDate.setDate(prevDate.getDate() - 7);
+            const nextDate = new Date(selectedWeek.getTime());
+            nextDate.setDate(nextDate.getDate() + 7);
+            const endWeek = new Date(selectedWeek.getTime());
+            endWeek.setDate(endWeek.getDate() + 6);
+
+            return (
+                <div className="flex items-center">
+                    <IconButton size="small" disabled={prevDate < dateBounds[0]} onClick={() => setSelectedWeek(prevDate)}>
+                        <AiOutlineLeft />
+                    </IconButton>
+                    <p>{selectedWeek.toDateString().substring(4)} - {endWeek.toDateString().substring(4)}</p>
+                    <IconButton size="small" disabled={nextDate > dateBounds[1]} onClick={() => setSelectedWeek(nextDate)}>
+                        <AiOutlineRight />
+                    </IconButton>
+                </div>
+            );
+        }
+
         // Render semester selection
         return (
             <div className="flex items-center">
@@ -263,26 +311,35 @@ export function SemesterCalendar() {
                 <div className="mr-6">
                     {yearTextField()}
                 </div>
+                <div className="mr-6">
+                    {weekModifier()}
+                </div>
             </div>
         );
     }
 
     function renderCalendar(): JSX.Element {
-        // Generate column of time markers
-        const timeBlocks = operatingHours.map((hour, i) => (
-            <div className="blockStyle">
-                {hour}
-            </div>
-        ));
+        // Print error if not displayable
+        if (!semester) return (<div className="text-center">Semester not found</div>);
+        if (!coursesByDay || !selectedWeek || !timeBounds[0] || !timeBounds[1]) return (<div className="text-center">No courses selected for this semester</div>);
 
-        // Generate grid for each day
-        const calendarGrid = operatingHours.map((hour, i) => (
-            <div className="MajorGridStyle" style={{top: (60*i)+"px"}}>
-                <div className="MinorGridStyle" style={{top: "15px"}} />
-                <div className="MinorGridStyle" style={{top: "30px"}} />
-                <div className="MinorGridStyle" style={{top: "45px"}} />
-            </div>
-        ));
+        // Generate column of time markers and background grid
+        var timeBlocks: JSX.Element[] = []
+        var calendarGrid: JSX.Element[] = [];
+        for (var i: number = timeBounds[0].getHours(); i < timeBounds[1].getHours(); i++) {
+            timeBlocks.push(
+                <div className="blockStyle">
+                    {(i%12+1) + (i < 12 ? "AM" : "PM")}
+                </div>
+            );
+            calendarGrid.push(
+                <div className="MajorGridStyle" style={{top: (60*(i-timeBounds[0].getHours()))+"px"}}>
+                    <div className="MinorGridStyle" style={{top: "15px"}} />
+                    <div className="MinorGridStyle" style={{top: "30px"}} />
+                    <div className="MinorGridStyle" style={{top: "45px"}} />
+                </div>
+            );
+        }
 
         const columns = days.map((day, i) => (
             <div style={colWidth}>

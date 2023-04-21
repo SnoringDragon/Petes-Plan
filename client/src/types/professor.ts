@@ -20,6 +20,15 @@ export interface ApiProfessor {
     //classes: Classes
     rateMyProfIds: string[],
     nickname?: string
+    reviews: {
+        email: string,
+        dateSubmitted: string,
+        course: string
+        attendanceReq: boolean,
+        rating: number,
+        comment: string,
+        grade: string
+    }[]
 }
 
 

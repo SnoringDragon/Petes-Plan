@@ -8,7 +8,7 @@ import Button from '@material-ui/core/Button';
 import React, { useEffect, useMemo, useRef } from 'react';
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { FaSearch } from 'react-icons/fa';
+import {FaChevronDown, FaMinus, FaPlus, FaSearch} from 'react-icons/fa';
 import { ApiCourse, Meeting } from '../../types/course-requirements';
 import CourseService from '../../services/CourseService';
 import { Degree } from '../../types/degree';
@@ -57,6 +57,7 @@ export function FuturePlan() {
     const [degreePlan, setDegreePlan] = useState<DegreePlan | null>(null);
     const [error, setError] = useState('');
     const [section, setSection] = useState<Section[][][]>([]);
+    const [hiddenSections, setHiddenSections] = useState<Set<string>>(new Set());
 
     const [createNewPlan, setCreateNewPlan] = useState(false);
 
@@ -80,6 +81,8 @@ export function FuturePlan() {
     const [selectedGpaSemester, setSelectedGpaSemester] = useState('');
 
     const [degreeSearch, setDegreeSearch] = useState('');
+    
+    const [recs, setRecs] = useState<{uniqueID: string, courseID: string, subject: string}[] | null>(null);
 
     const [courseModifications, setCourseModifications] = useState<{
         add: UserCourse[],
@@ -96,6 +99,10 @@ export function FuturePlan() {
         CourseService.searchCourse(searchRef.current.value)
             .then(res => setCourses(res));
     };
+    
+    const recc = () => {
+        //DegreePlanService.getRecommendations(degreePlan!._id).then(res =>{setRecs(res.recs)});
+    }
 
     const save = async () => {
         try {
@@ -126,6 +133,7 @@ export function FuturePlan() {
             if (res.degreePlans.length)
                 setDegreePlan(res.degreePlans[0]);
         });
+        
         SemesterService.getSemesters().then(res => setSemesters(res));
         GPAService.getCumulativeGPA().then(res => setCumulativeGpa(res));
     }, []);
@@ -336,56 +344,79 @@ export function FuturePlan() {
                 <hr className="w-full mt-6 mb-3 bg-slate-900" />
 
                 {section.flat().length ? <div className="flex flex-col grow basis-0">
-                    <div className="text-lg italic mb-2">Choose a course group, and pick one section of each schedule type from each group</div>
+                    <div className="text-lg italic mb-2 flex items-center">
+                        Choose a course group, and pick one section of each schedule type from each group
+                        <Button className="ml-auto" onClick={() => {
+                            if (hiddenSections.size)
+                                setHiddenSections(new Set());
+                            else
+                                setHiddenSections(new Set(section.flat(2).map(s => s._id)));
+                        }}>{hiddenSections.size ? 'Show' : 'Hide'} All</Button>
+                    </div>
 
                     <div className="overflow-y-auto flex flex-col grow basis-0">
                         {section.filter(groups => {
                             if (!instructorFilter) return true;
                             const instructors = groups.flat(2).flatMap(s => s.meetings.flatMap(m => m.instructors));
                             return instructors.find(inst => inst._id === instructorFilter);
-                        }).map((group, i) => <div key={i} className="px-4 py-3 mb-3 bg-gray-300 bg-opacity-25">
-                            <div className="text-xl mb-1.5">Group {i + 1}</div>
-                            <div>
-                                {[...group].sort((a, b) => SCHEDULE_ORDER[a[0].scheduleType] - SCHEDULE_ORDER[b[0].scheduleType]).map((sections, i) => <div key={i} className="px-3 py-2 bg-gray-300 bg-opacity-25 mb-2 rounded-md">
-                                    <div className="text-lg mb-1"><Tooltip arrow title={SCHEDULE_TYPES[sections[0].scheduleType as keyof typeof SCHEDULE_TYPES]}>
-                                        <span>{sections[0].scheduleType}</span>
-                                    </Tooltip> Schedule Type</div>
-                                    {sections.map((section, i) => <Tooltip arrow placement="top" enterDelay={250}
-                                                                           title={<div className="pointer-events-none -mx-6 -mb-12 -mt-20 scale-90 scale-y-75">{previewSectionCalendar}</div>}
-                                                                           classes={{ tooltip: 'max-w-2xl overflow-hidden' }}>
-                                        <div key={i} className={`p-1 border-gray-400 border rounded mb-1 cursor-pointer
+                        }).map((group, i) => <div key={i} className="mb-2">
+                            <Accordion defaultExpanded={true}>
+                                <AccordionSummary expandIcon={<FaChevronDown />}>
+                                    <div className="text-xl">Group {i + 1}</div>
+                                </AccordionSummary>
+                                <AccordionDetails className="flex flex-col">
+                                    {[...group].sort((a, b) => SCHEDULE_ORDER[a[0].scheduleType] - SCHEDULE_ORDER[b[0].scheduleType]).map((sections, i) => <div key={i} className="px-3 py-2 bg-gray-300 bg-opacity-25 mb-2 rounded-md">
+                                        <div className="text-lg mb-1"><Tooltip arrow title={SCHEDULE_TYPES[sections[0].scheduleType as keyof typeof SCHEDULE_TYPES]}>
+                                            <span>{sections[0].scheduleType}</span>
+                                        </Tooltip> Schedule Type</div>
+                                        {sections.map((section, i) => <Tooltip arrow placement="top" enterDelay={250}
+                                                                               title={<div className="pointer-events-none -mx-6 -mb-12 -mt-20 scale-90 scale-y-75">{previewSectionCalendar}</div>}
+                                                                               classes={{ tooltip: 'max-w-2xl overflow-hidden' }}>
+                                            <div key={i} className={`p-1 border-gray-400 border rounded mb-1 cursor-pointer
                                             ${selectedSectionSet.has(section._id) ? 'bg-pink-400 bg-opacity-25' : ''}`}
-                                            onClick={() => {
-                                                if (selectedSectionSet.has(section._id))
-                                                    setSelectedSection(selectedSection!.filter(s => s._id !== section._id))
-                                                else
-                                                    setSelectedSection([...(selectedSection ?? []).filter(s => s.scheduleType !== section.scheduleType), section])
-                                            }} onMouseEnter={() => setHoveringSection(section)} onMouseLeave={() => setHoveringSection(null)}>
-                                            <div>{section.name} (CRN {section.crn}), {section.minCredits === section.maxCredits ?
-                                                `${section.minCredits} Credits` : `${section.minCredits}-${section.maxCredits} Credits`}</div>
-                                            <div className="ml-2 grid" style={{
-                                                gridTemplateColumns: 'minmax(0, .5fr) minmax(0, .5fr) minmax(0, 1fr) minmax(0, .75fr) minmax(0, 1fr)'
-                                            }}>
-                                                <div className="px-1 py-0.5 border border-gray-400 font-semibold">Time</div>
-                                                <div className="px-1 py-0.5 border border-gray-400 font-semibold">Days</div>
-                                                <div className="px-1 py-0.5 border border-gray-400 font-semibold">Location</div>
-                                                <div className="px-1 py-0.5 border border-gray-400 font-semibold">Date Range</div>
-                                                <div className="px-1 py-0.5 border border-gray-400 font-semibold">Instructors</div>
+                                                 onClick={() => {
+                                                     if (selectedSectionSet.has(section._id))
+                                                         setSelectedSection(selectedSection!.filter(s => s._id !== section._id))
+                                                     else
+                                                         setSelectedSection([...(selectedSection ?? []).filter(s => s.scheduleType !== section.scheduleType), section])
+                                                 }} onMouseEnter={() => setHoveringSection(section)} onMouseLeave={() => setHoveringSection(null)}>
+                                                <div className="flex items-center">{section.name} (CRN {section.crn}), {section.minCredits === section.maxCredits ?
+                                                    `${section.minCredits} Credits` : `${section.minCredits}-${section.maxCredits} Credits`}
 
-                                                {section.meetings.map((meeting, i) => <React.Fragment key={i}>
-                                                    <div className="px-1 py-0.5 border border-gray-400">{meeting.startTime && meeting.endTime ? `${meeting.startTime}-${meeting.endTime}` : 'TBA'}</div>
-                                                    <div className="px-1 py-0.5 border border-gray-400">{meeting.days?.length ? meeting.days.join(', ') : 'TBA'}</div>
-                                                    <div className="px-1 py-0.5 border border-gray-400">{meeting.location ?? 'TBA'}</div>
-                                                    <div className="px-1 py-0.5 border border-gray-400">{meeting.startDate && meeting.endDate ? `${meeting.startDate}-${meeting.endDate}` : 'TBA'}</div>
-                                                    <div className="px-1 py-0.5 border border-gray-400">{meeting.instructors.length ? meeting.instructors.map((ins, i) => <Link to={'/'}>
-                                                        {ins.firstname} {ins.lastname}
-                                                    </Link>) : 'TBA'}</div>
-                                                </React.Fragment>)}
+                                                    <div className="ml-auto" onClick={(ev) => {
+                                                        if (hiddenSections.has(section._id))
+                                                            setHiddenSections(new Set([...hiddenSections].filter(s => s !== section._id)))
+                                                        else
+                                                            setHiddenSections(new Set([...hiddenSections, section._id]));
+                                                        ev.stopPropagation();
+                                                    }}>
+                                                        {hiddenSections.has(section._id) ? <FaPlus /> : <FaMinus />}
+                                                    </div>
+                                                </div>
+                                                {!hiddenSections.has(section._id) && <div className="ml-2 grid" style={{
+                                                    gridTemplateColumns: 'minmax(0, .5fr) minmax(0, .5fr) minmax(0, 1fr) minmax(0, .75fr) minmax(0, 1fr)'
+                                                }}>
+                                                    <div className="px-1 py-0.5 border border-gray-400 font-semibold">Time</div>
+                                                    <div className="px-1 py-0.5 border border-gray-400 font-semibold">Days</div>
+                                                    <div className="px-1 py-0.5 border border-gray-400 font-semibold">Location</div>
+                                                    <div className="px-1 py-0.5 border border-gray-400 font-semibold">Date Range</div>
+                                                    <div className="px-1 py-0.5 border border-gray-400 font-semibold">Instructors</div>
+
+                                                    {section.meetings.map((meeting, i) => <React.Fragment key={i}>
+                                                        <div className="px-1 py-0.5 border border-gray-400">{meeting.startTime && meeting.endTime ? `${meeting.startTime}-${meeting.endTime}` : 'TBA'}</div>
+                                                        <div className="px-1 py-0.5 border border-gray-400">{meeting.days?.length ? meeting.days.join(', ') : 'TBA'}</div>
+                                                        <div className="px-1 py-0.5 border border-gray-400">{meeting.location ?? 'TBA'}</div>
+                                                        <div className="px-1 py-0.5 border border-gray-400">{meeting.startDate && meeting.endDate ? `${meeting.startDate}-${meeting.endDate}` : 'TBA'}</div>
+                                                        <div className="px-1 py-0.5 border border-gray-400">{meeting.instructors.length ? meeting.instructors.map((ins, i) => <Link to={'/'}>
+                                                            {ins.firstname} {ins.lastname}
+                                                        </Link>) : 'TBA'}</div>
+                                                    </React.Fragment>)}
+                                                </div>}
                                             </div>
-                                        </div>
-                                    </Tooltip>)}
-                                </div>)}
-                            </div>
+                                        </Tooltip>)}
+                                    </div>)}
+                                </AccordionDetails>
+                            </Accordion>
                         </div>)}
                     </div>
                 </div> : <div>No sections available</div>}
@@ -460,7 +491,25 @@ export function FuturePlan() {
                     </div>
 
                 </div>
-                <div className="bg-white rounded px-4 pb-3 pt-4 text-black w-full">
+
+                <div className="bg-white rounded px-4 pb-3 pt-4 text-black w-full overflow-auto h-96">
+                <div className="text-2xl">Course Recommendations</div>
+
+                <Button variant="contained" color="secondary" onClick={recc}>Generate Reccomendations</Button>
+                
+                {recs?.map((rec, i) => (<div
+                        className="w-full py-3 px-4 border-y flex items-center" key={i}>
+                        <Link to={`/course_description?subject=${rec.subject}&courseID=${rec.courseID}`} className="mr-auto">{rec.subject} {rec.courseID}</Link>
+                        <Button color="inherit" onClick={() => {
+                            // setSemCourse(rec);
+                            // setSem(true);
+                            // setInstructorFilter('');
+                            // setSection([]);
+                        }}>Add</Button>
+                    </div>))}
+                </div>
+
+                <div className="bg-white rounded px-4 pb-3 mt-4 pt-4 text-black w-full">
                     <div className="text-2xl">Search Courses</div>
                     <div className="flex items-center">
                         <TextField
