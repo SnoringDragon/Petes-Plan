@@ -183,7 +183,22 @@ export function GradeCalc() {
                             if (!assignmentAddDenominatorRef.current[i]) assignmentAddDenominatorRef.current[i] = [];
                             assignmentAddDenominatorRef.current[i][j] = ref;
                         }} InputProps={{ className: 'text-inherit' }}></TextField>
-                        <Button variant="outlined" className="ml-auto" color="inherit" onClick={() => {
+                        <Button variant="outlined" className="ml-auto" color="inherit" 
+                        onKeyPress={(e) => {
+                            if (e.key === "Enter") {
+                                const name = assignmentAddRef.current[i][j].value;
+                            const numerator = parseFloat(assignmentAddNumeratorRef.current[i][j].value);
+                            const denominator = parseFloat(assignmentAddDenominatorRef.current[i][j].value);
+
+                            if (numerator < 0 || denominator < 0)
+                                return alert('Invalid grade entered')
+
+                            const g = [...grades];
+                            g[i].course.grades[j].assignments.push({ name, numerator, denominator });
+                            setGrades(g);
+                            }
+                        }} 
+                        onClick={() => {
                             const name = assignmentAddRef.current[i][j].value;
                             const numerator = parseFloat(assignmentAddNumeratorRef.current[i][j].value);
                             const denominator = parseFloat(assignmentAddDenominatorRef.current[i][j].value);
@@ -229,7 +244,19 @@ export function GradeCalc() {
         </div>)}
         <div className="flex p-4 bg-gray-500 rounded-md bg-opacity-25 items-center text-white">
             <span className="text-xl mr-4">Add course:</span>
-            <TextField className="text-white mr-4" inputRef={courseRef} InputProps={{ className: 'text-inherit' }}></TextField>
+            <TextField className="text-white mr-4" inputRef={courseRef} InputProps={{ className: 'text-inherit' }}
+            onKeyPress={(e) => {
+                if (e.key === "Enter") {
+                    const [subject, courseID] = courseRef.current.value.trim().toUpperCase().split(' ');
+                setGrades([...grades, {
+                    course: {
+                        subject,
+                        courseID,
+                        grades: []
+                    }
+                }])
+                }
+            }} ></TextField>
             <Button className="ml-auto" variant="outlined" color="inherit" onClick={() => {
                 const [subject, courseID] = courseRef.current.value.trim().toUpperCase().split(' ');
                 setGrades([...grades, {
