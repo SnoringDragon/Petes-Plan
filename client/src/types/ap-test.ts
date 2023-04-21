@@ -7,7 +7,8 @@ export type ApiAPTest = {
             courseID: string,
             subject: string
         }[]
-    }[]
+    }[],
+    type: string
 };
 
 export type ApiUserAPTest = {
