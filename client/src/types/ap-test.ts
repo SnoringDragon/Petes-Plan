@@ -2,7 +2,7 @@ export type ApiAPTest = {
     _id: string,
     name: string,
     credits: {
-        score: 1 | 2 | 3 | 4 | 5,
+        score: string,
         courses: {
             courseID: string,
             subject: string
@@ -12,5 +12,5 @@ export type ApiAPTest = {
 
 export type ApiUserAPTest = {
     test: ApiAPTest,
-    score: 1 | 2 | 3 | 4 | 5
+    score: string
 };
