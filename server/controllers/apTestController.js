@@ -16,7 +16,7 @@ module.exports.modifyUserApTest = async (req, res) => {
 
     // if (req.body.some(c => ![1,2,3,4,5].includes(c?.score)))
     //     return res.status(400).json({ message: 'unexpected score' });
-
+    
     if (req.body.some(c => {
         try {
             // ensure correct object id
@@ -42,23 +42,26 @@ module.exports.modifyUserApTest = async (req, res) => {
 
     req.body.forEach(c => {
         const test = tests.find(t => t._id.toString() === c.test);
-        const testCreditCourse = test?.credits.find(o => o.score === c.score);
-
-        if (!test || !testCreditCourse)
+        if (!test) {
             return;
-
+        }
         const testCourses = test.credits.flatMap(c => c.courses);
+        const testCreditCourse = test?.credits.find(o => o.score === c.score);
         req.user.completedCourses = [...req.user.completedCourses.filter(course => {
-            if (course.source !== 'ap') return true;
+            if (course.source !== test.type) return true;
             return !testCourses.some(testCourse => course.courseID === testCourse.courseID
                 && course.subject === testCourse.subject);
-        }), ...testCreditCourse.courses.map(c => ({
+        }) ]
+        if (!test || !testCreditCourse)
+            return;
+        req.user.completedCourses = [...req.user.completedCourses,
+            ...testCreditCourse.courses.map(c => ({
             courseID: c.courseID,
             subject: c.subject,
             grade: 'P',
             year: new Date().getFullYear(),
             semester: 'Fall',
-            source: 'ap'
+            source: test.type
         }))];
     });
 

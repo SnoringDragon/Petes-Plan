@@ -63,17 +63,13 @@ async function getClepData() {
     } else {
         temp.push([allScores[i], allCourses[i]])
         uniqueCLEP.set(allExams[i], temp);
-    }
-    uniqueCLEP.forEach(saveData)
+    } 
     // BIOL GENERAL: [ [55+, BIOL 11000], [70+, [BIOL 11000, 11100]] ]
     //
   }
-  saveData(uniqueCLEP)
-//   console.log(final[4], final[5])
+  uniqueCLEP.forEach(saveData)
 }
-// function saveData() {
 
-// }
 
 function returnCourses(value) {
     courses = []
@@ -85,9 +81,10 @@ function returnCourses(value) {
         })
     } else if (typeof value === "object") {
         for (let i = 0; i < value.length; i++) {
+            temp = value[0].split(" ");
             courses.push({
-                course_id: value[i][1],
-                subject: value[i][0]
+                course_id: temp[1],
+                subject: temp[0]
             })
         }
     }
@@ -102,8 +99,10 @@ async function saveData(value, key, map) {
             courses: returnCourses(value[i][1])
         })
     }
+    console.log(credits)
     let CLEP = await APTest.create({
         name: key,
+        type: "clep",
         credits: credits
     }); 
 } 
