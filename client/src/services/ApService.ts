@@ -10,7 +10,7 @@ class ApService extends Api {
         return this.get<ApiUserAPTest[]>('/api/ap-tests/');
     }
 
-    modifyUserApTests(body: { score: string, test: string }[]) {
+    modifyUserApTests(body: { score: string | null, test: string }[]) {
         return this.post('/api/ap-tests', body);
     }
 }

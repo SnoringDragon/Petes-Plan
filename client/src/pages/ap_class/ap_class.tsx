@@ -24,8 +24,10 @@ export function AP_Class() {
             })
     }, []);
 
-    const setSelected = (apTest: ApiAPTest, score: string) => {
+    const setSelected = (apTest: ApiAPTest, score: string | null) => {
         // remove this test with different scores
+        if (userApTests.find(test => test.test._id === apTest._id && test.score === score))
+            score = null;
         const newTests = userApTests.filter(test => !(test.test._id === apTest._id && test.score !== score));
         setUserApTests([...newTests, {
             test: apTest,
