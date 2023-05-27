@@ -2,6 +2,13 @@
 ### CS 307 - Software Engineering
 ### Creators: Cole, Shivani, Chloe, Patricia, and Anushka
 
+## Description
+This project was created for CS 30700: Software Engineering at Purdue University.
+
+The purpose of the project is to compile many of the resources students use for course planning into a single application that streamlines the process, making it easier and faster to create a degree plan and to modify it as you go.
+
+The project is now being continued independently [here](https://github.com/SnoringDragon/Petes-Plan).
+
 ## Running
 Install [`node.js`](https://nodejs.org/en/), and optionally [`docker`](https://www.docker.com/)
 
