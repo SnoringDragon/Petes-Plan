@@ -1,15 +1,14 @@
 # Petes-Plan
 
+## Description
+The purpose of the project is to compile many of the resources students use for course planning into a single application that streamlines the process, making it easier and faster to create a degree plan and to modify it as you go.
+
 ## Origin
 This project was originally created for CS 30700: Software Engineering at Purdue University.
 
 The original version submitted for class can be found [here](https://github.com/SnoringDragon/CS307-Petes-Plan).
 
 The project is now being continued independently as a personal project which I hope to release publicly when it is ready for consumers.
-
-## Description
-
-The purpose of the project is to compile many of the resources students use for course planning into a single application that streamlines the process, making it easier and faster to create a degree plan and to modify it as you go.
 
 ## Running
 Install [`node.js`](https://nodejs.org/en/), and optionally [`docker`](https://www.docker.com/)
