@@ -206,14 +206,14 @@ export function SemesterCalendar() {
         // Render degree plan select
         function degreePlanSelect(): (undefined | JSX.Element) {
             return (
-                <FormControl>
+                <FormControl variant="standard">
                     <InputLabel id="degree-plan-select">Degree Plan</InputLabel>
                     <Select
+                        variant="standard"
                         id="outlined-input"
                         labelId="degree-plan-select"
                         value={degreePlan}
-                        onChange={e => setDegreePlan(e.target.value as number)}
-                    >
+                        onChange={e => setDegreePlan(e.target.value as number)}>
                         {degreePlans.map((plan, i) => (<MenuItem value={i}>{plan.name}</MenuItem>))}
                     </Select>
                 </FormControl>
@@ -223,28 +223,28 @@ export function SemesterCalendar() {
         // Render semester select with error if semester is not found
         function semesterSelect(): (undefined | JSX.Element) {
             if (semester) return (
-                <FormControl>
+                <FormControl variant="standard">
                     <InputLabel id="semester-select">Semester</InputLabel>
                     <Select
+                        variant="standard"
                         id="outlined-input"
                         labelId="semester-select"
                         value={selectedSem}
-                        onChange={e => {setSem(e.target.value as string);}}
-                    >
+                        onChange={e => {setSem(e.target.value as string);}}>
                         {semesterOptions}
                     </Select>
                 </FormControl>
             );
             else return (
-                <FormControl>
+                <FormControl variant="standard">
                     <InputLabel error id="semester-select">Semester</InputLabel>
                     <Select
+                        variant="standard"
                         error
                         id="outlined-input"
                         labelId="semester-select"
                         value={selectedSem}
-                        onChange={e => {setSem(e.target.value as string);}}
-                    >
+                        onChange={e => {setSem(e.target.value as string);}}>
                         {semesterOptions}
                     </Select>
                 </FormControl>
@@ -255,24 +255,24 @@ export function SemesterCalendar() {
         function yearTextField(): (undefined | JSX.Element) {
             if (semester) return (
                 <TextField
+                    variant="standard"
                     id="year"
                     style={{ width: 60 }}
                     type="number"
                     label="Year"
                     value={selectedYear}
-                    onChange={e => {setYear(Number(e.target.value));}}
-                />
+                    onChange={e => {setYear(Number(e.target.value));}} />
             );
             else return (
                 <TextField
+                    variant="standard"
                     error
                     id="year"
                     style={{ width: 60 }}
                     type="number"
                     label="Year"
                     value={selectedYear}
-                    onChange={e => {setYear(Number(e.target.value));}}
-                />
+                    onChange={e => {setYear(Number(e.target.value));}} />
             );
         }
 

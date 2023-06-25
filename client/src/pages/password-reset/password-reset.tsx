@@ -34,37 +34,39 @@ export function PasswordReset() {
     };
 
     if (!email || !token)
-        return (<div className="w-full h-full flex items-center justify-center">
-            <Card className="-mt-16">
-                <CardHeader title="Enter Your Email: " className="text-center bg-zinc-800 text-white" />
-                <CardContent>
-                    <div className="p-4">
-                        <TextField
-                            fullWidth
-                            id="email"
-                            type="email"
-                            label="Email"
-                            placeholder="Email"
-                            margin="normal"
-                            inputRef={emailRef}
-                        />
-                    </div>
-                    {
-                        error && <div className="mt-4 text-red-500">Error: {error}</div>
-                    }
-                </CardContent>
-                <CardActions>
-                    <Button
-                        variant="contained"
-                        size="large"
-                        color="secondary"
-                        onClick={requestReset}
-                        className="w-full">
-                        Send
-                    </Button>
-                </CardActions>
-            </Card>
-        </div>);
+        return (
+            <div className="w-full h-full flex items-center justify-center">
+                <Card className="-mt-16">
+                    <CardHeader title="Enter Your Email: " className="text-center bg-zinc-800 text-white" />
+                    <CardContent>
+                        <div className="p-4">
+                            <TextField
+                                variant="standard"
+                                fullWidth
+                                id="email"
+                                type="email"
+                                label="Email"
+                                placeholder="Email"
+                                margin="normal"
+                                inputRef={emailRef} />
+                        </div>
+                        {
+                            error && <div className="mt-4 text-red-500">Error: {error}</div>
+                        }
+                    </CardContent>
+                    <CardActions>
+                        <Button
+                            variant="contained"
+                            size="large"
+                            color="secondary"
+                            onClick={requestReset}
+                            className="w-full">
+                            Send
+                        </Button>
+                    </CardActions>
+                </Card>
+            </div>
+        );
 
     const passwordRef = useRef({value: ''});
     const [isSuccess, setSuccess] = useState(false);
@@ -84,38 +86,40 @@ export function PasswordReset() {
             .finally(() => setLoading(false));
     };
 
-    return (<div className="w-full h-full flex items-center justify-center">
-        <Card className="-mt-16">
-            <CardHeader title="Enter Your New Password: " className="text-center bg-zinc-800 text-white" />
-            <CardContent>
-                <div className="p-4">
-                    <TextField
-                        fullWidth
-                        id="password"
-                        type="password"
-                        label="Password"
-                        placeholder="Password"
-                        margin="normal"
-                        inputRef={passwordRef}
-                    />
-                </div>
-                {
-                    error && <div className="mt-4 text-red-500">Error: {error}</div>
-                }
-                {
-                    isSuccess && <div className="mt-4">Success! Navigating to login...</div>
-                }
-            </CardContent>
-            <CardActions>
-                <Button
-                    variant="contained"
-                    size="large"
-                    color="secondary"
-                    onClick={resetPassword}
-                    className="w-full">
-                    Send
-                </Button>
-            </CardActions>
-        </Card>
-    </div>);
+    return (
+        <div className="w-full h-full flex items-center justify-center">
+            <Card className="-mt-16">
+                <CardHeader title="Enter Your New Password: " className="text-center bg-zinc-800 text-white" />
+                <CardContent>
+                    <div className="p-4">
+                        <TextField
+                            variant="standard"
+                            fullWidth
+                            id="password"
+                            type="password"
+                            label="Password"
+                            placeholder="Password"
+                            margin="normal"
+                            inputRef={passwordRef} />
+                    </div>
+                    {
+                        error && <div className="mt-4 text-red-500">Error: {error}</div>
+                    }
+                    {
+                        isSuccess && <div className="mt-4">Success! Navigating to login...</div>
+                    }
+                </CardContent>
+                <CardActions>
+                    <Button
+                        variant="contained"
+                        size="large"
+                        color="secondary"
+                        onClick={resetPassword}
+                        className="w-full">
+                        Send
+                    </Button>
+                </CardActions>
+            </Card>
+        </div>
+    );
 }

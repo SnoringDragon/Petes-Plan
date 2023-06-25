@@ -72,65 +72,67 @@ export function Modify_Profile_Page() {
             })
     };
 
-    return (<Layout>
-        <Dialog open={open}
-            onClose={() => setOpen(false)}>
-            <DialogTitle>{dialog.title}</DialogTitle>
-            <DialogContent>
-                <DialogContentText>
-                    {dialog.text}
-                </DialogContentText>
-            </DialogContent>
-            { dialog.buttons && <DialogActions>
-                <Button color="secondary" onClick={() => setOpen(false)} autoFocus>Cancel</Button>
-                <Button onClick={deleteAccount}>
-                    OK
-                </Button>
-            </DialogActions>}
-        </Dialog>
-        
-        <div className="w-full h-full flex items-center justify-center">
-        <Card className="-mt-16">
-            <CardHeader title="Modify Profile" className="text-center bg-zinc-800 text-white" />
-            <CardContent>
-                <div className="p-4">
-                    <TextField
-                        fullWidth
-                        id="name"
-                        type="name"
-                        label={userData?.name}
-                        placeholder="name"
-                        margin="normal"
-                        inputRef={nameRef}
-                    />
-                    <p></p>
-                    <text><u><br />Email: </u> {userData?.email}</text>
-                    <p></p>
-                    <Link to='/password-reset'><u><br />To change your password, click here.</u></Link >
+    return (
+        <Layout>
+            <Dialog open={open}
+                onClose={() => setOpen(false)}>
+                <DialogTitle>{dialog.title}</DialogTitle>
+                <DialogContent>
+                    <DialogContentText>
+                        {dialog.text}
+                    </DialogContentText>
+                </DialogContent>
+                { dialog.buttons && <DialogActions>
+                    <Button color="secondary" onClick={() => setOpen(false)} autoFocus>Cancel</Button>
+                    <Button onClick={deleteAccount}>
+                        OK
+                    </Button>
+                </DialogActions>}
+            </Dialog>
+            
+            <div className="w-full h-full flex items-center justify-center">
+            <Card className="-mt-16">
+                <CardHeader title="Modify Profile" className="text-center bg-zinc-800 text-white" />
+                <CardContent>
+                    <div className="p-4">
+                        <TextField
+                            variant="standard"
+                            fullWidth
+                            id="name"
+                            type="name"
+                            label={userData?.name}
+                            placeholder="name"
+                            margin="normal"
+                            inputRef={nameRef} />
+                        <p></p>
+                        <text><u><br />Email: </u> {userData?.email}</text>
+                        <p></p>
+                        <Link to='/password-reset'><u><br />To change your password, click here.</u></Link >
 
-                    {error && <div className="mt-4 text-red-500">Error: {error}</div>}
-                </div>
-            </CardContent>
-            <CardActions>
-                <Button
-                    variant="contained"
-                    size="large"
-                    color="secondary"
-                    className="w-half"
-                    disabled={isLoading}
-                    onClick={update}>
-                    Apply Changes
-                </Button>
-                <Button
-                    variant="contained"
-                    size="large"
-                    color="secondary"
-                    className="w-half"
-                    disabled={isLoading}
-                    onClick={() => setOpen(true)}>
-                    Delete Account
-                </Button>
-            </CardActions>
-        </Card>
-    </div></Layout>)
+                        {error && <div className="mt-4 text-red-500">Error: {error}</div>}
+                    </div>
+                </CardContent>
+                <CardActions>
+                    <Button
+                        variant="contained"
+                        size="large"
+                        color="secondary"
+                        className="w-half"
+                        disabled={isLoading}
+                        onClick={update}>
+                        Apply Changes
+                    </Button>
+                    <Button
+                        variant="contained"
+                        size="large"
+                        color="secondary"
+                        className="w-half"
+                        disabled={isLoading}
+                        onClick={() => setOpen(true)}>
+                        Delete Account
+                    </Button>
+                </CardActions>
+            </Card>
+        </div></Layout>
+    );
 }

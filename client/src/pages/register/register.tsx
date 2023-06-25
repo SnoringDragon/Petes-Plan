@@ -43,70 +43,72 @@ export function Register() {
         UserService.clearTokens();
     }, []);
 
-    return (<div className="w-full h-full flex items-center justify-center">
-        <Card className="-mt-16">
-            <CardHeader title="Register" className="text-center bg-zinc-800 text-white" />
-            <CardContent>
-                <div className="p-4">
-                    <TextField
-                        fullWidth
-                        id="name"
-                        type="name"
-                        label="Name"
-                        placeholder="Name"
-                        margin="normal"
-                        inputRef={nameRef}
-                    />
-                    <TextField
-                        fullWidth
-                        id="email"
-                        type="email"
-                        label="Email"
-                        placeholder="Email"
-                        margin="normal"
-                        inputRef={emailRef}
-                    />
-                    <TextField
-                        fullWidth
-                        id="password"
-                        type="password"
-                        label="Password"
-                        placeholder="Password"
-                        margin="normal"
-                        inputRef={passwordRef}
-                    />
-                    <TextField
-                        fullWidth
-                        id="confirm password"
-                        type="password"
-                        label="Confirm Password"
-                        placeholder="Confirm Password"
-                        margin="normal"
-                        inputRef={confirmPasswordRef}
-                    />
+    return (
+        <div className="w-full h-full flex items-center justify-center">
+            <Card className="-mt-16">
+                <CardHeader title="Register" className="text-center bg-zinc-800 text-white" />
+                <CardContent>
+                    <div className="p-4">
+                        <TextField
+                            variant="standard"
+                            fullWidth
+                            id="name"
+                            type="name"
+                            label="Name"
+                            placeholder="Name"
+                            margin="normal"
+                            inputRef={nameRef} />
+                        <TextField
+                            variant="standard"
+                            fullWidth
+                            id="email"
+                            type="email"
+                            label="Email"
+                            placeholder="Email"
+                            margin="normal"
+                            inputRef={emailRef} />
+                        <TextField
+                            variant="standard"
+                            fullWidth
+                            id="password"
+                            type="password"
+                            label="Password"
+                            placeholder="Password"
+                            margin="normal"
+                            inputRef={passwordRef} />
+                        <TextField
+                            variant="standard"
+                            fullWidth
+                            id="confirm password"
+                            type="password"
+                            label="Confirm Password"
+                            placeholder="Confirm Password"
+                            margin="normal"
+                            inputRef={confirmPasswordRef} />
 
-                    <div className="flex">
-                        <Link to="/password-reset" className="mr-auto">Forgot your password?</Link>
-                        <Link to="/login">Already have an account?</Link>
+                        <div className="flex">
+                            <Link to="/password-reset" className="mr-auto">Forgot your password?</Link>
+                            <Link to="/login">Already have an account?</Link>
+                        </div>
+
+                        {error && <div className="mt-4 text-red-500">Error: {error}</div>}
+                        {isSuccess && <div className="mt-4">
+                            Success! Check your email to verify.
+                        </div>}
                     </div>
-
-                    {error && <div className="mt-4 text-red-500">Error: {error}</div>}
-                    {isSuccess && <div className="mt-4">
-                        Success! Check your email to verify.
-                    </div>}
-                </div>
-            </CardContent>
-            <CardActions>
-                <Button
-                    variant="contained"
-                    size="large"
-                    color="secondary"
-                    className="w-full"
-                    disabled={isLoading}
-                    onClick={register}>
-                    Register
-                </Button>
-            </CardActions>
-        </Card>
-    </div>)
+                </CardContent>
+                <CardActions>
+                    <Button
+                        variant="contained"
+                        size="large"
+                        color="secondary"
+                        className="w-full"
+                        disabled={isLoading}
+                        onClick={register}>
+                        Register
+                    </Button>
+                </CardActions>
+            </Card>
+        </div>
+    );
 }

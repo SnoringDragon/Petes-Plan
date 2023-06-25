@@ -106,70 +106,80 @@ export function TotalDeg() {
 
 
     
-    return (<Layout>
-        <div className="grid grid-cols-3 gap-y-2 gap-x-3">
-            <div className="w-full h-full flex flex-col items-center justify-left">
-                <div className="bg-white rounded px-4 pb-3 pt-4 text-black w-full">
-                    <div className="text-2xl">Select Degree Plan</div>
-                    <Select fullWidth className="my-2" value={degreePlans.findIndex(p => p.name === degreePlan?.name)} onChange={ev => setDegreePlan(degreePlans[ev.target.value as number])}>
-                        {degreePlans.map((plan, i) => (<MenuItem key={i} value={i}>
-                            {plan.name}
-                        </MenuItem>))}
-                    </Select>
-                </div>
-                <Card className="mt-3">
-                        <CardHeader title="Completed Courses" className="text-center h-10 bg-zinc-800 text-white" />
-                        <CardContent>
-                            {userCourses.map((course, i) => (<div className="flex items-center mb-2" key={i}>
-                                <div className="mr-4">{course.subject} {course.courseID}: {course.semester} {course.year} : </div>
-                                <TextField value={course.grade}/>
-                                <div className="mx-2" />
-                            </div>))}
-                            {courseModifications.add.map((course, i) => (<div className="flex items-center mb-2" key={i}>
-                                <div className="mr-4">{course.subject} {course.courseID}:</div>
-                                <TextField value={course.grade} onChange={ev => {
-                                    const newAdditions = courseModifications.add.map(x => {
-                                        if (x === course)
-                                            return { ...x, grade: ev.target.value }
-                                        return x;
-                                    });
-                                    setCourseModifications({...courseModifications, add: newAdditions });
-                                }} />
-                            </div>))}
-                        </CardContent>
-                    </Card>
-                {degreePlan && <>
-                    <div className="bg-white rounded px-4 pb-3 pt-4 text-black w-full mt-3">
-                        <div className="text-2xl">Planned Courses</div>
-                        {degreePlan.courses.sort(
-                    function(a, b) {
-                        if(a.year < b.year) return -1;
-                        if(a.year > b.year) return 1;
-                        if(a.year == b.year && a.semester.toLowerCase() > b.semester.toLowerCase()) return 1;
-                        if(a.year == b.year && a.semester.toLowerCase() < b.semester.toLowerCase()) return -1;
-                        return 0;
-                    }).map((course, i) => (<div key={i} className="flex items-center py-2 border-b border-gray-300">
-                            <Link className="mr-auto" to={`/course_description?subject=${course.subject}&courseID=${course.courseID}`}>{course.subject} {course.courseID} : {course.semester} {course.year} </Link>
-                        </div>))}
-                        {courseModifications.add.map((course, i) => (<div key={i} className="flex items-center py-2 border-b border-gray-300">
-                            <Link className="mr-auto" to={`/course_description?subject=${course.subject}&courseID=${course.courseID}`}>{course.subject} {course.courseID}</Link>
-                            <Button variant="contained" color="secondary" onClick={() => {
-                                setCourseModifications({
-                                    ...courseModifications,
-                                    add: courseModifications.add.filter(c => c !== course)
-                                });
-                            }}>Delete</Button>
-                        </div>))}
-                        {(courseModifications.add.length || courseModifications.delete.length) ? <Button
-                            variant="contained"
-                            size="large"
-                            color="secondary"
-                            className="w-full h-8" onClick={save}>
-                            Save
-                        </Button> : null}
+    return (
+        <Layout>
+            <div className="grid grid-cols-3 gap-y-2 gap-x-3">
+                <div className="w-full h-full flex flex-col items-center justify-left">
+                    <div className="bg-white rounded px-4 pb-3 pt-4 text-black w-full">
+                        <div className="text-2xl">Select Degree Plan</div>
+                        <Select
+                            variant="standard"
+                            fullWidth
+                            className="my-2"
+                            value={degreePlans.findIndex(p => p.name === degreePlan?.name)}
+                            onChange={ev => setDegreePlan(degreePlans[ev.target.value as number])}>
+                            {degreePlans.map((plan, i) => (<MenuItem key={i} value={i}>
+                                {plan.name}
+                            </MenuItem>))}
+                        </Select>
                     </div>
-                </>}
+                    <Card className="mt-3">
+                            <CardHeader title="Completed Courses" className="text-center h-10 bg-zinc-800 text-white" />
+                            <CardContent>
+                                {userCourses.map((course, i) => (<div className="flex items-center mb-2" key={i}>
+                                    <div className="mr-4">{course.subject} {course.courseID}: {course.semester} {course.year} : </div>
+                                    <TextField variant="standard" value={course.grade} />
+                                    <div className="mx-2" />
+                                </div>))}
+                                {courseModifications.add.map((course, i) => (<div className="flex items-center mb-2" key={i}>
+                                    <div className="mr-4">{course.subject} {course.courseID}:</div>
+                                    <TextField
+                                        variant="standard"
+                                        value={course.grade}
+                                        onChange={ev => {
+                                            const newAdditions = courseModifications.add.map(x => {
+                                                if (x === course)
+                                                    return { ...x, grade: ev.target.value }
+                                                return x;
+                                            });
+                                            setCourseModifications({...courseModifications, add: newAdditions });
+                                        }} />
+                                </div>))}
+                            </CardContent>
+                        </Card>
+                    {degreePlan && <>
+                        <div className="bg-white rounded px-4 pb-3 pt-4 text-black w-full mt-3">
+                            <div className="text-2xl">Planned Courses</div>
+                            {degreePlan.courses.sort(
+                        function(a, b) {
+                            if(a.year < b.year) return -1;
+                            if(a.year > b.year) return 1;
+                            if(a.year == b.year && a.semester.toLowerCase() > b.semester.toLowerCase()) return 1;
+                            if(a.year == b.year && a.semester.toLowerCase() < b.semester.toLowerCase()) return -1;
+                            return 0;
+                        }).map((course, i) => (<div key={i} className="flex items-center py-2 border-b border-gray-300">
+                                <Link className="mr-auto" to={`/course_description?subject=${course.subject}&courseID=${course.courseID}`}>{course.subject} {course.courseID} : {course.semester} {course.year} </Link>
+                            </div>))}
+                            {courseModifications.add.map((course, i) => (<div key={i} className="flex items-center py-2 border-b border-gray-300">
+                                <Link className="mr-auto" to={`/course_description?subject=${course.subject}&courseID=${course.courseID}`}>{course.subject} {course.courseID}</Link>
+                                <Button variant="contained" color="secondary" onClick={() => {
+                                    setCourseModifications({
+                                        ...courseModifications,
+                                        add: courseModifications.add.filter(c => c !== course)
+                                    });
+                                }}>Delete</Button>
+                            </div>))}
+                            {(courseModifications.add.length || courseModifications.delete.length) ? <Button
+                                variant="contained"
+                                size="large"
+                                color="secondary"
+                                className="w-full h-8" onClick={save}>
+                                Save
+                            </Button> : null}
+                        </div>
+                    </>}
+                </div>
             </div>
-        </div>
-    </Layout>)
+        </Layout>
+    );
 }

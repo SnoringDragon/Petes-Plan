@@ -398,206 +398,197 @@ export function FuturePlan() {
         return '';
     }, [selectedSection, section])
 
-    return (<Layout>
-        <Dialog open={showWarning} onClose={() => setWarning(false)}>
-            <DialogTitle>The prerequisites for this course have not been fulfilled!</DialogTitle>    
-            <DialogActions>
-                <Button onClick={() => setWarning(false)}>Cancel</Button>
-                <Button onClick={() => {
-                   //setSemCourse(course!);
-                   setOverride(true);
-                   setWarning(false);
-                   setCourseModifications({...courseModifications,
-                        add: [...courseModifications.add, ...overrideCourse]
-                   });
-                   setOverrideCourse([]);
-                }}>Override</Button>
-            </DialogActions>
-        </Dialog>
+    return (
+        <Layout>
+            <Dialog open={showWarning} onClose={() => setWarning(false)}>
+                <DialogTitle>The prerequisites for this course have not been fulfilled!</DialogTitle>    
+                <DialogActions>
+                    <Button onClick={() => setWarning(false)}>Cancel</Button>
+                    <Button onClick={() => {
+                       //setSemCourse(course!);
+                       setOverride(true);
+                       setWarning(false);
+                       setCourseModifications({...courseModifications,
+                            add: [...courseModifications.add, ...overrideCourse]
+                       });
+                       setOverrideCourse([]);
+                    }}>Override</Button>
+                </DialogActions>
+            </Dialog>
 
-        <Dialog open={createNewPlan} onClose={() => setCreateNewPlan(false)}>
-            <DialogTitle>Enter Plan Name</DialogTitle>
-            <DialogContent>
-                <TextField
-                    autoFocus
-                    margin="dense"
-                    label="Name"
-                    fullWidth
-                    variant="standard"
-                    inputRef={nameRef}
-                />
-            </DialogContent>
-            <DialogActions>
-                <Button onClick={() => setCreateNewPlan(false)}>Cancel</Button>
-                <Button onClick={() => {
-                    DegreePlanService.createDegreePlan(nameRef.current.value)
-                        .then((newPlan) => {
-                            DegreePlanService.getPlans()
-                                .then(res => {
-                                    setDegreePlans(res.degreePlans);
-                                    setDegreePlan(res.degreePlans.find(p => p._id === newPlan.degreePlan._id)!)
-                                });
-                            setCreateNewPlan(false);
-                        })
-                        .catch(err => setError(err?.message ?? err))
+            <Dialog open={createNewPlan} onClose={() => setCreateNewPlan(false)}>
+                <DialogTitle>Enter Plan Name</DialogTitle>
+                <DialogContent>
+                    <TextField
+                        autoFocus
+                        margin="dense"
+                        label="Name"
+                        fullWidth
+                        variant="standard"
+                        inputRef={nameRef}
+                    />
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setCreateNewPlan(false)}>Cancel</Button>
+                    <Button onClick={() => {
+                        DegreePlanService.createDegreePlan(nameRef.current.value)
+                            .then((newPlan) => {
+                                DegreePlanService.getPlans()
+                                    .then(res => {
+                                        setDegreePlans(res.degreePlans);
+                                        setDegreePlan(res.degreePlans.find(p => p._id === newPlan.degreePlan._id)!)
+                                    });
+                                setCreateNewPlan(false);
+                            })
+                            .catch(err => setError(err?.message ?? err))
 
-                }}>Create</Button>
-            </DialogActions>
-        </Dialog>
+                    }}>Create</Button>
+                </DialogActions>
+            </Dialog>
 
-        <Modal open={createSem} onClose={() => setSem(false)}>
-            <div className="flex flex-col absolute left-1/2 top-1/2 w-3/4 h-3/4 bg-gray-200 rounded-md
-                -translate-x-1/2 -translate-y-1/2 p-6 text-slate-800">
-                <div className="text-2xl mb-2">Select Planned Semester</div>
-                <Select fullWidth
-                    value={selectedSem}
-                    label="Semester"
-                    onChange={ev => {
-                        setSection([])
-                        setSelectedSem(ev.target.value as string)
-                        setSelectedSection([]);
-                    }} >
-                    {semCourse?.semesters?.filter(semester => semester.year >= new Date().getFullYear())
-                        .map((semester) => (<MenuItem key={semester._id} value={semester._id}>
-                        {semester.semester} {semester.year}
-                    </MenuItem>))}
-                </Select>
+            <Modal open={createSem} onClose={() => setSem(false)}>
+                <div className="flex flex-col absolute left-1/2 top-1/2 w-3/4 h-3/4 bg-gray-200 rounded-md
+                    -translate-x-1/2 -translate-y-1/2 p-6 text-slate-800">
+                    <div className="text-2xl mb-2">Select Planned Semester</div>
+                    <Select
+                        variant="standard"
+                        fullWidth
+                        value={selectedSem}
+                        label="Semester"
+                        onChange={ev => {
+                            setSection([])
+                            setSelectedSem(ev.target.value as string)
+                            setSelectedSection([]);
+                        }}>
+                        {semCourse?.semesters?.filter(semester => semester.year >= new Date().getFullYear())
+                            .map((semester) => (<MenuItem key={semester._id} value={semester._id}>
+                            {semester.semester} {semester.year}
+                        </MenuItem>))}
+                    </Select>
 
-                {section.flat().length ? <>
-                    <div className="mt-4 mb-2">Filter Instructors</div>
+                    {section.flat().length ? <>
+                        <div className="mt-4 mb-2">Filter Instructors</div>
 
-                    <Select fullWidth value={instructorFilter} MenuProps={{ className: 'max-h-96' }}
-                                                 onChange={ev => {
-                                                     setInstructorFilter(ev.target.value as string);
-                                                     setSelectedSection([]);
-                                                 }}>
-                        <MenuItem value={""}>No Filter</MenuItem>
-                        {[...section.flat(2).flatMap(s => s.meetings
-                                .flatMap(m => m.instructors))
-                            .reduce((dict, instructor) => {
-                                dict.set(instructor._id, instructor);
-                                return dict;
-                            }, new Map<string, ApiProfessor>())]
-                            .map(([, instructor]) => <MenuItem key={instructor._id} value={instructor._id}>
-                                {instructor.firstname} {instructor.lastname}
-                            </MenuItem>)}
-                </Select></> : null}
+                        <Select
+                            variant="standard"
+                            fullWidth
+                            value={instructorFilter}
+                            MenuProps={{ className: 'max-h-96' }}
+                            onChange={ev => {
+                                setInstructorFilter(ev.target.value as string);
+                                setSelectedSection([]);
+                            }}>
+                            <MenuItem value={""}>No Filter</MenuItem>
+                            {[...section.flat(2).flatMap(s => s.meetings
+                                    .flatMap(m => m.instructors))
+                                .reduce((dict, instructor) => {
+                                    dict.set(instructor._id, instructor);
+                                    return dict;
+                                }, new Map<string, ApiProfessor>())]
+                                .map(([, instructor]) => <MenuItem key={instructor._id} value={instructor._id}>
+                                    {instructor.firstname} {instructor.lastname}
+                                </MenuItem>)}
+                    </Select></> : null}
 
-                <hr className="w-full mt-6 mb-3 bg-slate-900" />
+                    <hr className="w-full mt-6 mb-3 bg-slate-900" />
 
-                {section.flat().length ? <div className="flex flex-col grow basis-0">
-                    <div className="text-lg italic mb-2 flex items-center">
-                        Choose a course group, and pick one section of each schedule type from each group
-                        <Button className="ml-auto" onClick={() => {
-                            if (hiddenSections.size)
-                                setHiddenSections(new Set());
-                            else
-                                setHiddenSections(new Set(section.flat(2).map(s => s._id)));
-                        }}>{hiddenSections.size ? 'Show' : 'Hide'} All</Button>
-                    </div>
+                    {section.flat().length ? <div className="flex flex-col grow basis-0">
+                        <div className="text-lg italic mb-2 flex items-center">
+                            Choose a course group, and pick one section of each schedule type from each group
+                            <Button className="ml-auto" onClick={() => {
+                                if (hiddenSections.size)
+                                    setHiddenSections(new Set());
+                                else
+                                    setHiddenSections(new Set(section.flat(2).map(s => s._id)));
+                            }}>{hiddenSections.size ? 'Show' : 'Hide'} All</Button>
+                        </div>
 
-                    <div className="overflow-y-auto flex flex-col grow basis-0">
-                        {section.filter(groups => {
-                            if (!instructorFilter) return true;
-                            const instructors = groups.flat(2).flatMap(s => s.meetings.flatMap(m => m.instructors));
-                            return instructors.find(inst => inst._id === instructorFilter);
-                        }).map((group, i) => <div key={i} className="mb-2">
-                            <Accordion defaultExpanded={true}>
-                                <AccordionSummary expandIcon={<FaChevronDown />}>
-                                    <div className="text-xl">Group {i + 1}</div>
-                                </AccordionSummary>
-                                <AccordionDetails className="flex flex-col">
-                                    {[...group].sort((a, b) => SCHEDULE_ORDER[a[0].scheduleType] - SCHEDULE_ORDER[b[0].scheduleType]).map((sections, i) => <div key={i} className="px-3 py-2 bg-gray-300 bg-opacity-25 mb-2 rounded-md">
-                                        <div className="text-lg mb-1"><Tooltip arrow title={SCHEDULE_TYPES[sections[0].scheduleType as keyof typeof SCHEDULE_TYPES]}>
-                                            <span>{sections[0].scheduleType}</span>
-                                        </Tooltip> Schedule Type</div>
-                                        {sections.map((section, i) => <Tooltip arrow placement="top" enterDelay={250}
-                                                                               title={<div className="pointer-events-none -mx-6 -mb-12 -mt-20 scale-90 scale-y-75">{previewSectionCalendar}</div>}
-                                                                               classes={{ tooltip: 'max-w-2xl overflow-hidden' }}>
-                                            <div key={i} className={`p-1 border-gray-400 border rounded mb-1 cursor-pointer
-                                            ${selectedSectionSet.has(section._id) ? 'bg-pink-400 bg-opacity-25' : ''}`}
-                                                 onClick={() => {
-                                                     if (selectedSectionSet.has(section._id))
-                                                         setSelectedSection(selectedSection!.filter(s => s._id !== section._id))
-                                                     else
-                                                         setSelectedSection([...(selectedSection ?? []).filter(s => s.scheduleType !== section.scheduleType), section])
-                                                 }} onMouseEnter={() => setHoveringSection(section)} onMouseLeave={() => setHoveringSection(null)}>
-                                                <div className="flex items-center">{section.name} (CRN {section.crn}), {section.minCredits === section.maxCredits ?
-                                                    `${section.minCredits} Credits` : `${section.minCredits}-${section.maxCredits} Credits`}
+                        <div className="overflow-y-auto flex flex-col grow basis-0">
+                            {section.filter(groups => {
+                                if (!instructorFilter) return true;
+                                const instructors = groups.flat(2).flatMap(s => s.meetings.flatMap(m => m.instructors));
+                                return instructors.find(inst => inst._id === instructorFilter);
+                            }).map((group, i) => <div key={i} className="mb-2">
+                                <Accordion defaultExpanded={true}>
+                                    <AccordionSummary expandIcon={<FaChevronDown />}>
+                                        <div className="text-xl">Group {i + 1}</div>
+                                    </AccordionSummary>
+                                    <AccordionDetails className="flex flex-col">
+                                        {[...group].sort((a, b) => SCHEDULE_ORDER[a[0].scheduleType] - SCHEDULE_ORDER[b[0].scheduleType]).map((sections, i) => <div key={i} className="px-3 py-2 bg-gray-300 bg-opacity-25 mb-2 rounded-md">
+                                            <div className="text-lg mb-1"><Tooltip arrow title={SCHEDULE_TYPES[sections[0].scheduleType as keyof typeof SCHEDULE_TYPES]}>
+                                                <span>{sections[0].scheduleType}</span>
+                                            </Tooltip> Schedule Type</div>
+                                            {sections.map((section, i) => <Tooltip arrow placement="top" enterDelay={250}
+                                                                                   title={<div className="pointer-events-none -mx-6 -mb-12 -mt-20 scale-90 scale-y-75">{previewSectionCalendar}</div>}
+                                                                                   classes={{ tooltip: 'max-w-2xl overflow-hidden' }}>
+                                                <div key={i} className={`p-1 border-gray-400 border rounded mb-1 cursor-pointer
+                                                ${selectedSectionSet.has(section._id) ? 'bg-pink-400 bg-opacity-25' : ''}`}
+                                                     onClick={() => {
+                                                         if (selectedSectionSet.has(section._id))
+                                                             setSelectedSection(selectedSection!.filter(s => s._id !== section._id))
+                                                         else
+                                                             setSelectedSection([...(selectedSection ?? []).filter(s => s.scheduleType !== section.scheduleType), section])
+                                                     }} onMouseEnter={() => setHoveringSection(section)} onMouseLeave={() => setHoveringSection(null)}>
+                                                    <div className="flex items-center">{section.name} (CRN {section.crn}), {section.minCredits === section.maxCredits ?
+                                                        `${section.minCredits} Credits` : `${section.minCredits}-${section.maxCredits} Credits`}
 
-                                                    <div className="ml-auto" onClick={(ev) => {
-                                                        if (hiddenSections.has(section._id))
-                                                            setHiddenSections(new Set([...hiddenSections].filter(s => s !== section._id)))
-                                                        else
-                                                            setHiddenSections(new Set([...hiddenSections, section._id]));
-                                                        ev.stopPropagation();
-                                                    }}>
-                                                        {hiddenSections.has(section._id) ? <FaPlus /> : <FaMinus />}
+                                                        <div className="ml-auto" onClick={(ev) => {
+                                                            if (hiddenSections.has(section._id))
+                                                                setHiddenSections(new Set([...hiddenSections].filter(s => s !== section._id)))
+                                                            else
+                                                                setHiddenSections(new Set([...hiddenSections, section._id]));
+                                                            ev.stopPropagation();
+                                                        }}>
+                                                            {hiddenSections.has(section._id) ? <FaPlus /> : <FaMinus />}
+                                                        </div>
                                                     </div>
+                                                    {!hiddenSections.has(section._id) && <div className="ml-2 grid" style={{
+                                                        gridTemplateColumns: 'minmax(0, .5fr) minmax(0, .5fr) minmax(0, 1fr) minmax(0, .75fr) minmax(0, 1fr)'
+                                                    }}>
+                                                        <div className="px-1 py-0.5 border border-gray-400 font-semibold">Time</div>
+                                                        <div className="px-1 py-0.5 border border-gray-400 font-semibold">Days</div>
+                                                        <div className="px-1 py-0.5 border border-gray-400 font-semibold">Location</div>
+                                                        <div className="px-1 py-0.5 border border-gray-400 font-semibold">Date Range</div>
+                                                        <div className="px-1 py-0.5 border border-gray-400 font-semibold">Instructors</div>
+
+                                                        {section.meetings.map((meeting, i) => <React.Fragment key={i}>
+                                                            <div className="px-1 py-0.5 border border-gray-400">{meeting.startTime && meeting.endTime ? `${meeting.startTime}-${meeting.endTime}` : 'TBA'}</div>
+                                                            <div className="px-1 py-0.5 border border-gray-400">{meeting.days?.length ? meeting.days.join(', ') : 'TBA'}</div>
+                                                            <div className="px-1 py-0.5 border border-gray-400">{meeting.location ?? 'TBA'}</div>
+                                                            <div className="px-1 py-0.5 border border-gray-400">{meeting.startDate && meeting.endDate ? `${meeting.startDate}-${meeting.endDate}` : 'TBA'}</div>
+                                                            <div className="px-1 py-0.5 border border-gray-400">{meeting.instructors.length ? meeting.instructors.map((ins, i) => <Link to={'/'}>
+                                                                {ins.firstname} {ins.lastname}
+                                                            </Link>) : 'TBA'}</div>
+                                                        </React.Fragment>)}
+                                                    </div>}
                                                 </div>
-                                                {!hiddenSections.has(section._id) && <div className="ml-2 grid" style={{
-                                                    gridTemplateColumns: 'minmax(0, .5fr) minmax(0, .5fr) minmax(0, 1fr) minmax(0, .75fr) minmax(0, 1fr)'
-                                                }}>
-                                                    <div className="px-1 py-0.5 border border-gray-400 font-semibold">Time</div>
-                                                    <div className="px-1 py-0.5 border border-gray-400 font-semibold">Days</div>
-                                                    <div className="px-1 py-0.5 border border-gray-400 font-semibold">Location</div>
-                                                    <div className="px-1 py-0.5 border border-gray-400 font-semibold">Date Range</div>
-                                                    <div className="px-1 py-0.5 border border-gray-400 font-semibold">Instructors</div>
+                                            </Tooltip>)}
+                                        </div>)}
+                                    </AccordionDetails>
+                                </Accordion>
+                            </div>)}
+                        </div>
+                    </div> : <div>No sections available</div>}
 
-                                                    {section.meetings.map((meeting, i) => <React.Fragment key={i}>
-                                                        <div className="px-1 py-0.5 border border-gray-400">{meeting.startTime && meeting.endTime ? `${meeting.startTime}-${meeting.endTime}` : 'TBA'}</div>
-                                                        <div className="px-1 py-0.5 border border-gray-400">{meeting.days?.length ? meeting.days.join(', ') : 'TBA'}</div>
-                                                        <div className="px-1 py-0.5 border border-gray-400">{meeting.location ?? 'TBA'}</div>
-                                                        <div className="px-1 py-0.5 border border-gray-400">{meeting.startDate && meeting.endDate ? `${meeting.startDate}-${meeting.endDate}` : 'TBA'}</div>
-                                                        <div className="px-1 py-0.5 border border-gray-400">{meeting.instructors.length ? meeting.instructors.map((ins, i) => <Link to={'/'}>
-                                                            {ins.firstname} {ins.lastname}
-                                                        </Link>) : 'TBA'}</div>
-                                                    </React.Fragment>)}
-                                                </div>}
-                                            </div>
-                                        </Tooltip>)}
-                                    </div>)}
-                                </AccordionDetails>
-                            </Accordion>
-                        </div>)}
-                    </div>
-                </div> : <div>No sections available</div>}
-
-                <div className="mt-auto pt-2 flex">
-                    {sectionAddError && <span className="text-red-500 mt-auto">Error: {sectionAddError}</span>}
-                    <Button variant="contained" className="mr-2 ml-auto" onClick={() => {
-                        setSem(false);
-                        setSelectedSection(null);
-                    }}>Cancel</Button>
-                    <Button variant="contained" color="secondary" disabled={sectionAddError !== '' || !section.length} onClick={() => {
-                        const now = Date.now();
-                        const semesters = semCourse?.semesters.find(o => o._id === selectedSem);
-                        if (!semCourse || !semesters) {
-                            console.log(semCourse, semesters)
+                    <div className="mt-auto pt-2 flex">
+                        {sectionAddError && <span className="text-red-500 mt-auto">Error: {sectionAddError}</span>}
+                        <Button variant="contained" className="mr-2 ml-auto" onClick={() => {
                             setSem(false);
                             setSelectedSection(null);
-                            return;
-                        }
+                        }}>Cancel</Button>
+                        <Button variant="contained" color="secondary" disabled={sectionAddError !== '' || !section.length} onClick={() => {
+                            const now = Date.now();
+                            const semesters = semCourse?.semesters.find(o => o._id === selectedSem);
+                            if (!semCourse || !semesters) {
+                                console.log(semCourse, semesters)
+                                setSem(false);
+                                setSelectedSection(null);
+                                return;
+                            }
 
-                        if (checkOverride(semCourse, semesters)) {
-                            setWarning(true);
-                            setOverrideCourse((selectedSection?.map((s, i) => {
-                                return {
-                                    _id: '' + (now + i),
-                                    subject: semCourse.subject,
-                                    courseID: semCourse.courseID,
-                                    semester: semesters.semester,
-                                    grade: 'A',
-                                    year: semesters.year,
-                                    section: s,
-                                    courseData: {  ...semCourse, sections: section },
-                                    overrideStatus: 'override'
-                                }
-                            }).filter(x => x) ?? []));
-                        } else {
-                            setCourseModifications({
-                                ...courseModifications,
-                                add: [...courseModifications.add, ...(selectedSection?.map((s, i) => {
+                            if (checkOverride(semCourse, semesters)) {
+                                setWarning(true);
+                                setOverrideCourse((selectedSection?.map((s, i) => {
                                     return {
                                         _id: '' + (now + i),
                                         subject: semCourse.subject,
@@ -606,239 +597,302 @@ export function FuturePlan() {
                                         grade: 'A',
                                         year: semesters.year,
                                         section: s,
-                                        courseData: {  ...semCourse, sections: section }
+                                        courseData: {  ...semCourse, sections: section },
+                                        overrideStatus: 'override'
                                     }
-                                }).filter(x => x) ?? [])]
-                            })
-                        }
-                        setSem(false);
-                        setSelectedSection(null);
-                    }}>
-                        Save
-                    </Button>
-                </div>
-            </div>
-        </Modal>
-
-        <div className="grid grid-cols-3 gap-y-2 gap-x-3">
-            <div className="w-full h-full flex flex-col items-center justify-left">
-                <div className="bg-white rounded px-4 pb-3 mb-4 pt-4 text-black w-full">
-                    <div className="text-2xl mb-3">Graduation Requirements</div>
-
-                    {(degreePlans?.flatMap(plan => plan.degrees)?.length ?? 0) === 0 ? <div className="pb-2">
-                        You don't have any degrees in your degree plans. Please add degrees.
-                    </div> : <Button variant="contained" color="secondary" onClick={() => {
-                        navigate('/graduation-requirements')
-                    }}>View Graduation Requirements</Button>}
-
-                    <div className="text-2xl my-2">GPA</div>
-
-
-                    {/* <span className="mr-2">Semester:</span> */}
-                    {/* <Select value={selectedGpaSemester} onChange={ev => setSelectedGpaSemester(ev.target.value as string)}>
-                        {semesters.map(sem => <MenuItem key={sem._id} value={sem._id}>
-                            {sem.semester} {sem.year}
-                        </MenuItem>)}
-                    </Select> */}
-
-                    <div className="flex">
-                        <span className="mr-4">
-                            Cumulative GPA: {cumulativeGpa === null ? 'N/A' : cumulativeGpa.toFixed(2)}
-                        </span>
-                        {/* <span>
-                            Semester GPA: {semesterGpa === null ? 'N/A' : semesterGpa.toFixed(2)}
-                        </span> */}
-                    </div>
-
-                </div>
-
-                <div className="bg-white rounded px-4 pb-3 pt-4 text-black w-full overflow-auto h-96">
-                <div className="text-2xl">Course Recommendations</div>
-
-                <Button variant="contained" color="secondary" onClick={recc}>Generate Reccomendations</Button>
-                
-                {reccomended?.map((rec, i) => (<div
-                        className="w-full py-3 px-4 border-y flex items-center" key={i}>
-                        <CourseLink className="mr-auto" courseID={rec.courseID} subject={rec.subject} useColor={false} />
-                        {/* <Link to={`/course_description?subject=${rec.subject}&courseID=${rec.courseID}`} className="mr-auto">{rec.subject} {rec.courseID}</Link> */}
-                        <Button color="inherit" onClick={() => {
-                            getCourse(rec.courseID, rec.subject)
-                                .then((res) => {
-                                    if (!res) return;
-                                    setSemCourse(res!);
-                                    setSem(true);
-                                    setSelectedSem(null);
-                                    setInstructorFilter('');
-                                    setSection([]);
+                                }).filter(x => x) ?? []));
+                            } else {
+                                setCourseModifications({
+                                    ...courseModifications,
+                                    add: [...courseModifications.add, ...(selectedSection?.map((s, i) => {
+                                        return {
+                                            _id: '' + (now + i),
+                                            subject: semCourse.subject,
+                                            courseID: semCourse.courseID,
+                                            semester: semesters.semester,
+                                            grade: 'A',
+                                            year: semesters.year,
+                                            section: s,
+                                            courseData: {  ...semCourse, sections: section }
+                                        }
+                                    }).filter(x => x) ?? [])]
                                 })
-
-                            // setCourseModifications({
-                            //     ...courseModifications,
-                            //     add: [...courseModifications.add, {
-                            //         subject: course.subject,
-                            //         courseID: course.courseID,
-                            //         semester: 'Spring',
-                            //         grade: 'A',
-                            //         year: 2022
-                            //     }]
-                            // });
-                        }}>Add</Button>
-                    </div>))}
-                </div>
-
-                <div className="bg-white rounded px-4 pb-3 mt-4 pt-4 text-black w-full">
-                    <div className="text-2xl">Search Courses</div>
-                    <div className="flex items-center">
-                        <TextField
-                            fullWidth
-                            label="Search"
-                            placeholder="Search"
-                            margin="normal"
-                            onKeyDown={ev => ev.key === 'Enter' && search()}
-                            inputRef={searchRef}
-                        />
-                        <FaSearch className="ml-4 cursor-pointer" onClick={search} />
+                            }
+                            setSem(false);
+                            setSelectedSection(null);
+                        }}>
+                            Save
+                        </Button>
                     </div>
                 </div>
-                <div className="border-x border-gray-500 bg-slate-500 rounded mt-4 w-full flex flex-col">
-                    {courses.map((course, i) => (<div
-                        className="w-full py-3 px-4 bg-gray-600 border-y border-gray-500 flex items-center" key={i}>
-                        <CourseLink className="mr-auto" courseID={course.courseID} subject={course.subject} useColor={false} />
-                        <Button color="inherit" onClick={() => {
-                            setSemCourse(course);
-                            setSem(true);
-                            setSelectedSem(null);
-                            setInstructorFilter('');
-                            setSection([]);
-                            // setCourseModifications({
-                            //     ...courseModifications,
-                            //     add: [...courseModifications.add, {
-                            //         subject: course.subject,
-                            //         courseID: course.courseID,
-                            //         semester: 'Spring',
-                            //         grade: 'A',
-                            //         year: 2022
-                            //     }]
-                            // });
-                        }}>Add</Button>
-                    </div>))}
-                </div>
-            </div>
-            <div className="bg-white rounded px-4 pb-3 pt-4 text-black w-full overflow-auto h-96">
-                <div className="text-2xl">Degrees</div>
-                <TextField
-                    fullWidth
-                    label="Search"
-                    placeholder="Search"
-                    margin="normal"
-                    value={degreeSearch}
-                    onChange={ev => setDegreeSearch(ev.target.value)}
-                />
-                
-                {degrees.filter(d => d.name.toLowerCase().includes(degreeSearch.toLowerCase()))
-                    .map((degree, i) => (<div key={i} className="my-2 flex">
-                        <Link to={`/major_requirements?id=${degree._id}`} className="mr-auto">{degree.name}</Link>
-                        <Button variant="contained" color="secondary" onClick={() => {
-                            setDegreeModifications({
-                                ...degreeModifications,
-                                add: [...degreeModifications.add, degree]
-                            });
-                        }}>Add</Button>
-                    </div>))}
-            </div>
-            <div className="col-start-3 flex flex-col justify-right">
-                <div className="bg-white rounded px-4 pb-3 pt-4 text-black w-full">
-                    <div className="text-2xl">Select Degree Plan</div>
-                    <Select fullWidth className="my-2" value={degreePlans.findIndex(p => p.name === degreePlan?.name)} onChange={ev => setDegreePlan(degreePlans[ev.target.value as number])}>
-                        {degreePlans.map((plan, i) => (<MenuItem key={i} value={i}>
-                            {plan.name}
-                        </MenuItem>))}
-                    </Select>
-                    <Button variant="contained" color="secondary" fullWidth onClick={() => {
-                        setError(''); setCreateNewPlan(true)
-                    }}>Create New Plan</Button>
-                </div>
-                {degreePlan && <>
-                    <div className="bg-white rounded px-4 pb-3 pt-4 text-black w-full mt-3">
+            </Modal>
+
+            <div className="grid grid-cols-3 gap-y-2 gap-x-3">
+                <div className="w-full h-full flex flex-col items-center justify-left">
+                    <div className="bg-white rounded px-4 pb-3 mb-4 pt-4 text-black w-full">
+                        <div className="text-2xl mb-3">Graduation Requirements</div>
+
+                        {(degreePlans?.flatMap(plan => plan.degrees)?.length ?? 0) === 0 ? <div className="pb-2">
+                            You don't have any degrees in your degree plans. Please add degrees.
+                        </div> : <Button variant="contained" color="secondary" onClick={() => {
+                            navigate('/graduation-requirements')
+                        }}>View Graduation Requirements</Button>}
+
+                        <div className="text-2xl my-2">GPA</div>
+
+
+                        {/* <span className="mr-2">Semester:</span> */}
+                        {/* <Select value={selectedGpaSemester} onChange={ev => setSelectedGpaSemester(ev.target.value as string)}>
+                            {semesters.map(sem => <MenuItem key={sem._id} value={sem._id}>
+                                {sem.semester} {sem.year}
+                            </MenuItem>)}
+                        </Select> */}
+
                         <div className="flex">
-                            <div className="text-2xl mr-auto">Selected Courses</div>
-                            <div><span>Semester filter:&nbsp;</span>
-                                <Select value={semesterFilter} onChange={ev => {console.log(ev.target.value as string); setSemesterFilter(ev.target.value as string); setSelectedGpaSemester(ev.target.value as string)}}>
-                                    
-                                    <MenuItem value={""}>None</MenuItem>
-                                    {/* {semesters.map(sem => <MenuItem key={sem._id} value={sem._id}>
-                                    {sem.semester} {sem.year} */}
-                                    {/* </MenuItem>)} */}
-                                    {[...new Set([degreePlan.courses, userCourses, courseModifications.add]
-                                        .flat().map(c => `${c.semester} ${c.year}`))].map((sem, i) => <MenuItem key={sem} value={sem}>
-                                        {sem} 
-                                    </MenuItem>)}
-                                    
-                                </Select>
-                                <span>
-                                     Semester GPA: {semesterGpa === null ? 'N/A' : semesterGpa.toFixed(2)}
-                                </span>
-                            </div>
+                            <span className="mr-4">
+                                Cumulative GPA: {cumulativeGpa === null ? 'N/A' : cumulativeGpa.toFixed(2)}
+                            </span>
+                            {/* <span>
+                                Semester GPA: {semesterGpa === null ? 'N/A' : semesterGpa.toFixed(2)}
+                            </span> */}
                         </div>
-                        {Object.entries([degreePlan.courses, userCourses, courseModifications.add]
-                            .flatMap(courses => {
-                                return courses.map(course => ({ course, isNew: courses !== degreePlan.courses, isUserCourse: courses === userCourses }))
-                            })
-                            .reduce((semesterDict, course) => {
-                                const sem = `${course.course.semester} ${course.course.year}`;
-                                if (!(sem in semesterDict))
-                                    semesterDict[sem] = [];
-                                semesterDict[sem].push(course);
-                                return semesterDict;
-                            }, {} as { [key: string]: {isNew: boolean, isUserCourse: boolean, course: UserCourse}[] }))
-                            .sort(([semA], [semB]) => {
-                                const [semATerm, semAYear] = semA.split(' ');
-                                const [semBTerm, semBYear] = semB.split(' ');
-                                const yearCompare = semAYear.localeCompare(semBYear);
-                                if (yearCompare) return -yearCompare;
-                                const termOrder = ['Spring', 'Summer', 'Fall', 'Winter'];
-                                return termOrder.indexOf(semBTerm) - termOrder.indexOf(semATerm);
-                            })
-                            .filter(([sem]) => {
-                                if (!semesterFilter) return true;
-                                return sem === semesterFilter;
-                            })
-                            .map(([semester, courses], i) =>
-                                (<Accordion className="mt-2" defaultExpanded={true}>
-                                    <AccordionSummary className="text-lg py-1 h-8"><div >
-                                        {semester}
-                                    </div ></AccordionSummary>
-                                    <AccordionDetails className="flex flex-col">
-                                    {courses.map(({ course, isNew, isUserCourse }, j) => (<div key={j} className="flex items-center py-2 border-b border-gray-300">
-                            <div className="flex flex-col">
-                                <div className="flex items-center">
-                                    <CourseLink className="mr-1" courseID={course.courseID} subject={course.subject} useColor={false} />
 
-                                    {!isUserCourse && !satisfied(course?.courseData?.requirements,
-                                        semesters.find(s => s.semester === course.semester && s.year === course.year))  && (course.overrideStatus === 'override' ?
-                                        <Tooltip title={"Overridden"}><FaMinusCircle /></Tooltip> : <Tooltip title={"Prerequisites not met"}><FaExclamationCircle /></Tooltip>) }
+                    </div>
 
+                    <div className="bg-white rounded px-4 pb-3 pt-4 text-black w-full overflow-auto h-96">
+                    <div className="text-2xl">Course Recommendations</div>
+
+                    <Button variant="contained" color="secondary" onClick={recc}>Generate Reccomendations</Button>
+                    
+                    {reccomended?.map((rec, i) => (<div
+                            className="w-full py-3 px-4 border-y flex items-center" key={i}>
+                            <CourseLink className="mr-auto" courseID={rec.courseID} subject={rec.subject} useColor={false} />
+                            {/* <Link to={`/course_description?subject=${rec.subject}&courseID=${rec.courseID}`} className="mr-auto">{rec.subject} {rec.courseID}</Link> */}
+                            <Button color="inherit" onClick={() => {
+                                getCourse(rec.courseID, rec.subject)
+                                    .then((res) => {
+                                        if (!res) return;
+                                        setSemCourse(res!);
+                                        setSem(true);
+                                        setSelectedSem(null);
+                                        setInstructorFilter('');
+                                        setSection([]);
+                                    })
+
+                                // setCourseModifications({
+                                //     ...courseModifications,
+                                //     add: [...courseModifications.add, {
+                                //         subject: course.subject,
+                                //         courseID: course.courseID,
+                                //         semester: 'Spring',
+                                //         grade: 'A',
+                                //         year: 2022
+                                //     }]
+                                // });
+                            }}>Add</Button>
+                        </div>))}
+                    </div>
+
+                    <div className="bg-white rounded px-4 pb-3 mt-4 pt-4 text-black w-full">
+                        <div className="text-2xl">Search Courses</div>
+                        <div className="flex items-center">
+                            <TextField
+                                variant="standard"
+                                fullWidth
+                                label="Search"
+                                placeholder="Search"
+                                margin="normal"
+                                onKeyDown={ev => ev.key === 'Enter' && search()}
+                                inputRef={searchRef} />
+                            <FaSearch className="ml-4 cursor-pointer" onClick={search} />
+                        </div>
+                    </div>
+                    <div className="border-x border-gray-500 bg-slate-500 rounded mt-4 w-full flex flex-col">
+                        {courses.map((course, i) => (<div
+                            className="w-full py-3 px-4 bg-gray-600 border-y border-gray-500 flex items-center" key={i}>
+                            <CourseLink className="mr-auto" courseID={course.courseID} subject={course.subject} useColor={false} />
+                            <Button color="inherit" onClick={() => {
+                                setSemCourse(course);
+                                setSem(true);
+                                setSelectedSem(null);
+                                setInstructorFilter('');
+                                setSection([]);
+                                // setCourseModifications({
+                                //     ...courseModifications,
+                                //     add: [...courseModifications.add, {
+                                //         subject: course.subject,
+                                //         courseID: course.courseID,
+                                //         semester: 'Spring',
+                                //         grade: 'A',
+                                //         year: 2022
+                                //     }]
+                                // });
+                            }}>Add</Button>
+                        </div>))}
+                    </div>
+                </div>
+                <div className="bg-white rounded px-4 pb-3 pt-4 text-black w-full overflow-auto h-96">
+                    <div className="text-2xl">Degrees</div>
+                    <TextField
+                        variant="standard"
+                        fullWidth
+                        label="Search"
+                        placeholder="Search"
+                        margin="normal"
+                        value={degreeSearch}
+                        onChange={ev => setDegreeSearch(ev.target.value)} />
+                    
+                    {degrees.filter(d => d.name.toLowerCase().includes(degreeSearch.toLowerCase()))
+                        .map((degree, i) => (<div key={i} className="my-2 flex">
+                            <Link to={`/major_requirements?id=${degree._id}`} className="mr-auto">{degree.name}</Link>
+                            <Button variant="contained" color="secondary" onClick={() => {
+                                setDegreeModifications({
+                                    ...degreeModifications,
+                                    add: [...degreeModifications.add, degree]
+                                });
+                            }}>Add</Button>
+                        </div>))}
+                </div>
+                <div className="col-start-3 flex flex-col justify-right">
+                    <div className="bg-white rounded px-4 pb-3 pt-4 text-black w-full">
+                        <div className="text-2xl">Select Degree Plan</div>
+                        <Select
+                            variant="standard"
+                            fullWidth
+                            className="my-2"
+                            value={degreePlans.findIndex(p => p.name === degreePlan?.name)}
+                            onChange={ev => setDegreePlan(degreePlans[ev.target.value as number])}>
+                            {degreePlans.map((plan, i) => (<MenuItem key={i} value={i}>
+                                {plan.name}
+                            </MenuItem>))}
+                        </Select>
+                        <Button variant="contained" color="secondary" fullWidth onClick={() => {
+                            setError(''); setCreateNewPlan(true)
+                        }}>Create New Plan</Button>
+                    </div>
+                    {degreePlan && <>
+                        <div className="bg-white rounded px-4 pb-3 pt-4 text-black w-full mt-3">
+                            <div className="flex">
+                                <div className="text-2xl mr-auto">Selected Courses</div>
+                                <div><span>Semester filter:&nbsp;</span>
+                                    <Select
+                                        variant="standard"
+                                        value={semesterFilter}
+                                        onChange={ev => {console.log(ev.target.value as string); setSemesterFilter(ev.target.value as string); setSelectedGpaSemester(ev.target.value as string)}}>
+                                        
+                                        <MenuItem value={""}>None</MenuItem>
+                                        {/* {semesters.map(sem => <MenuItem key={sem._id} value={sem._id}>
+                                        {sem.semester} {sem.year} */}
+                                        {/* </MenuItem>)} */}
+                                        {[...new Set([degreePlan.courses, userCourses, courseModifications.add]
+                                            .flat().map(c => `${c.semester} ${c.year}`))].map((sem, i) => <MenuItem key={sem} value={sem}>
+                                            {sem} 
+                                        </MenuItem>)}
+                                        
+                                    </Select>
+                                    <span>
+                                         Semester GPA: {semesterGpa === null ? 'N/A' : semesterGpa.toFixed(2)}
+                                    </span>
+                                </div>
+                            </div>
+                            {Object.entries([degreePlan.courses, userCourses, courseModifications.add]
+                                .flatMap(courses => {
+                                    return courses.map(course => ({ course, isNew: courses !== degreePlan.courses, isUserCourse: courses === userCourses }))
+                                })
+                                .reduce((semesterDict, course) => {
+                                    const sem = `${course.course.semester} ${course.course.year}`;
+                                    if (!(sem in semesterDict))
+                                        semesterDict[sem] = [];
+                                    semesterDict[sem].push(course);
+                                    return semesterDict;
+                                }, {} as { [key: string]: {isNew: boolean, isUserCourse: boolean, course: UserCourse}[] }))
+                                .sort(([semA], [semB]) => {
+                                    const [semATerm, semAYear] = semA.split(' ');
+                                    const [semBTerm, semBYear] = semB.split(' ');
+                                    const yearCompare = semAYear.localeCompare(semBYear);
+                                    if (yearCompare) return -yearCompare;
+                                    const termOrder = ['Spring', 'Summer', 'Fall', 'Winter'];
+                                    return termOrder.indexOf(semBTerm) - termOrder.indexOf(semATerm);
+                                })
+                                .filter(([sem]) => {
+                                    if (!semesterFilter) return true;
+                                    return sem === semesterFilter;
+                                })
+                                .map(([semester, courses], i) =>
+                                    (<Accordion className="mt-2" defaultExpanded={true}>
+                                        <AccordionSummary className="text-lg py-1 h-8"><div >
+                                            {semester}
+                                        </div ></AccordionSummary>
+                                        <AccordionDetails className="flex flex-col">
+                                        {courses.map(({ course, isNew, isUserCourse }, j) => (<div key={j} className="flex items-center py-2 border-b border-gray-300">
+                                <div className="flex flex-col">
+                                    <div className="flex items-center">
+                                        <CourseLink className="mr-1" courseID={course.courseID} subject={course.subject} useColor={false} />
+
+                                        {!isUserCourse && !satisfied(course?.courseData?.requirements,
+                                            semesters.find(s => s.semester === course.semester && s.year === course.year))  && (course.overrideStatus === 'override' ?
+                                            <Tooltip title={"Overridden"}><FaMinusCircle /></Tooltip> : <Tooltip title={"Prerequisites not met"}><FaExclamationCircle /></Tooltip>) }
+
+                                    </div>
+
+                                    {course.section && <div>{course.section?.name} ({course.section?.sectionID})</div>}
+                                    <div>Instructors: {(() => {
+                                        const instructors = course.section?.meetings.flat().flatMap(m => m.instructors) ?? [];
+
+                                        if (!instructors.length) return 'To Be Assigned';
+
+                                        return instructors.map(instructor => <Link to={`/professor?id=${instructor._id}&filter=${course.courseData._id}`} key={instructor._id}>
+                                            {instructor.firstname + ' ' + instructor.lastname}
+                                        </Link>);
+                                    })()}</div>
                                 </div>
 
-                                {course.section && <div>{course.section?.name} ({course.section?.sectionID})</div>}
-                                <div>Instructors: {(() => {
-                                    const instructors = course.section?.meetings.flat().flatMap(m => m.instructors) ?? [];
+                                <Dialog open={modifyCourse?._id === course._id}>
+                                    <DialogTitle>Modify</DialogTitle>
+                                    <DialogContent>
+                                        <div>Section:</div>
+                                        <Select
+                                            variant="standard"
+                                            defaultValue={course.section?._id}
+                                            onChange={ev => {
+                                                const section = course.courseData?.sections?.flat(2).find(s => s._id === ev.target.value)
 
-                                    if (!instructors.length) return 'To Be Assigned';
+                                                if (!isNew) {
+                                                    setDegreePlan({
+                                                        ...degreePlan,
+                                                        courses: degreePlan.courses.filter(x => x !== course)
+                                                    });
 
-                                    return instructors.map(instructor => <Link to={`/professor?id=${instructor._id}&filter=${course.courseData._id}`} key={instructor._id}>
-                                        {instructor.firstname + ' ' + instructor.lastname}
-                                    </Link>);
-                                })()}</div>
-                            </div>
+                                                    setCourseModifications({
+                                                        delete: [...courseModifications.delete, course._id],
+                                                        add: [...courseModifications.add, {
+                                                            ...course,
+                                                            section
+                                                        }]
+                                                    });
+                                                } else {
+                                                    setCourseModifications({
+                                                        ...courseModifications,
+                                                        add: courseModifications.add.map(c => {
+                                                            if (c._id !== course._id) return c;
+                                                            return { ...c, section };
+                                                        })
+                                                    });
+                                                }
+                                            }}>
+                                            {course.courseData?.sections?.flat(2).map(section => renderSectionMenuItem(section))}
+                                        </Select>
+                                    </DialogContent>
+                                    <DialogActions>
+                                        <Button onClick={() => setModifyCourse(null)}>Close</Button>
+                                    </DialogActions>
+                                </Dialog>
 
-                            <Dialog open={modifyCourse?._id === course._id}>
-                                <DialogTitle>Modify</DialogTitle>
-                                <DialogContent>
-                                    <div>Section:</div>
-                                    <Select defaultValue={course.section?._id} onChange={ev => {
-                                        const section = course.courseData?.sections?.flat(2).find(s => s._id === ev.target.value)
-
+                                            {isUserCourse ? <><span className="ml-auto mr-2">Grade: {course.grade}</span></> : <>
+                                    <Button className="ml-auto mr-2" variant="contained" color="secondary" onClick={() => {
+                                        setModifyCourse(course);
+                                    }}>Modify</Button>
+                                    <Button variant="contained" color="secondary" onClick={() => {
                                         if (!isNew) {
                                             setDegreePlan({
                                                 ...degreePlan,
@@ -846,112 +900,77 @@ export function FuturePlan() {
                                             });
 
                                             setCourseModifications({
-                                                delete: [...courseModifications.delete, course._id],
-                                                add: [...courseModifications.add, {
-                                                    ...course,
-                                                    section
-                                                }]
+                                                ...courseModifications,
+                                                delete: [...courseModifications.delete, course._id]
                                             });
                                         } else {
                                             setCourseModifications({
                                                 ...courseModifications,
-                                                add: courseModifications.add.map(c => {
-                                                    if (c._id !== course._id) return c;
-                                                    return { ...c, section };
-                                                })
-                                            });
+                                                add: courseModifications.add.filter(({ _id }) => _id !== course._id)
+                                            })
                                         }
-                                    }}>
-                                        {course.courseData?.sections?.flat(2).map(section => renderSectionMenuItem(section))}
-                                    </Select>
-                                </DialogContent>
-                                <DialogActions>
-                                    <Button onClick={() => setModifyCourse(null)}>Close</Button>
-                                </DialogActions>
-                            </Dialog>
+                                    }}>Delete</Button>
+                                </>}
 
-                                        {isUserCourse ? <><span className="ml-auto mr-2">Grade: {course.grade}</span></> : <>
-                                <Button className="ml-auto mr-2" variant="contained" color="secondary" onClick={() => {
-                                    setModifyCourse(course);
-                                }}>Modify</Button>
+                                    </div>))}</AccordionDetails></Accordion>))}
+                            {/*{courseModifications.add.map((course, i) => (<div key={i} className="flex items-center py-2 border-b border-gray-300">*/}
+                            {/*    <Link className="mr-auto" to={`/course_description?subject=${course.subject}&courseID=${course.courseID}`}>{course.subject} {course.courseID}</Link>*/}
+                            {/*    <div><br />Section Name &emsp;</div>*/}
+                            {/*    <Button variant="contained" color="secondary" onClick={() => {*/}
+                            {/*        setCourseModifications({*/}
+                            {/*            ...courseModifications,*/}
+                            {/*            add: courseModifications.add.filter(c => c !== course)*/}
+                            {/*        });*/}
+                            {/*    }}>Delete</Button>*/}
+                            {/*</div>))}*/}
+                            {(courseModifications.add.length || courseModifications.delete.length) ? <Button
+                                variant="contained"
+                                size="large"
+                                color="secondary"
+                                className="w-full h-8" onClick={save}>
+                                Save
+                            </Button> : null}
+                        </div>
+
+                        <div className="bg-white rounded px-4 pb-3 pt-4 text-black w-full mt-3">
+                            <div className="text-2xl">Planned Degrees</div>
+                            {degreePlan.degrees.map((degree, i) => (<div key={i} className="flex items-center py-2 border-b border-gray-300">
+                                <Link to={`/major_requirements?id=${degree._id}`} className="mr-2">
+                                    {degree.type[0].toUpperCase()}{degree.type.slice(1)} in {degree.name}
+                                </Link>
+                                <span className="mr-auto">GPA: {majorGpas[degree._id] ?? 'N/A'}</span>
                                 <Button variant="contained" color="secondary" onClick={() => {
-                                    if (!isNew) {
-                                        setDegreePlan({
-                                            ...degreePlan,
-                                            courses: degreePlan.courses.filter(x => x !== course)
-                                        });
-
-                                        setCourseModifications({
-                                            ...courseModifications,
-                                            delete: [...courseModifications.delete, course._id]
-                                        });
-                                    } else {
-                                        setCourseModifications({
-                                            ...courseModifications,
-                                            add: courseModifications.add.filter(({ _id }) => _id !== course._id)
-                                        })
-                                    }
+                                    setDegreePlan({
+                                        ...degreePlan,
+                                        degrees: degreePlan.degrees.filter(x => x !== degree)
+                                    });
+                                    setDegreeModifications({
+                                        ...degreeModifications,
+                                        delete: [...degreeModifications.delete, degree._id]
+                                    });
                                 }}>Delete</Button>
-                            </>}
-
-                                </div>))}</AccordionDetails></Accordion>))}
-                        {/*{courseModifications.add.map((course, i) => (<div key={i} className="flex items-center py-2 border-b border-gray-300">*/}
-                        {/*    <Link className="mr-auto" to={`/course_description?subject=${course.subject}&courseID=${course.courseID}`}>{course.subject} {course.courseID}</Link>*/}
-                        {/*    <div><br />Section Name &emsp;</div>*/}
-                        {/*    <Button variant="contained" color="secondary" onClick={() => {*/}
-                        {/*        setCourseModifications({*/}
-                        {/*            ...courseModifications,*/}
-                        {/*            add: courseModifications.add.filter(c => c !== course)*/}
-                        {/*        });*/}
-                        {/*    }}>Delete</Button>*/}
-                        {/*</div>))}*/}
-                        {(courseModifications.add.length || courseModifications.delete.length) ? <Button
-                            variant="contained"
-                            size="large"
-                            color="secondary"
-                            className="w-full h-8" onClick={save}>
-                            Save
-                        </Button> : null}
-                    </div>
-
-                    <div className="bg-white rounded px-4 pb-3 pt-4 text-black w-full mt-3">
-                        <div className="text-2xl">Planned Degrees</div>
-                        {degreePlan.degrees.map((degree, i) => (<div key={i} className="flex items-center py-2 border-b border-gray-300">
-                            <Link to={`/major_requirements?id=${degree._id}`} className="mr-2">
-                                {degree.type[0].toUpperCase()}{degree.type.slice(1)} in {degree.name}
-                            </Link>
-                            <span className="mr-auto">GPA: {majorGpas[degree._id] ?? 'N/A'}</span>
-                            <Button variant="contained" color="secondary" onClick={() => {
-                                setDegreePlan({
-                                    ...degreePlan,
-                                    degrees: degreePlan.degrees.filter(x => x !== degree)
-                                });
-                                setDegreeModifications({
-                                    ...degreeModifications,
-                                    delete: [...degreeModifications.delete, degree._id]
-                                });
-                            }}>Delete</Button>
-                        </div>))}
-                        {degreeModifications.add.map((degree, i) => (<div key={i} className="flex items-center py-2 border-b border-gray-300">
-                            <Link to={`/major_requirements?id=${degree._id}`} className="mr-auto">{degree.type[0].toUpperCase()}{degree.type.slice(1)} in {degree.name}</Link>
-                            <Button variant="contained" color="secondary" onClick={() => {
-                                setDegreeModifications({
-                                    ...degreeModifications,
-                                    add: degreeModifications.add.filter(c => c !== degree)
-                                });
-                            }}>Delete</Button>
-                        </div>))}
-                        {(degreeModifications.add.length || degreeModifications.delete.length) ? <Button
-                            variant="contained"
-                            size="large"
-                            color="secondary"
-                            className="w-full h-8" onClick={save}>
-                            Save
-                        </Button> : null}
-                    </div>
-                </>}
+                            </div>))}
+                            {degreeModifications.add.map((degree, i) => (<div key={i} className="flex items-center py-2 border-b border-gray-300">
+                                <Link to={`/major_requirements?id=${degree._id}`} className="mr-auto">{degree.type[0].toUpperCase()}{degree.type.slice(1)} in {degree.name}</Link>
+                                <Button variant="contained" color="secondary" onClick={() => {
+                                    setDegreeModifications({
+                                        ...degreeModifications,
+                                        add: degreeModifications.add.filter(c => c !== degree)
+                                    });
+                                }}>Delete</Button>
+                            </div>))}
+                            {(degreeModifications.add.length || degreeModifications.delete.length) ? <Button
+                                variant="contained"
+                                size="large"
+                                color="secondary"
+                                className="w-full h-8" onClick={save}>
+                                Save
+                            </Button> : null}
+                        </div>
+                    </>}
+                </div>
             </div>
-        </div>
 
-    </Layout>);
+        </Layout>
+    );
 }
