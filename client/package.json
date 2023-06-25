@@ -10,7 +10,7 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@aldabil/react-scheduler": "^1.0.38",
+    "@aldabil/react-scheduler": "^2.7.10",
     "@mui/icons-material": "^5.11.16",
     "@mui/material": "^5.13.6",
     "@mui/styles": "^5.13.2",
