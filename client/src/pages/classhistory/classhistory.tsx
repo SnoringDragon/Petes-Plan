@@ -1,10 +1,10 @@
 import { Layout } from '../../components/layout/layout';
-import Card from '@material-ui/core/Card';
-import TextField from '@material-ui/core/TextField';
-import CardContent from '@material-ui/core/CardContent';
-import CardActions from '@material-ui/core/CardActions';
-import CardHeader from '@material-ui/core/CardHeader';
-import Button from '@material-ui/core/Button';
+import Card from '@mui/material/Card';
+import TextField from '@mui/material/TextField';
+import CardContent from '@mui/material/CardContent';
+import CardActions from '@mui/material/CardActions';
+import CardHeader from '@mui/material/CardHeader';
+import Button from '@mui/material/Button';
 import React, { useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
@@ -21,7 +21,7 @@ import {
     DialogTitle,
     MenuItem,
     Select
-} from '@material-ui/core';
+} from '@mui/material';
 import { Semester } from '../../types/semester';
 import SemesterService from '../../services/SemesterService';
 import GPAService from '../../services/GPAService';

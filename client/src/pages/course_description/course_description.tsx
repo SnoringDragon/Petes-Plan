@@ -24,7 +24,7 @@ import {
     MenuItem,
     Select,
     TextField
-} from '@material-ui/core';
+} from '@mui/material';
 import { Semester } from '../../types/semester';
 import SemesterService from '../../services/SemesterService';
 import { Boilergrades } from '../../components/boilergrades/boilergrades';

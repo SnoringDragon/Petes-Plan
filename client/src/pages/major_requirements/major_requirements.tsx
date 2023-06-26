@@ -1,13 +1,13 @@
 import React, { useReducer, useEffect, useState } from 'react';
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
-import TextField from '@material-ui/core/TextField';
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
-import CardActions from '@material-ui/core/CardActions';
-import CardHeader from '@material-ui/core/CardHeader';
-import Button from '@material-ui/core/Button';
-import Checkbox from '@material-ui/core/Checkbox';
-import { Accordion, AccordionDetails, AccordionSummary, FormLabelTypeMap, Modal } from '@material-ui/core';
+import { createStyles, makeStyles, Theme } from '@mui/material/styles';
+import TextField from '@mui/material/TextField';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import CardActions from '@mui/material/CardActions';
+import CardHeader from '@mui/material/CardHeader';
+import Button from '@mui/material/Button';
+import Checkbox from '@mui/material/Checkbox';
+import { Accordion, AccordionDetails, AccordionSummary, FormLabelTypeMap, Modal } from '@mui/material';
 import { Layout } from '../../components/layout/layout';
 import { Degree, DegreeRequirement } from '../../types/degree';
 import DegreeService from '../../services/DegreeService';
@@ -24,7 +24,7 @@ import {
     DialogTitle,
     MenuItem,
     Select
-} from '@material-ui/core';
+} from '@mui/material';
 import { ApiCourse } from '../../types/course-requirements';
 import GPAService from '../../services/GPAService';
 import { FaArrowLeft, FaChevronDown, FaExternalLinkAlt } from 'react-icons/fa';

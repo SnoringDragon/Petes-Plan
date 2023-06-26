@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import ScheduledTaskService from '../../services/ScheduledTaskService';
 import { ScheduledTask } from '../../types/scheduled-task';
-import { Button, CircularProgress, IconButton, Modal, TextField, Tooltip } from '@material-ui/core';
+import { Button, CircularProgress, IconButton, Modal, TextField, Tooltip } from '@mui/material';
 import { FaCheck, FaExclamationCircle, FaQuestion, FaTimes, FaForward, FaSave, FaInfoCircle } from 'react-icons/fa';
 import Cron from 'react-js-cron';
 import cronParser from 'cron-parser';

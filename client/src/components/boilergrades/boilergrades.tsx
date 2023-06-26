@@ -8,7 +8,7 @@ import {
     MenuItem,
     OutlinedInput,
     Select, Tooltip
-} from '@material-ui/core';
+} from '@mui/material';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import BoilerGradesService from '../../services/BoilerGradesService';
@@ -201,8 +201,7 @@ export function Boilergrades(props: { className?: string } &
 
                                 return `${sem.semester} ${sem.year}`;
                             }).filter(x => x).join(', ')}
-                            MenuProps={{ PaperProps: { className: 'max-h-80' } ,
-                                getContentAnchorEl: () => (null as any), }}>
+                            MenuProps={{ PaperProps: { className: 'max-h-80' } }}>
                             {semesters.map(sem => <MenuItem key={sem.term} value={sem.term}>
                                 <Checkbox checked={semesterFilter.includes(sem.term)} />
                                 <ListItemText>{sem.semester} {sem.year}</ListItemText>
@@ -259,7 +258,7 @@ export function Boilergrades(props: { className?: string } &
                             <div>{val.count}</div>
                             {boilergradesGroupsMap.all.gpa ? <>
                                 <Tooltip classes={{ tooltip: 'max-w-full' }} disableFocusListener disableTouchListener disableHoverListener
-                                         open={showDetails === key} interactive title={<div>
+                                         open={showDetails === key} title={<div>
                                     <GradeTable grades={val.grades} className="text-base" />
                                 </div>} arrow placement="top">
                                     <div className="relative h-full" onClick={() => showDetails === key ? setShowDetails('') : setShowDetails(key)}>

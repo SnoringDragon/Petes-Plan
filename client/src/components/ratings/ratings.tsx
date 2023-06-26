@@ -1,7 +1,7 @@
 import { BaseRating, RateMyProfRating, Rating, RatingSearch, RatingSearchResult } from '../../types/rating';
 import { useEffect, useState } from 'react';
 import RatingService from '../../services/RatingService';
-import { Box, Chip, CircularProgress, IconButton, MenuItem, OutlinedInput, Select, Tooltip } from '@material-ui/core';
+import { Box, Chip, CircularProgress, IconButton, MenuItem, OutlinedInput, Select, Tooltip } from '@mui/material';
 import { FaTimes, FaLaptop, FaChevronUp, FaChevronDown } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import { CourseLink } from '../course-link/course-link';

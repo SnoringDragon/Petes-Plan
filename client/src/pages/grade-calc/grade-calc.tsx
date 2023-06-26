@@ -1,7 +1,7 @@
 import { Layout } from "../../components/layout/layout";
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Button, Checkbox, TextField } from '@material-ui/core';
+import { Button, Checkbox, TextField } from '@mui/material';
 import { CourseLink } from '../../components/course-link/course-link';
 import { Grade } from '../../types/grades';
 import GradesService from '../../services/GradesService';

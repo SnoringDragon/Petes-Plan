@@ -1,4 +1,4 @@
-import { Card, CardContent, CardHeader, FormControl, IconButton, InputLabel, MenuItem, Select, TextField } from "@material-ui/core";
+import { Card, CardContent, CardHeader, FormControl, IconButton, InputLabel, MenuItem, Select, TextField } from "@mui/material";
 import { Layout } from "../../components/layout/layout";
 import { CSSProperties, useEffect, useRef, useState } from "react";
 import SemesterService from "../../services/SemesterService";

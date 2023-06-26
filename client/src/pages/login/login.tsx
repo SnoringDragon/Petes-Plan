@@ -1,13 +1,14 @@
-import React, { useReducer, useEffect, useState, useRef } from 'react';
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
+import { 
+    Button,
+    Card,
+    CardActions,
+    CardContent,
+    CardHeader,
+    Checkbox,
+    TextField
+} from '@mui/material';
+import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from "react-router-dom";
-import TextField from '@material-ui/core/TextField';
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
-import CardActions from '@material-ui/core/CardActions';
-import CardHeader from '@material-ui/core/CardHeader';
-import Button from '@material-ui/core/Button';
-import Checkbox from '@material-ui/core/Checkbox';
 import UserService from '../../services/UserService';
 
 export function Login() {

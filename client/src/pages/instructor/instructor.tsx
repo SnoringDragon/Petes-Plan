@@ -1,20 +1,7 @@
-import React, { useEffect, useState } from 'react';
-import { Layout } from '../../components/layout/layout';
+import { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { ApiCourse } from '../../types/course-requirements';
-import { FaArrowLeft } from 'react-icons/fa';
-import { Prerequisites } from '../../components/prerequisites/prerequisites';
-import CourseService from '../../services/CourseService';
-import { UserCourse } from '../../types/user-course';
-import CourseHistoryService from '../../services/CourseHistoryService';
-import Card from '@material-ui/core/Card';
-import TextField from '@material-ui/core/TextField';
 
-import CardContent from '@material-ui/core/CardContent';
-import CardActions from '@material-ui/core/CardActions';
-import CardHeader from '@material-ui/core/CardHeader';
-import Button from '@material-ui/core/Button';
-import UserService from '../../services/UserService';
+import { Card, CardContent, CardHeader } from '@mui/material/';
 import { Link } from 'react-router-dom';
 
 export function Instructor() {

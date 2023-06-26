@@ -1,6 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom';
 import UserService from '../../services/UserService';
-import { Button } from '@material-ui/core';
+import { Button } from '@mui/material';
 import { useCallback, useEffect, useState } from 'react';
 
 export function HeaderBar() {

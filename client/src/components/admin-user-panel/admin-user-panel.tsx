@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { User } from '../../types/user';
 import AdminUserService from '../../services/AdminUserService';
 import React from 'react';
-import { Button } from '@material-ui/core';
+import { Button } from '@mui/material';
 
 export function AdminUserPanel() {
     const [users, setUsers] = useState<User[]>([]);

@@ -1,11 +1,13 @@
-import Card from '@material-ui/core/Card';
-import CardHeader from '@material-ui/core/CardHeader';
-import CardContent from '@material-ui/core/CardContent';
-import TextField from '@material-ui/core/TextField';
+import {
+    Button,
+    Card,
+    CardActions,
+    CardContent,
+    CardHeader,
+    TextField
+} from '@mui/material';
+import { useRef, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
-import CardActions from '@material-ui/core/CardActions';
-import Button from '@material-ui/core/Button';
-import React, { useRef, useState } from 'react';
 import UserService from '../../services/UserService';
 
 export function VerifyEmail() {

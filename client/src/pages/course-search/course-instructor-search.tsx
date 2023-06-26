@@ -1,5 +1,5 @@
 import { Layout } from '../../components/layout/layout';
-import { TextField } from '@material-ui/core';
+import { TextField } from '@mui/material';
 import { FaSearch } from 'react-icons/fa';
 import { useEffect, useRef, useState } from 'react';
 import { ApiCourse } from '../../types/course-requirements';
