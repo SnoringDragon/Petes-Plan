@@ -1,11 +1,12 @@
 version: '3.9'
 services:
   mongo:
-    image: 'mongo:6.0.4'
-    restart: always
+    image: mongo
+    restart: unless-stopped
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: hunter2
+      TZ: Etc/UTC
     ports:
       - '127.0.0.1:27017:27017'
     volumes:
@@ -13,17 +14,19 @@ services:
 
   mongo-express:
     image: mongo-express
-    restart: always
+    restart: unless-stopped
     ports:
       - '127.0.0.1:8081:8081'
     environment:
       ME_CONFIG_MONGODB_ADMINUSERNAME: root
       ME_CONFIG_MONGODB_ADMINPASSWORD: hunter2
       ME_CONFIG_MONGODB_URL: mongodb://root:hunter2@mongo:27017/
+    depends_on:
+      - mongo
 
   mailhog:
     image: mailhog/mailhog
-    restart: always
+    restart: unless-stopped
     ports:
       - '127.0.0.1:1025:1025'
       - '127.0.0.1:8025:8025'
