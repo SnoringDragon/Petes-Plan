@@ -1,15 +1,15 @@
-import Card from '@material-ui/core/Card';
-import TextField from '@material-ui/core/TextField';
+import Card from '@mui/material/Card';
+import TextField from '@mui/material/TextField';
 
-import CardContent from '@material-ui/core/CardContent';
-import CardActions from '@material-ui/core/CardActions';
-import CardHeader from '@material-ui/core/CardHeader';
-import Button from '@material-ui/core/Button';
+import CardContent from '@mui/material/CardContent';
+import CardActions from '@mui/material/CardActions';
+import CardHeader from '@mui/material/CardHeader';
+import Button from '@mui/material/Button';
 import React, { useEffect, useRef, useState } from 'react';
 import UserService from '../../services/UserService';
 import { Layout } from '../../components/layout/layout';
 import { Link, useNavigate } from 'react-router-dom';
-import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@material-ui/core';
+import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 
 
 export function Modify_Profile_Page() {
@@ -72,65 +72,67 @@ export function Modify_Profile_Page() {
             })
     };
 
-    return (<Layout>
-        <Dialog open={open}
-            onClose={() => setOpen(false)}>
-            <DialogTitle>{dialog.title}</DialogTitle>
-            <DialogContent>
-                <DialogContentText>
-                    {dialog.text}
-                </DialogContentText>
-            </DialogContent>
-            { dialog.buttons && <DialogActions>
-                <Button color="secondary" onClick={() => setOpen(false)} autoFocus>Cancel</Button>
-                <Button onClick={deleteAccount}>
-                    OK
-                </Button>
-            </DialogActions>}
-        </Dialog>
-        
-        <div className="w-full h-full flex items-center justify-center">
-        <Card className="-mt-16">
-            <CardHeader title="Modify Profile" className="text-center bg-zinc-800 text-white" />
-            <CardContent>
-                <div className="p-4">
-                    <TextField
-                        fullWidth
-                        id="name"
-                        type="name"
-                        label={userData?.name}
-                        placeholder="name"
-                        margin="normal"
-                        inputRef={nameRef}
-                    />
-                    <p></p>
-                    <text><u><br />Email: </u> {userData?.email}</text>
-                    <p></p>
-                    <Link to='/password-reset'><u><br />To change your password, click here.</u></Link >
+    return (
+        <Layout>
+            <Dialog open={open}
+                onClose={() => setOpen(false)}>
+                <DialogTitle>{dialog.title}</DialogTitle>
+                <DialogContent>
+                    <DialogContentText>
+                        {dialog.text}
+                    </DialogContentText>
+                </DialogContent>
+                { dialog.buttons && <DialogActions>
+                    <Button color="secondary" onClick={() => setOpen(false)} autoFocus>Cancel</Button>
+                    <Button onClick={deleteAccount}>
+                        OK
+                    </Button>
+                </DialogActions>}
+            </Dialog>
+            
+            <div className="w-full h-full flex items-center justify-center">
+            <Card className="-mt-16">
+                <CardHeader title="Modify Profile" className="text-center bg-zinc-800 text-white" />
+                <CardContent>
+                    <div className="p-4">
+                        <TextField
+                            variant="standard"
+                            fullWidth
+                            id="name"
+                            type="name"
+                            label={userData?.name}
+                            placeholder="name"
+                            margin="normal"
+                            inputRef={nameRef} />
+                        <p></p>
+                        <text><u><br />Email: </u> {userData?.email}</text>
+                        <p></p>
+                        <Link to='/password-reset'><u><br />To change your password, click here.</u></Link >
 
-                    {error && <div className="mt-4 text-red-500">Error: {error}</div>}
-                </div>
-            </CardContent>
-            <CardActions>
-                <Button
-                    variant="contained"
-                    size="large"
-                    color="secondary"
-                    className="w-half"
-                    disabled={isLoading}
-                    onClick={update}>
-                    Apply Changes
-                </Button>
-                <Button
-                    variant="contained"
-                    size="large"
-                    color="secondary"
-                    className="w-half"
-                    disabled={isLoading}
-                    onClick={() => setOpen(true)}>
-                    Delete Account
-                </Button>
-            </CardActions>
-        </Card>
-    </div></Layout>)
+                        {error && <div className="mt-4 text-red-500">Error: {error}</div>}
+                    </div>
+                </CardContent>
+                <CardActions>
+                    <Button
+                        variant="contained"
+                        size="large"
+                        color="secondary"
+                        className="w-half"
+                        disabled={isLoading}
+                        onClick={update}>
+                        Apply Changes
+                    </Button>
+                    <Button
+                        variant="contained"
+                        size="large"
+                        color="secondary"
+                        className="w-half"
+                        disabled={isLoading}
+                        onClick={() => setOpen(true)}>
+                        Delete Account
+                    </Button>
+                </CardActions>
+            </Card>
+        </div></Layout>
+    );
 }

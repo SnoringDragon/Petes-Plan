@@ -1,13 +1,12 @@
-import { Link } from 'react-router-dom';
+import { CircularProgress, Tooltip } from '@mui/material';
 import { useCallback, useEffect, useState } from 'react';
-import { UserCourse } from '../../types/user-course';
-import { DegreePlan } from '../../types/degree-plan';
-import { makePromiseCache } from '../../utils/promise-cache';
-import DegreePlanService from '../../services/DegreePlanService';
-import CourseService from '../../services/CourseService';
+import { Link } from 'react-router-dom';
 import CourseHistoryService from '../../services/CourseHistoryService';
+import CourseService from '../../services/CourseService';
+import DegreePlanService from '../../services/DegreePlanService';
 import { ApiCourse } from '../../types/course-requirements';
-import { CircularProgress, Tooltip } from '@material-ui/core';
+import { DegreePlan } from '../../types/degree-plan';
+import { UserCourse } from '../../types/user-course';
 import { Prerequisites } from '../prerequisites/prerequisites';
 
 

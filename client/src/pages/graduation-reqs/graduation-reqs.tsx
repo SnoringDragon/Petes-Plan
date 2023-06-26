@@ -6,7 +6,7 @@ import DegreePlanService from '../../services/DegreePlanService';
 import { DegreePlan } from '../../types/degree-plan';
 import { Link } from 'react-router-dom';
 import Confetti from 'react-confetti';
-import Button from '@material-ui/core/Button';
+import Button from '@mui/material/Button';
 import { DegreeRequirement, DegreeRequirementCourse } from '../../types/degree';
 import { CourseLink } from '../../components/course-link/course-link';
 

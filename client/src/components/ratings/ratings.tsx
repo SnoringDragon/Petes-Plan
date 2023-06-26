@@ -1,7 +1,7 @@
 import { BaseRating, RateMyProfRating, Rating, RatingSearch, RatingSearchResult } from '../../types/rating';
 import { useEffect, useState } from 'react';
 import RatingService from '../../services/RatingService';
-import { Box, Chip, CircularProgress, IconButton, MenuItem, OutlinedInput, Select, Tooltip } from '@material-ui/core';
+import { Box, Chip, CircularProgress, IconButton, MenuItem, OutlinedInput, Select, Tooltip } from '@mui/material';
 import { FaTimes, FaLaptop, FaChevronUp, FaChevronDown } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import { CourseLink } from '../course-link/course-link';
@@ -161,34 +161,37 @@ export function Ratings(props: RatingSearch & { filter?: string[] }) {
         return include;
     });
 
-    return (<div className="flex flex-col w-full">
-        <div className="flex mb-2">
-            <div className="flex flex-col mr-2">
-                <div className="flex items-start mb-1">
-                    <span className="text-6xl font-bold">{avgQuality.toFixed(1)}</span>
-                    <span className="mt-1.5">/ 5</span>
-                </div>
-                <span className="mb-2">Overall quality based on {count} ratings</span>
-                <span className="text-4xl font-bold mb-4">{name}</span>
-                <div className="flex flex-grow mb-1">
-                    <div className="flex flex-col items-center p-4 border-r border-gray-500">
-                        <span className="text-3xl font-bold">{wouldTakeAgain === null ? 'N/A' :
-                            (wouldTakeAgain * 100).toFixed(1) + '%'}</span>
-                        <span>Would take again</span>
+    return (
+        <div className="flex flex-col w-full">
+            <div className="flex mb-2">
+                <div className="flex flex-col mr-2">
+                    <div className="flex items-start mb-1">
+                        <span className="text-6xl font-bold">{avgQuality.toFixed(1)}</span>
+                        <span className="mt-1.5">/ 5</span>
                     </div>
-                    <div className="flex flex-col items-center p-4">
-                        <span className="text-3xl font-bold">{avgDifficulty.toFixed(1)}</span>
-                        <span>Level of difficulty</span>
+                    <span className="mb-2">Overall quality based on {count} ratings</span>
+                    <span className="text-4xl font-bold mb-4">{name}</span>
+                    <div className="flex flex-grow mb-1">
+                        <div className="flex flex-col items-center p-4 border-r border-gray-500">
+                            <span className="text-3xl font-bold">{wouldTakeAgain === null ? 'N/A' :
+                                (wouldTakeAgain * 100).toFixed(1) + '%'}</span>
+                            <span>Would take again</span>
+                        </div>
+                        <div className="flex flex-col items-center p-4">
+                            <span className="text-3xl font-bold">{avgDifficulty.toFixed(1)}</span>
+                            <span>Level of difficulty</span>
+                        </div>
                     </div>
                 </div>
+                <BarChart title="Rating Distribution" data={numQuality} className="flex-grow mx-4" />
+                <BarChart title="Difficulty Distribution" data={numDifficulty} className="flex-grow mx-4" />
             </div>
-            <BarChart title="Rating Distribution" data={numQuality} className="flex-grow mx-4" />
-            <BarChart title="Difficulty Distribution" data={numDifficulty} className="flex-grow mx-4" />
-        </div>
-        <span className="font-bold mb-1">Tags for {name}</span>
-        <TagList className="mb-2" tags={includedTags.map(t => t.name)} />
-        <div className="flex items-center mb-6">
-            <Select multiple
+            <span className="font-bold mb-1">Tags for {name}</span>
+            <TagList className="mb-2" tags={includedTags.map(t => t.name)} />
+            <div className="flex items-center mb-6">
+                <Select
+                    variant="standard"
+                    multiple
                     autoWidth
                     className="w-auto flex-grow"
                     displayEmpty
@@ -220,74 +223,75 @@ export function Ratings(props: RatingSearch & { filter?: string[] }) {
                             })}
                         </Box>);
                     }}>
-                <MenuItem disabled value="">
-                    <em>{isCourse ? 'Select Instructor' : 'Select Course'}</em>
-                </MenuItem>
-                {isCourse ? ratings.metadata.instructors.map(instructor => (<MenuItem key={instructor._id} value={instructor._id}>
-                    {renderProfessor(instructor)}
-                </MenuItem>)) :
-                    ratings.metadata.courses.map(course => (<MenuItem key={course._id} value={course._id}>
-                        {course.subject} {course.courseID}
-                    </MenuItem>))}
-            </Select>
-            <FaTimes className="ml-4 text-xl cursor-pointer" onClick={() => setFilter([])} />
-        </div>
-        <div className="flex items-center justify-center w-full py-2 mb-2 bg-gray-600 bg-opacity-25 cursor-pointer"
-            onClick={() => setCollapsed(!collapsed)}>
-            {collapsed ? 'Expand' : 'Collapse'} Reviews
-            {collapsed ? <FaChevronDown className="ml-2" /> : <FaChevronUp className="ml-2" />}
-        </div>
-        <div className={collapsed ? 'hidden' : ''}>
-        {data.map(rating => (<div key={rating._id} className="bg-gray-500 bg-opacity-25 p-6 mb-4 flex">
-            <div className="mr-6">
-                <RatingSquare rating={rating.quality} label="Quality" />
-                <RatingSquare rating={rating.difficulty} label="Difficulty" invert={true} scalingFunc={x => x ** (.75)} />
+                    <MenuItem disabled value="">
+                        <em>{isCourse ? 'Select Instructor' : 'Select Course'}</em>
+                    </MenuItem>
+                    {isCourse ? ratings.metadata.instructors.map(instructor => (<MenuItem key={instructor._id} value={instructor._id}>
+                        {renderProfessor(instructor)}
+                    </MenuItem>)) :
+                        ratings.metadata.courses.map(course => (<MenuItem key={course._id} value={course._id}>
+                            {course.subject} {course.courseID}
+                        </MenuItem>))}
+                </Select>
+                <FaTimes className="ml-4 text-xl cursor-pointer" onClick={() => setFilter([])} />
             </div>
-            <div className="flex flex-col flex-1">
-                <div className="flex items-center font-bold">
-                    {(isRateMyProfessor(rating) && rating.isForOnlineClass) && <Tooltip arrow title="For online class">
-                        <IconButton disableRipple disableFocusRipple className="mr-1.5">
-                            <FaLaptop className="w-5 h-5 -m-1.5 text-white" />
-                        </IconButton>
-                    </Tooltip>}
-                    {rating.course ? (isCourse ?
-                            <Link className="text-lg" to={`/professor?id=${rating.instructor._id}&filter=${course._id}`}>
-                                {renderProfessor(rating.instructor)
-                                }</Link> :
-                            <CourseLink className="text-lg" courseID={rating.course.courseID} subject={rating.course.subject} useColor={false} filter={instructor._id} />)
-                        : <span className="italic font-normal">No course found</span>}
-                    <span className="ml-auto">{
-                        new Date(rating.createdAt).toLocaleDateString(undefined, { dateStyle: 'long' })
-                    }</span>
+            <div className="flex items-center justify-center w-full py-2 mb-2 bg-gray-600 bg-opacity-25 cursor-pointer"
+                onClick={() => setCollapsed(!collapsed)}>
+                {collapsed ? 'Expand' : 'Collapse'} Reviews
+                {collapsed ? <FaChevronDown className="ml-2" /> : <FaChevronUp className="ml-2" />}
+            </div>
+            <div className={collapsed ? 'hidden' : ''}>
+            {data.map(rating => (<div key={rating._id} className="bg-gray-500 bg-opacity-25 p-6 mb-4 flex">
+                <div className="mr-6">
+                    <RatingSquare rating={rating.quality} label="Quality" />
+                    <RatingSquare rating={rating.difficulty} label="Difficulty" invert={true} scalingFunc={x => x ** (.75)} />
                 </div>
-                <div className="text-lg flex flex-col flex-grow">
-                    <AttributeList className="my-1.5" attributes={[{
-                        name: 'Would Take Again',
-                        value: rating.wouldTakeAgain
-                    }, {
-                        name: 'Grade',
-                        value: rating.grade
-                    },...(isRateMyProfessor(rating) ? [{
-                        name: 'For Credit',
-                        value: rating.isForCredit
-                    }, {
-                        name: 'Attendance',
-                        value: rating.isAttendanceMandatory,
-                        labels: ['Not Mandatory', 'Mandatory']
-                    }, {
-                        name: 'Textbook Used',
-                        value: rating.isTextbookUsed
-                    }] : [])]} />
-                    <span>{rating.review}</span>
-                    <div className="mt-auto pt-1 flex items-end">
-                        <TagList tags={rating.tags} />
-                        {(rating.type! in sources) && <span className="ml-auto text-sm text-gray-400">
-                            Source: {sources[rating.type!]}
-                        </span>}
+                <div className="flex flex-col flex-1">
+                    <div className="flex items-center font-bold">
+                        {(isRateMyProfessor(rating) && rating.isForOnlineClass) && <Tooltip arrow title="For online class">
+                            <IconButton disableRipple disableFocusRipple className="mr-1.5">
+                                <FaLaptop className="w-5 h-5 -m-1.5 text-white" />
+                            </IconButton>
+                        </Tooltip>}
+                        {rating.course ? (isCourse ?
+                                <Link className="text-lg" to={`/professor?id=${rating.instructor._id}&filter=${course._id}`}>
+                                    {renderProfessor(rating.instructor)
+                                    }</Link> :
+                                <CourseLink className="text-lg" courseID={rating.course.courseID} subject={rating.course.subject} useColor={false} filter={instructor._id} />)
+                            : <span className="italic font-normal">No course found</span>}
+                        <span className="ml-auto">{
+                            new Date(rating.createdAt).toLocaleDateString(undefined, { dateStyle: 'long' })
+                        }</span>
+                    </div>
+                    <div className="text-lg flex flex-col flex-grow">
+                        <AttributeList className="my-1.5" attributes={[{
+                            name: 'Would Take Again',
+                            value: rating.wouldTakeAgain
+                        }, {
+                            name: 'Grade',
+                            value: rating.grade
+                        },...(isRateMyProfessor(rating) ? [{
+                            name: 'For Credit',
+                            value: rating.isForCredit
+                        }, {
+                            name: 'Attendance',
+                            value: rating.isAttendanceMandatory,
+                            labels: ['Not Mandatory', 'Mandatory']
+                        }, {
+                            name: 'Textbook Used',
+                            value: rating.isTextbookUsed
+                        }] : [])]} />
+                        <span>{rating.review}</span>
+                        <div className="mt-auto pt-1 flex items-end">
+                            <TagList tags={rating.tags} />
+                            {(rating.type! in sources) && <span className="ml-auto text-sm text-gray-400">
+                                Source: {sources[rating.type!]}
+                            </span>}
+                        </div>
                     </div>
                 </div>
+            </div>))}
             </div>
-        </div>))}
         </div>
-    </div>);
+    );
 }

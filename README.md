@@ -17,11 +17,7 @@ Install [`node.js`](https://nodejs.org/en/), and optionally [`docker`](https://w
 `cd` into the `client` folder
 
 #### Installing and updating packages
-To update packages, such as when new dependencies are added, run `npm i`
-
-To install a package from [`npmjs`](https://www.npmjs.com/), run `npm i {package_name}`
-* _Note:_ some packages (such as material UI) may not have been updated for the latest version of React.
-Installing these may require adding the `--legacy-peer-deps` flag. (e.g. `npm i --legacy-peer-deps`)
+To update and install packages, run `npm i`
 
 ### Running the client
 Run `npm run dev` inside the `client` folder
@@ -32,9 +28,7 @@ Run `npm run dev` inside the `client` folder
 Copy the `.env.example` file to a new file called `.env`
 
 #### Installing and updating packages
-To update packages, such as when new dependencies are added, run `npm i`
-
-To install a package from [`npmjs`](https://www.npmjs.com/), run `npm i {package_name}`
+To update and install packages, run `npm i`
 
 ### Running the server
 Run `npm run dev` or `node index.js` inside the `server` folder

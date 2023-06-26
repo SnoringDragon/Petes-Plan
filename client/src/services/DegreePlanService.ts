@@ -2,6 +2,7 @@ import { Api } from './Api';
 import { UserCourse } from '../types/user-course';
 import { DegreePlan } from '../types/degree-plan';
 import { makePromiseCache } from '../utils/promise-cache';
+import { Section } from '../types/course-requirements';
 
 class DegreePlanService extends Api {
     getPlans() {
@@ -17,7 +18,7 @@ class DegreePlanService extends Api {
         semester: string,
         year: number,
         subject: string,
-        section: string,
+        section?: Section,
         overrideStatus?: string
     }[]) {
         return this.post<{ degreePlan: DegreePlan }>(`/api/degreePlan/${plan}/add`, { degrees, courses });

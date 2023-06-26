@@ -8,7 +8,7 @@ import { Ratings } from '../../components/ratings/ratings';
 import { Boilergrades } from '../../components/boilergrades/boilergrades';
 import { Boilergrade } from '../../types/boilergrades';
 import BoilerGradesService from '../../services/BoilerGradesService';
-import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, Checkbox } from '@material-ui/core';
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, Checkbox } from '@mui/material';
 import RatingService from '../../services/RatingService';
 
 export function Professor_Page() {
