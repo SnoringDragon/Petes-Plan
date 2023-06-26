@@ -208,3 +208,10 @@ fabric.properties
 .idea/caches/build_file_checksums.ser
 
 gen/
+
+# Idea Folder
+.idea/
+
+# VS Code Folder
+.vscode/
+Petes-Plan.code-workspace
