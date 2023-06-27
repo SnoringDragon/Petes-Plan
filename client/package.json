@@ -9,6 +9,9 @@
     "preview": "vite preview",
     "test": "vitest"
   },
+  "overrides": {
+    "semver": "7.5.3"
+  },
   "dependencies": {
     "@aldabil/react-scheduler": "^2.7.10",
     "@emotion/react": "^11.11.1",

@@ -9,6 +9,9 @@
   },
   "author": "",
   "license": "ISC",
+  "overrides": {
+    "semver": "7.5.3"
+  },
   "dependencies": {
     "antlr4": "^4.12.0",
     "bcrypt": "^5.1.0",
