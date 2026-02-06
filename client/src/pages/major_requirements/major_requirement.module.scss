@@ -1,0 +1,23 @@
+.group-description {
+  @apply p-4 flex flex-col gap-1.5;
+
+  > hr:first-of-type {
+    display: none;
+  }
+
+  > hr:last-of-type {
+    display: none;
+  }
+
+  > ul {
+    @apply list-disc;
+  }
+
+  > ol {
+    @apply list-decimal;
+  }
+
+  > ul, > ol {
+    @apply pl-8;
+  }
+}
