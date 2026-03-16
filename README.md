@@ -54,3 +54,6 @@ The local MongoDB instance is exposed on `localhost:27017`. The admin username i
 
 ### Mongo Express
 Mongo Express is a web interface for browsing the contents of the mongoDB database. It is located at [`localhost:8081`](http://localhost:8081)
+
+### Redis
+Mongo Express is a web interface for browsing the contents of the Redis(the cache). It is located at [`localhost:8082`](http://localhost:8082)

@@ -2,6 +2,7 @@ const { Router } = require('express');
 const Course = require('../models/courseModel');
 const Section = require('../models/sectionModel');
 const Semester = require('../models/semesterModel');
+const cacheMiddleware = require('../middleware/cache');
 
 const mongoose = require('mongoose');
 
@@ -63,7 +64,7 @@ module.exports = app => {
         return res.json(await req.course.getSections(req.query.semester));
     });
 
-    router.get('/search', async (req, res) => {
+    router.get('/search', cacheMiddleware(3600), async (req, res) => {
         if (typeof req.query.q !== 'string')
             return res.status(400).json({ message: 'invalid input' });
 
@@ -76,7 +77,7 @@ module.exports = app => {
         }, {
             $lookup: {
                 from: 'sections',
-                localField: 'id',
+                localField: '_id',
                 foreignField: 'course',
                 as: 'sections'
             }
@@ -101,7 +102,7 @@ module.exports = app => {
     });
 
     /* Return scheduling information for a course */
-    router.get('/scheduling', getCourse, async (req, res) => {
+    router.get('/scheduling', cacheMiddleware(1800), getCourse, async (req, res) => {
         if (!req.course) {
             return res.status(404).json({
                 message: 'Course not found',

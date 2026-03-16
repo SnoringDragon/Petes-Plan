@@ -21,6 +21,23 @@ services:
       ME_CONFIG_MONGODB_ADMINPASSWORD: hunter2
       ME_CONFIG_MONGODB_URL: mongodb://root:hunter2@mongo:27017/
 
+  redis:
+    image: redis:latest
+    container_name: petes-cache
+    ports:
+      - "6379:6379"
+    restart: always
+
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: petes-redis-ui
+    environment:
+      - REDIS_HOSTS=local:redis:6379
+    ports:
+      - '127.0.0.1:8082:8081'
+    depends_on:
+      - redis
+
   mailhog:
     image: mailhog/mailhog
     restart: always

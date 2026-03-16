@@ -3,11 +3,11 @@ const Boilergrades = require('../models/boilergradesModel');
 const Course = require('../models/courseModel');
 const Instructor = require('../models/instructorModel');
 const mongoose = require('mongoose');
-
+const cacheMiddleware = require('../middleware/cache');
 module.exports = app => {
     const router = Router();
 
-    router.get('/course', async (req, res) => {
+    router.get('/course', cacheMiddleware(3600), async (req, res) => {
         let course = null;
 
         if (req.query.course) {
