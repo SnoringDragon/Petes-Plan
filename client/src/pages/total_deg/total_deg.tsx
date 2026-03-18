@@ -57,7 +57,7 @@ export function TotalDeg() {
     
 
     const [courseModifications, setCourseModifications] = useState<{
-        add: Omit<UserCourse, '_id'>[],
+        add: (Omit<Omit<UserCourse, '_id'>, 'section'> & { section: string })[],
         delete: string[]
     }>({ delete: [], add: [] });
 

@@ -1,4 +1,3 @@
-version: '3.9'
 services:
   mongo:
     image: 'mongo:6.0.4'
@@ -27,6 +26,12 @@ services:
     ports:
       - '127.0.0.1:1025:1025'
       - '127.0.0.1:8025:8025'
+
+  petes-plan-client:
+    build: ./client
+    restart: always
+    ports:
+      - 4173:4173
 
 volumes:
   mongo-data:
