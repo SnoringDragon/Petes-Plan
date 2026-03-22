@@ -1,5 +1,4 @@
 FROM node:alpine
-EXPOSE 5173
 WORKDIR /app
 COPY package.json .
 RUN npm i --legacy-peer-deps

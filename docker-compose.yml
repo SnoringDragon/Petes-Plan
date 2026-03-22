@@ -5,10 +5,10 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: hunter2
-    ports:
-      - '127.0.0.1:27017:27017'
     volumes:
       - mongo-data:/data/db
+    networks:
+      - database
 
   mongo-express:
     image: mongo-express
@@ -19,19 +19,44 @@ services:
       ME_CONFIG_MONGODB_ADMINUSERNAME: root
       ME_CONFIG_MONGODB_ADMINPASSWORD: hunter2
       ME_CONFIG_MONGODB_URL: mongodb://root:hunter2@mongo:27017/
+    networks:
+      - database
+    depends_on:
+      - mongo
 
   mailhog:
     image: mailhog/mailhog
     restart: always
     ports:
-      - '127.0.0.1:1025:1025'
       - '127.0.0.1:8025:8025'
+    networks:
+      - database
+      - email
+  
+  petes-plan-server:
+    image: cdoner/petes-plan-server:v01
+    restart: always
+    ports:
+      - 8000:8000
+    networks:
+      - database
+      - email
+    depends_on:
+      - mongo
 
   petes-plan-client:
-    build: ./client
+    image: cdoner/petes-plan-client:v01
     restart: always
     ports:
       - 4173:4173
+    depends_on:
+      - petes-plan-server
+
+networks:
+  database:
+    driver: bridge
+  email:
+    driver: bridge
 
 volumes:
   mongo-data:
