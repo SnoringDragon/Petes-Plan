@@ -34,7 +34,7 @@ services:
       - email
   
   petes-plan-server:
-    image: cdoner/petes-plan-server:v01
+    image: cdoner/petes-plan-server:latest
     restart: always
     ports:
       - 8000:8000
@@ -45,7 +45,7 @@ services:
       - mongo
 
   petes-plan-client:
-    image: cdoner/petes-plan-client:v01
+    image: cdoner/petes-plan-client:latest
     restart: always
     ports:
       - 4173:4173
