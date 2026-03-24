@@ -5,7 +5,7 @@ const handlebars = require('nodemailer-express-handlebars');
 const mailer = nodeMailer.createTransport({
     /* Uncomment the following lines and comment previous 2 lines to use a fake email service */
     
-    host: '127.0.0.1',
+    host: 'mailhog',
     port: 1025,
     
     /* Uncomment the following lines and comment previous 2 lines to use a real email service */

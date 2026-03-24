@@ -59,7 +59,8 @@ class Acalog extends BaseService {
         const table = $('td.block_content > table[class=table_default] > tbody');
 
         if (table.length !== 1)
-            throw new Error('unexpected result from server');
+            return {pageCount: 0, programs: []};
+            // throw new Error('unexpected result from server');
 
         const rows = $(table).find('tr');
 
