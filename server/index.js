@@ -13,7 +13,7 @@ async function main() {
     const app = require('./app')();
 
     /* Start the server */
-    app.listen(port, () => {
+    app.listen(port, '0.0.0.0', () => {
         console.log('listening on port', port);
     });
 }

@@ -7,7 +7,9 @@ let app;
 
 module.exports = () => {
     app = express();
-
+    app.get('/health', (req, res) => {
+        res.status(200).send('OK');
+    });
     app.use(cors());
     app.use(jsonParser);
     app.use(cookieParser());
