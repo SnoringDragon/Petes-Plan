@@ -5,7 +5,7 @@ require('dotenv').config()
 async function main() {
     const models = await require('./models')(process.env.DB);
 
-    const port = process.env.PORT;
+    const port = process.env.PORT || 8000;
     delete process.env.DB;
 
     await require('./tasks')();
