@@ -16,6 +16,6 @@ export default defineConfig({
     host: '0.0.0.0',
     port: 4173,
     // @ts-ignore
-    allowedHosts: 'all'
+    allowedHosts: ['purduepete-1964525879.us-east-1.elb.amazonaws.com']
   }
 })
