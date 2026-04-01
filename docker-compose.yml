@@ -34,6 +34,7 @@ services:
       - email
   
   petes-plan-server:
+    #build: ./server
     image: cdoner/petes-plan-server:latest
     restart: always
     ports:
@@ -43,6 +44,8 @@ services:
       - email
     depends_on:
       - mongo
+    environment:
+      - MONGO_URL=mongodb://root:hunter2@mongo:27017/petes-plan?authSource=admin
 
   petes-plan-client:
     image: cdoner/petes-plan-client:latest
