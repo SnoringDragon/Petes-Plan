@@ -2,12 +2,13 @@ const { Router } = require('express');
 const Boilergrades = require('../models/boilergradesModel');
 const Course = require('../models/courseModel');
 const Instructor = require('../models/instructorModel');
+const cacheMiddleware = require('../middleware/cache');
 const mongoose = require('mongoose');
 
 module.exports = app => {
     const router = Router();
 
-    router.get('/course', async (req, res) => {
+    router.get('/course', cacheMiddleware(3600), async (req, res) => {
         let course = null;
 
         if (req.query.course) {
@@ -27,7 +28,7 @@ module.exports = app => {
             .populate('instructor'));
     })
 
-    router.get('/instructor', async (req, res) => {
+    router.get('/instructor', cacheMiddleware(3600), async (req, res) => {
         let instructor = null;
 
         if (req.query.instructor) {

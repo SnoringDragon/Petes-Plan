@@ -2,7 +2,7 @@ const { Router } = require('express');
 const Course = require('../models/courseModel');
 const Section = require('../models/sectionModel');
 const Semester = require('../models/semesterModel');
-
+const cacheMiddleware = require('../middleware/cache');
 const mongoose = require('mongoose');
 
 module.exports = app => {
@@ -63,7 +63,7 @@ module.exports = app => {
         return res.json(await req.course.getSections(req.query.semester));
     });
 
-    router.get('/search', async (req, res) => {
+    router.get('/search', cacheMiddleware(3600), async (req, res) => {
         if (typeof req.query.q !== 'string')
             return res.status(400).json({ message: 'invalid input' });
 
