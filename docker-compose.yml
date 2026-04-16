@@ -34,8 +34,8 @@ services:
       - email
   
   petes-plan-server:
-    #build: ./server
-    image: cdoner/petes-plan-server:latest
+    build: ./server
+    # image: cdoner/petes-plan-server:latest
     restart: always
     ports:
       - 8000:8000
