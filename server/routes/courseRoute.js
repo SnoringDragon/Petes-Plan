@@ -101,7 +101,7 @@ module.exports = app => {
     });
 
     /* Return scheduling information for a course */
-    router.get('/scheduling', getCourse, async (req, res) => {
+    router.get('/scheduling', cacheMiddleware(3600), getCourse, async (req, res) => {
         if (!req.course) {
             return res.status(404).json({
                 message: 'Course not found',
