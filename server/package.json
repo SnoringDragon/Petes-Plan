@@ -35,6 +35,7 @@
     "oracledb": "^6.10.0",
     "parse-full-name": "^1.2.6",
     "race-as-promised": "^0.0.1",
+    "redis": "^5.12.1",
     "validator": "^13.9.0"
   },
   "devDependencies": {

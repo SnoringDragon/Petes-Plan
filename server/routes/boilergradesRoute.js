@@ -2,10 +2,14 @@ const { Router } = require('express');
 const Boilergrades = require('../models/boilergradesModel');
 const Course = require('../models/courseModel');
 const Instructor = require('../models/instructorModel');
+const cacheMiddleware = require('../middleware/cache');
 const mongoose = require('mongoose');
+
+const TTL = parseInt(process.env.CACHE_TTL) || 10;
 
 module.exports = app => {
     const router = Router();
+    router.use(cacheMiddleware(TTL));
 
     router.get('/course', async (req, res) => {
         let course = null;

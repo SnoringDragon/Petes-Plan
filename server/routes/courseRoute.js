@@ -2,8 +2,12 @@ const { Router } = require('express');
 const Course = require('../models/courseModel');
 const Section = require('../models/sectionModel');
 const Semester = require('../models/semesterModel');
-
+const cacheMiddleware = require('../middleware/cache');
 const mongoose = require('mongoose');
+
+
+// Get CACHE_TTL from environment, default to 10 seconds if not set
+const TTL = parseInt(process.env.CACHE_TTL) || 10;
 
 module.exports = app => {
     const router = Router();
@@ -63,7 +67,7 @@ module.exports = app => {
         return res.json(await req.course.getSections(req.query.semester));
     });
 
-    router.get('/search', async (req, res) => {
+    router.get('/search', cacheMiddleware(TTL), async (req, res) => {
         if (typeof req.query.q !== 'string')
             return res.status(400).json({ message: 'invalid input' });
 
@@ -101,7 +105,7 @@ module.exports = app => {
     });
 
     /* Return scheduling information for a course */
-    router.get('/scheduling', getCourse, async (req, res) => {
+    router.get('/scheduling', cacheMiddleware(TTL), getCourse, async (req, res) => {
         if (!req.course) {
             return res.status(404).json({
                 message: 'Course not found',
