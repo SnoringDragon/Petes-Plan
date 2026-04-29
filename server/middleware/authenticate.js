@@ -63,8 +63,11 @@
 
 //     next();
 // }
+const jwt = require('jsonwebtoken');
+const util = require('util');
 
-const admin = require('../firebase'); // Make sure this points to your Firebase Admin init file
+const secret = require('../secret');
+const admin = require('./firebase');
 const User = require('../models/userModel');
 
 module.exports.authenticate = async (req, res, next) => {
@@ -72,7 +75,6 @@ module.exports.authenticate = async (req, res, next) => {
     let token;
     const authorization = req.headers.authorization;
 
-    // 1. Extract the token (Keeping your exact same extraction logic)
     if (authorization) {
         if (!authorization.startsWith('Bearer ')) {
             return res.status(401).json(errorPayload);
@@ -87,25 +89,19 @@ module.exports.authenticate = async (req, res, next) => {
     }
 
     try {
-        // 2. Let Google verify the signature (ZERO CPU cost for your server!)
         const decodedToken = await admin.auth().verifyIdToken(token);
 
-        // 3. Find the MongoDB user using the email verified by Firebase
-        // Since Google verified the token, we know 100% this email is authentic
         const user = await User.findOne({ email: decodedToken.email });
 
-        // Invalid user (e.g., they exist in Firebase but were deleted from your DB)
         if (!user) {
             return res.status(401).json(errorPayload);
         }
 
-        // 4. Attach user and token to the request so downstream routes work perfectly
         req.user = user;
         req.token = token;
 
         next();
     } catch (error) {
-        // If the token is expired, tampered with, or invalid, Firebase throws an error
         console.error('Auth verification failed:', error.message);
         return res.status(401).json(errorPayload);
     }
