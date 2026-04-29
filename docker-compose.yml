@@ -48,7 +48,7 @@ services:
     image: cdoner/petes-plan-client:latest
     restart: always
     ports:
-      - 4173:4173
+      - 80:4173
     depends_on:
       - petes-plan-server
 
