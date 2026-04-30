@@ -49,6 +49,8 @@ services:
     restart: always
     ports:
       - 80:4173
+   volumes:
+      - ./client/vite.config.ts:/app/vite.config.ts
     depends_on:
       - petes-plan-server
 
