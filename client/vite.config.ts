@@ -13,4 +13,9 @@ export default defineConfig({
     host: true,
     port: 4173
   }
+  preview: {
+    allowedHosts: true, 
+    port: 4173,
+    host: true 
+  }
 })
